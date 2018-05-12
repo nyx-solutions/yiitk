@@ -14,8 +14,8 @@
          */
         public function safeUp()
         {
-            if ($this->tableExists($this->getCurrentTableName())) {
-                $this->dropTable($this->getCurrentTableName());
+            if ($this->tableExists($this->findCurrentTableName())) {
+                $this->dropTable($this->findCurrentTableName());
             }
         }
 

@@ -87,7 +87,7 @@
         {
             parent::init();
 
-            if ($this->db->driverName === 'mysql') {
+            if ($this->getDb()->getDriverName() != 'mysql') {
                 $rowFormat = '';
 
                 if ($this->useMysqlInnoDbRowFormat && strtolower($this->tableEngine) == 'innodb') {
@@ -271,6 +271,10 @@
          */
         public function viewExists($view)
         {
+            if ($this->getDb()->getDriverName() != 'mysql') {
+                throw new \yii\base\Exception('The method viewExists is only supported in MySQL.');
+            }
+
             return $this->tableExists($view);
         }
 
@@ -280,6 +284,10 @@
          */
         public function createView($view, $select)
         {
+            if ($this->getDb()->getDriverName() != 'mysql') {
+                throw new \yii\base\Exception('The method createView is only supported in MySQL.');
+            }
+
             $this->execute("CREATE OR REPLACE VIEW {$view} AS {$select}");
         }
 
@@ -288,6 +296,10 @@
          */
         public function dropView($view)
         {
+            if ($this->getDb()->getDriverName() != 'mysql') {
+                throw new \yii\base\Exception('The method dropView is only supported in MySQL.');
+            }
+
             if ($this->viewExists($view)) {
                 $this->execute("DROP VIEW {$view}");
             }
