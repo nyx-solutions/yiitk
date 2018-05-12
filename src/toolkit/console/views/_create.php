@@ -14,9 +14,9 @@
          */
         public function safeUp()
         {
-            if (!$this->tableExists($this->getCurrentTableName())) {
+            if (!$this->tableExists($this->findCurrentTableName())) {
                 $this->createTable(
-                    $this->getCurrentTableName(),
+                    $this->findCurrentTableName(),
                     [
                         'id'        => $this->bigPrimaryKey($this->pkLength),
                         'createdAt' => $this->dateTime()->notNull(),

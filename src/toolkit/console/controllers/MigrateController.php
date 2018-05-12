@@ -15,6 +15,18 @@
         public $generatorTemplateFiles = [];
 
         /**
+         * {@inheritdoc}
+         */
+        public function init()
+        {
+            \Yii::setAlias('@yiitk/migrations/controllers', dirname(__DIR__));
+
+            $this->templateFile = '@yiitk/migrations/controllers/views/migration.php';
+
+            parent::init();
+        }
+
+        /**
          * @inheritdoc
          */
         protected function generateMigrationSourceCode($params)

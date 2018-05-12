@@ -22,7 +22,7 @@
 
 ?>
 
-    use common\components\db\Migration;
+    use yiitk\db\Migration;
 
     /**
      * Class <?= $className."\n"; ?>

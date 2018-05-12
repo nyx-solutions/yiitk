@@ -14,8 +14,8 @@
          */
         public function safeUp()
         {
-            if (!$this->columnExists($this->getCurrentTableName(), 'fieldName')) {
-                $this->addColumn($this->getCurrentTableName(), 'fieldName', $this->string(255)->null()->after('id'));
+            if (!$this->columnExists($this->findCurrentTableName(), 'fieldName')) {
+                $this->addColumn($this->findCurrentTableName(), 'fieldName', $this->string(255)->null()->after('id'));
             }
         }
 
@@ -24,7 +24,7 @@
          */
         public function safeDown()
         {
-            if ($this->columnExists($this->getCurrentTableName(), 'fieldName')) {
-                $this->dropColumn($this->getCurrentTableName(), 'fieldName');
+            if ($this->columnExists($this->findCurrentTableName(), 'fieldName')) {
+                $this->dropColumn($this->findCurrentTableName(), 'fieldName');
             }
         }
