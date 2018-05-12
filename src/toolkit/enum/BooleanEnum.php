@@ -1,8 +1,8 @@
 <?php
 
-    namespace yiitk\emum;
+    namespace yiitk\enum;
 
-    use yiitk\emum\base\BaseEnum;
+    use yiitk\enum\base\BaseEnum;
 
     /**
      * Class BooleanEnum

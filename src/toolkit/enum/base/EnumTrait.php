@@ -1,6 +1,6 @@
 <?php
 
-    namespace yiitk\emum\base;
+    namespace yiitk\enum\base;
 
     use yiitk\helpers\InflectorHelper;
     use yii\base\Event;
