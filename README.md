@@ -32,6 +32,7 @@ ou adicionar
 
 ## Como utilizar o YiiTK
 
+- [Módulo Base](#módulo-base)
 - [DB Migrations](#db-migrations)
 - [Helpers](#helpers)
 - [Behaviors](#behaviors)
@@ -41,6 +42,22 @@ ou adicionar
 - [Biblioteca: Enum](#biblioteca-enum)
 - [Biblioteca: Curl e MultiCurl](#biblioteca-curl)
 - [Biblioteca: SOAP](#biblioteca-soap)
+
+### Módulo Base
+
+É requerido que seja configurado o módulo base para o correto funcionamento do `YiiTK`, para fazê-lo, adicione na seção `modules` da sua configuração:
+
+```php
+'bootstrap' => [
+    'yiitk'
+],
+
+'modules' => [
+    'yiitk' => [
+        'class' => \yiitk\Module::class
+    ]
+]
+```
 
 ### DB Migrations
 
@@ -52,7 +69,7 @@ Na configuração do console, adicione:
 
 'controllerMap' => [
     'migrate' => [
-        'class' => yiitk\console\controllers\MigrateController::class
+        'class' => \yiitk\console\controllers\MigrateController::class
     ]
 ],
 
