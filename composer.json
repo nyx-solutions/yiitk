@@ -1,6 +1,6 @@
 {
-  "name": "jsas-development/yiitk",
-  "description": "Yii Framework version 2 Toolkit",
+  "name": "yiitk/yiitk",
+  "description": "YiiTK - Yii Framework version 2 Toolkit",
   "type": "library",
   "keywords": [
     "yii2",
@@ -9,8 +9,12 @@
     "php"
   ],
   "license": "BSD-3-Clause",
-  "version": "1.0.3",
+  "version": "0.0.1",
   "authors": [
+    {
+      "name": "YiiTK",
+      "email": "yiitk@jsas.com.br"
+    },
     {
       "name": "Jonatas Sas",
       "email": "atendimento@jsas.com.br"
@@ -59,7 +63,7 @@
     },
     {
       "type": "vcs",
-      "url": "https://github.com/jsas-development/yiitk"
+      "url": "https://github.com/yiitk/yiitk"
     }
   ]
 }
