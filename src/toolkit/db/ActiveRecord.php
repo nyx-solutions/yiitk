@@ -4,7 +4,7 @@
 
     use yii\behaviors\SluggableBehavior;
     use yiitk\behaviors\DateTimeBehavior;
-    use yiitk\emum\base\EnumTrait;
+    use yiitk\enum\base\EnumTrait;
     use yiitk\web\FlashMessagesTrait;
 
     /**

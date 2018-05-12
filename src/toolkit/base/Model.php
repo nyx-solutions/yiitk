@@ -2,7 +2,7 @@
 
     namespace yiitk\base;
 
-    use yiitk\emum\base\EnumTrait;
+    use yiitk\enum\base\EnumTrait;
     use yiitk\web\FlashMessagesTrait;
 
     /**
