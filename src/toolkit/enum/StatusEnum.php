@@ -17,10 +17,10 @@
      * @property bool   $isBlocked
      * @property bool   $isWaitingConfirmation
      *
-     * @method static active
-     * @method static inactive
-     * @method static blocked
-     * @method static waitingConfirmation
+     * @method static   active
+     * @method static   inactive
+     * @method static   blocked
+     * @method static   waitingConfirmation
      */
     class StatusEnum extends BaseEnum
     {
