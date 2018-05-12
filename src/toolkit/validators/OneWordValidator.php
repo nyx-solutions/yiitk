@@ -3,6 +3,7 @@
     namespace yiitk\validators;
 
     use yii\validators\Validator;
+    use yiitk\base\Model;
 
     /**
      * Class OneWordValidator
@@ -18,7 +19,7 @@
         {
             parent::init();
 
-            $this->message = 'O campo "{attribute}" deve conter apenas uma única palavra (sem números, caracteres especiais ou espaços).';
+            $this->message = \Yii::t('yiitk', 'The field "{attribute}" must have only one word (without numbers, special chars or spaces).');
         }
 
         /**
@@ -26,6 +27,7 @@
          */
         public function validateAttribute($model, $attribute)
         {
+            /** @var Model $model */
             if (!$this->validateWord($model->$attribute)) {
                 $this->addError($model, $attribute, $this->getMessage($model->getAttributeLabel($attribute)));
             }

@@ -106,16 +106,16 @@
         {
             try {
                 if (parent::delete()) {
-                    $this->addSuccessMessage('O registro solicitado foi removido com sucesso.');
+                    $this->addSuccessMessage(\Yii::t('yiitk', 'The requested entry was successfully removed.'));
 
                     return true;
                 } else {
-                    $this->addErrorMessage('Não foi possível remover o registro solicitado.');
+                    $this->addErrorMessage(\Yii::t('yiitk', 'It was not possible to remove the requested entry.'));
 
                     return false;
                 }
             } catch (\Exception $e) {
-                $this->addErrorMessage('Não foi possível remover o registro solicitado pois ele está atrelado a outros registros do sistema.');
+                $this->addErrorMessage(\Yii::t('yiitk', 'It was not possible to remove the requested entry because it was attached to another entry in the system.'));
 
                 return false;
             }

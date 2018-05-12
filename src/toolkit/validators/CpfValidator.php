@@ -19,7 +19,7 @@
         {
             parent::init();
 
-            $this->message = 'O número de CPF informado não é válido.';
+            $this->message = \Yii::t('yiitk', 'The brazilian tax number is not valid.');
         }
 
         /**

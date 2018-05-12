@@ -19,7 +19,7 @@
         {
             parent::init();
 
-            $this->message = 'O número de CNPJ informado não é válido.';
+            $this->message = \Yii::t('yiitk', 'The brazilian company tax number is not valid.');
         }
 
         /**
