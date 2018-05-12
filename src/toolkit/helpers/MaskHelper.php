@@ -2,8 +2,6 @@
 
     namespace yiitk\helpers;
 
-    use Yii;
-
     /**
      * Class MaskHelper
      *
@@ -11,26 +9,35 @@
      */
     class MaskHelper extends StringHelper
     {
-        const MASK_PATTERN_CPF         = '###.###.###-###';
-        const MASK_PATTERN_CNPJ        = '##.###.###/####-##';
-        const MASK_PATTERN_ZIP_CODE    = '#####-###';
-        const MASK_PATTERN_CREDIT_CARD = '#### #### #### ####';
+        /**
+         * @var array
+         */
+        protected static $patters = [
+            'cpf'         => '###.###.###-###',
+            'cnpj'        => '##.###.###/####-##',
+            'zipcode'     => '#####-###',
+            'credit-card' => '#### #### #### ####',
+        ];
 
         /**
          * Returns a string with a certain mask (using # as a pattern).
          *
-         * @param $string  string
-         * @param $mask    string
-         * @param $onEmpty string
+         * @param string $string
+         * @param string $mask
+         * @param string $empty
          *
          * @return string
          */
-        public static function mask($string, $mask, $onEmpty = '')
+        public static function mask($string, $mask, $empty = '')
         {
+            if (isset(static::$patters[strtolower($mask)])) {
+                $mask = static::$patters[strtolower($mask)];
+            }
+
             $string = trim((string)$string);
 
             if (empty($string)) {
-                return $onEmpty;
+                return $empty;
             }
 
             $maskared = '';

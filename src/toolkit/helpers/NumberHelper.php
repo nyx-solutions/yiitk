@@ -22,40 +22,4 @@
         {
             return StringHelper::justNumbers($content);
         }
-
-        /**
-         * @param int      $value
-         * @param bool|int $upper
-         *
-         * @return string
-         *
-         * @see StringHelper::toSpelled
-         */
-        public static function toSpelled($value = 0, $upper = false)
-        {
-            return StringHelper::toSpelledNumber($value, $upper);
-        }
-
-        /**
-         * @param float $amount
-         * @param bool  $withPrefix
-         *
-         * @return string
-         *
-         * @see StringHelper::toMoney
-         */
-        public static function toMoney($amount, $withPrefix = true)
-        {
-            return StringHelper::toMoney($amount, $withPrefix);
-        }
-
-        /**
-         * @param float $amount
-         *
-         * @return string
-         */
-        public static function toPercentText($amount)
-        {
-            return static::toMoney($amount, false).'%';
-        }
     }

@@ -2,10 +2,6 @@
 
     namespace yiitk\helpers;
 
-    use DateTime;
-    use DateTimeZone;
-    use Yii;
-
     /**
      * Class StringHelper
      *
@@ -13,11 +9,9 @@
      */
     class StringHelper extends \yii\helpers\StringHelper
     {
-        const CASE_UPPER        = MB_CASE_UPPER;
-        const CASE_LOWER        = MB_CASE_LOWER;
-        const CASE_TITLE        = MB_CASE_TITLE;
-
-        const ID_PATTERN_LENGTH = 9;
+        const CASE_UPPER = MB_CASE_UPPER;
+        const CASE_LOWER = MB_CASE_LOWER;
+        const CASE_TITLE = MB_CASE_TITLE;
 
         /**
          * Recebe uma string formatada e retorna apenas os seus números.
@@ -69,6 +63,145 @@
         public static function asSlug($value = '', $spaces = '-', $case = MB_CASE_LOWER)
         {
             return InflectorHelper::slug($value, $spaces, ($case == MB_CASE_LOWER));
+        }
+
+        /**
+         * @param string  $string
+         * @param integer $mode
+         *
+         * @return string
+         */
+        public static function convertCase($string, $mode = self::CASE_UPPER)
+        {
+            return mb_convert_case((string)$string, $mode, 'UTF-8');
+        }
+
+        /**
+         * @param string $string
+         *
+         * @return string
+         */
+        public static function toLowerCase($string)
+        {
+            return static::convertCase($string, self::CASE_LOWER);
+        }
+
+        /**
+         * @param string $string
+         *
+         * @return string
+         */
+        public static function toUpperCase($string)
+        {
+            return static::convertCase($string, self::CASE_UPPER);
+        }
+
+        /**
+         * @param integer $length
+         * @param integer $upper
+         * @param integer $lower
+         * @param integer $digit
+         * @param integer $special
+         *
+         * @return string
+         */
+        public static function generateRandomString($length = 0, $upper = 0, $lower = 0, $digit = 0, $special = 0)
+        {
+            $length      = (int)$length;
+            $upper       = (int)$upper;
+            $lower       = (int)$lower;
+            $digit       = (int)$digit;
+            $special     = (int)$special;
+
+            $lowerList   = 'abcdefghijklmnopqrstuvxwyz';
+            $upperList   = 'ABCDEFGHIJKLMNOPQRSTUVXWYZ';
+            $digitList   = '0123456789';
+            $specialList = '!@#$%&*()_-+={}[]?:;';
+
+            $gapList     = '';
+
+            if ($upper > 0) {
+                $gapList .= $upperList;
+            }
+
+            if ($lower > 0) {
+                $gapList .= $lowerList;
+            }
+
+            if ($digit > 0) {
+                $gapList .= $digitList;
+            }
+
+            if ($special > 0) {
+                $gapList .= $specialList;
+            }
+
+            if (empty($gapList)) {
+                $gapList .= $lowerList.$digitList;
+            }
+
+            $final = '';
+
+            if ($length > 0) {
+                for ($i = 1; $i <= $length; $i++) {
+                    if ($upper > 0) {
+                        $aux = str_shuffle($upperList);
+                        $final .= $aux{0};
+                        $upper--;
+
+                        continue;
+                    }
+
+                    if ($lower > 0) {
+                        $aux = str_shuffle($lowerList);
+                        $final .= $aux{0};
+                        $lower--;
+
+                        continue;
+                    }
+
+                    if ($digit > 0) {
+                        $aux = str_shuffle($digitList);
+                        $final .= $aux{0};
+                        $digit--;
+
+                        continue;
+                    }
+
+                    if ($special > 0) {
+                        $aux = str_shuffle($specialList);
+                        $final .= $aux{0};
+                        $special--;
+
+                        continue;
+                    }
+
+                    $aux = str_shuffle($gapList);
+                    $final .= $aux{0};
+                }
+
+                return $final;
+            } else {
+                return (string)rand(100000, 999999);
+            }
+        }
+
+        /**
+         * @param string $email
+         *
+         * @return string
+         */
+        public static function obfuscateEmail($email)
+        {
+            $emailSplit = explode('@', $email);
+            $email      = $emailSplit[0];
+            $len        = strlen($email) - 1;
+
+            for ($i = 1; $i < $len; $i++) {
+                $email[$i] = '*';
+            }
+
+            return $email.'@'.$emailSplit[1];
         }
 
         /**
@@ -447,7 +580,7 @@
          *
          * @return bool
          */
-        public static function seemsUtf8($str)
+        protected static function seemsUtf8($str)
         {
             static::mbstringBinarySafeEncoding();
 
@@ -493,7 +626,7 @@
          *
          * @return void
          */
-        public static function mbstringBinarySafeEncoding($reset = false)
+        protected static function mbstringBinarySafeEncoding($reset = false)
         {
             static $encodings = [];
             static $overloaded = null;
@@ -521,442 +654,8 @@
         /**
          * @return void
          */
-        public static function resetMbstringEncoding()
+        protected static function resetMbstringEncoding()
         {
             static::mbstringBinarySafeEncoding(true);
-        }
-
-        /**
-         * @param int      $value
-         * @param bool|int $upper
-         *
-         * @return string
-         */
-        public static function toSpelledNumber($value = 0, $upper = false)
-        {
-            $value = (string)$value;
-
-            if (strpos($value, ',') > 0) {
-                // retira o ponto de milhar, se tiver
-                $value = str_replace('.', '', $value);
-
-                // troca a virgula decimal por ponto decimal
-                $value = str_replace(',', '.', $value);
-            }
-
-            $singular = ['centavo', 'real', 'mil', 'milhão', 'bilhão', 'trilhão', 'quatrilhão'];
-            $plural = ['centavos', 'reais', 'mil', 'milhões', 'bilhões', 'trilhões', 'quatrilhões'];
-            $c = [
-                '',
-                'cem',
-                'duzentos',
-                'trezentos',
-                'quatrocentos',
-                'quinhentos',
-                'seiscentos',
-                'setecentos',
-                'oitocentos',
-                'novecentos'
-            ];
-            $d = ['', 'dez', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
-            $d10 = [
-                'dez',
-                'onze',
-                'doze',
-                'treze',
-                'quatorze',
-                'quinze',
-                'dezesseis',
-                'dezesete',
-                'dezoito',
-                'dezenove'
-            ];
-            $u = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
-
-            $z = 0;
-
-            $value = number_format($value, 2, '.', '.');
-            $inteiro = explode('.', $value);
-            $cont = count($inteiro);
-
-            for ($i = 0; $i < $cont; $i++) {
-                for ($ii = strlen($inteiro[$i]); $ii < 3; $ii++) {
-                    $inteiro[$i] = '0'.$inteiro[$i];
-                }
-            }
-
-            $fim = $cont - ($inteiro[$cont - 1] > 0 ? 1 : 2);
-            $rt = '';
-
-            for ($i = 0; $i < $cont; $i++) {
-                $value = $inteiro[$i];
-                $rc = (($value > 100) && ($value < 200)) ? 'cento' : $c[$value[0]];
-                $rd = ($value[1] < 2) ? '' : $d[$value[1]];
-                $ru = ($value > 0) ? (($value[1] == 1) ? $d10[$value[2]] : $u[$value[2]]) : '';
-
-                $r = $rc.(($rc && ($rd || $ru)) ? ' e ' : '').$rd.(($rd && $ru) ? ' e ' : '').$ru;
-                $t = $cont - 1 - $i;
-                $r .= $r ? ' '.($value > 1 ? $plural[$t] : $singular[$t]) : '';
-                if ($value == '000') {
-                    $z++;
-                } elseif ($z > 0) {
-                    $z--;
-                }
-                if (($t == 1) && ($z > 0) && ($inteiro[0] > 0)) {
-                    $r .= (($z > 1) ? ' de ' : '').$plural[$t];
-                }
-                if ($r) {
-                    $rt = $rt.((($i > 0) && ($i <= $fim) && ($inteiro[0] > 0) && ($z < 1)) ? (($i < $fim) ? ', ' : ' e ') : ' ').$r;
-                }
-            }
-
-            if (!$upper) {
-                return trim($rt ? $rt : 'zero');
-            } elseif ((int)$upper === 2) {
-                return trim(strtoupper($rt) ? strtoupper($rt) : 'Zero');
-            } else {
-                return trim(ucwords($rt) ? ucwords($rt) : 'Zero');
-            }
-        }
-
-        /**
-         * @return string
-         */
-        public static function getUniqueCode()
-        {
-            $now = new DateTime('now', new DateTimeZone(Yii::$app->getTimeZone()));
-
-            return (string)sha1(uniqid(rand().rand().$now->format('YmdHis'), true));
-        }
-
-        /**
-         * @param int $id
-         *
-         * @return string
-         */
-        public static function getPatternFromId($id)
-        {
-            $id = (int)$id;
-
-            $left = (string)rand((int)('1'.str_repeat('0', (self::ID_PATTERN_LENGTH - 1))), (int)(str_repeat('9', (self::ID_PATTERN_LENGTH))));
-            $right = (string)rand((int)('1'.str_repeat('0', (self::ID_PATTERN_LENGTH - 1))), (int)(str_repeat('9', (self::ID_PATTERN_LENGTH))));
-
-            return $left.(string)$id.$right;
-        }
-
-        /**
-         * @param string $uid
-         *
-         * @return int
-         */
-        public static function getIdFromPattern($uid)
-        {
-            $uid = (string)$uid;
-
-            return (int)preg_replace('/^([0-9]{'.self::ID_PATTERN_LENGTH.'})([0-9]{1,})([0-9]{'.self::ID_PATTERN_LENGTH.'})$/', '$2', (string)$uid);
-        }
-
-        /**
-         * @param string $text
-         * @param int    $max
-         * @param string $suffix
-         *
-         * @return string
-         */
-        public static function getTextWithLimit($text, $max = 255, $suffix = '...')
-        {
-            $text = (string)$text;
-
-            if (strlen($text) > $max) {
-                $textParts = explode(' ', $text);
-
-                if (is_array($textParts) && count($textParts) > 1) {
-                    $newText = $tempNewText = '';
-
-                    foreach ($textParts as $word) {
-                        $tempNewText .= ((!empty($tempNewText)) ? ' ' : '').$word;
-
-                        if (strlen($tempNewText) > $max) {
-                            break;
-                        }
-
-                        $newText = $tempNewText.$suffix;
-                    }
-
-                    return $newText;
-                } else {
-                    return substr($text, 0, $max).$suffix;
-                }
-            } else {
-                return $text;
-            }
-        }
-
-        /**
-         * @param float $amount
-         * @param bool  $withPrefix
-         *
-         * @return string
-         */
-        public static function toMoney($amount, $withPrefix = true)
-        {
-            $amount = (float)$amount;
-            $withPrefix = (bool)$withPrefix;
-
-            return (($withPrefix) ? 'R$ ' : '').number_format($amount, 2, ',', '.');
-        }
-
-        /**
-         * @param string  $string
-         * @param integer $mode
-         *
-         * @return string
-         */
-        public static function convertCase($string, $mode = self::CASE_UPPER)
-        {
-            return mb_convert_case((string)$string, $mode, 'UTF-8');
-        }
-
-        /**
-         * @param integer $length
-         * @param integer $upper
-         * @param integer $lower
-         * @param integer $digit
-         * @param integer $special
-         *
-         * @return string
-         */
-        public static function generatePassword($length = 0, $upper = 0, $lower = 0, $digit = 0, $special = 0)
-        {
-            return static::generateRandomString($length, $upper, $lower, $digit, $special);
-        }
-
-        /**
-         * @param integer $length
-         * @param integer $upper
-         * @param integer $lower
-         * @param integer $digit
-         * @param integer $special
-         *
-         * @return string
-         */
-        public static function generateRandomString($length = 0, $upper = 0, $lower = 0, $digit = 0, $special = 0)
-        {
-            $length      = (int)$length;
-            $upper       = (int)$upper;
-            $lower       = (int)$lower;
-            $digit       = (int)$digit;
-            $special     = (int)$special;
-
-            $lowerList   = 'abcdefghijklmnopqrstuvxwyz';
-            $upperList   = 'ABCDEFGHIJKLMNOPQRSTUVXWYZ';
-            $digitList   = '0123456789';
-            $specialList = '!@#$%&*()_-+={}[]?:;';
-
-            $gapList     = '';
-
-            if ($upper > 0) {
-                $gapList .= $upperList;
-            }
-
-            if ($lower > 0) {
-                $gapList .= $lowerList;
-            }
-
-            if ($digit > 0) {
-                $gapList .= $digitList;
-            }
-
-            if ($special > 0) {
-                $gapList .= $specialList;
-            }
-
-            if (empty($gapList)) {
-                $gapList .= $lowerList.$digitList;
-            }
-
-            $final = '';
-
-            if ($length > 0) {
-                for ($i = 1; $i <= $length; $i++) {
-                    if ($upper > 0) {
-                        $aux = str_shuffle($upperList);
-                        $final .= $aux{0};
-                        $upper--;
-
-                        continue;
-                    }
-
-                    if ($lower > 0) {
-                        $aux = str_shuffle($lowerList);
-                        $final .= $aux{0};
-                        $lower--;
-
-                        continue;
-                    }
-
-                    if ($digit > 0) {
-                        $aux = str_shuffle($digitList);
-                        $final .= $aux{0};
-                        $digit--;
-
-                        continue;
-                    }
-
-                    if ($special > 0) {
-                        $aux = str_shuffle($specialList);
-                        $final .= $aux{0};
-                        $special--;
-
-                        continue;
-                    }
-
-                    $aux = str_shuffle($gapList);
-                    $final .= $aux{0};
-                }
-
-                return $final;
-            } else {
-                return (string)rand(100000, 999999);
-            }
-        }
-
-        /**
-         * @param integer|string $numbers
-         * @param array          $charsTable
-         *
-         * @return string
-         */
-        public static function stringfyNumbers($numbers, $charsTable = [])
-        {
-            $numbers = str_split((string)$numbers);
-
-            if (!is_array($charsTable) || count($charsTable) !== 11) {
-                $charsTable = ['y', 'p', 'k', 'a', 't', 'n', 'o', 'e', 'q', 'f', 'm'];
-            }
-
-            $string = '';
-
-            foreach ($numbers as $number) {
-                $number = (int)$number;
-
-                if ($number > 9) {
-                    $number = 9;
-                }
-
-                $string .= ((rand(1, 2) % 2 == 0) ? strtoupper((string)$charsTable[$number]) : (string)$charsTable[$number]);
-            }
-
-            return $string;
-        }
-
-        /**
-         * @param string  $singular
-         * @param string  $plural
-         * @param integer $n
-         * @param bool    $emptyOnZero
-         *
-         * @return string
-         */
-        public static function pluralize($singular, $plural, $n = 0, $emptyOnZero = false)
-        {
-            $n = (int)$n;
-
-            if ($n === 1) {
-                return sprintf($singular, $n);
-            } else {
-                if ((bool)$emptyOnZero) {
-                    if ($n === 0) {
-                        return '';
-                    }
-                }
-
-                return sprintf($plural, $n);
-            }
-        }
-
-        /**
-         * @param string $name
-         *
-         * @return string
-         */
-        public static function asFirstName($name)
-        {
-            $firstName = explode(' ', (string)$name);
-
-            if (is_array($firstName) && count($firstName) > 0) {
-                return (string)$firstName[0];
-            } else {
-                return (string)$firstName;
-            }
-        }
-
-        /**
-         * @param string $name
-         *
-         * @return string
-         */
-        public static function asLastName($name)
-        {
-            $lastName = explode(' ', (string)$name);
-
-            if (is_array($lastName) && count($lastName) > 0) {
-                return (string)end($lastName);
-            } else {
-                return (string)$lastName;
-            }
-        }
-
-        /**
-         * @param string $string
-         *
-         * @return string
-         */
-        public static function toASCII($string = '') {
-            $convertedString = '';
-
-            $length = strlen($string);
-
-            for ($i = 0; $i < $length; $i++) {
-                $convertedString .= '\\x'.dechex(ord(substr($string, $i, 1)));
-            }
-
-            return $convertedString;
-        }
-
-        /**
-         * @param string $str
-         * @param string $needleStart
-         * @param string $needleEnd
-         * @param string $replacement
-         *
-         * @return string
-         */
-        public static function replaceBetween($str, $needleStart, $needleEnd, $replacement) {
-            $pos = strpos($str, $needleStart);
-            $start = $pos === false ? 0 : $pos + strlen($needleStart);
-
-            $pos = strpos($str, $needleEnd, $start);
-            $end = $start === false ? strlen($str) : $pos;
-
-            return substr_replace($str,$replacement,  $start, $end - $start);
-        }
-
-        /**
-         * @param string $email
-         *
-         * @return string
-         */
-        public static function obfuscateEmail($email)
-        {
-            $emailSplit = explode('@', $email);
-            $email      = $emailSplit[0];
-            $len        = strlen($email) - 1;
-
-            for ($i = 1; $i < $len; $i++) {
-                $email[$i] = '*';
-            }
-
-            return $email.'@'.$emailSplit[1];
         }
     }
