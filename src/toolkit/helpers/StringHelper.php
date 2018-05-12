@@ -68,19 +68,7 @@
          */
         public static function asSlug($value = '', $spaces = '-', $case = MB_CASE_LOWER)
         {
-            $value = (string)$value;
-
-            if (!in_array($case, [MB_CASE_LOWER, MB_CASE_UPPER])) {
-                $case = MB_CASE_LOWER;
-            }
-
-            $value = static::removeAccents($value);
-
-            $value = preg_replace('/ /', $spaces, trim($value));
-            $value = preg_replace('/([^A-Za-z0-9'.quotemeta($spaces).']{1,})/', '', $value);
-            $value = mb_convert_case($value, $case, 'UTF-8');
-
-            return (string)$value;
+            return InflectorHelper::slug($value, $spaces, ($case == MB_CASE_LOWER));
         }
 
         /**

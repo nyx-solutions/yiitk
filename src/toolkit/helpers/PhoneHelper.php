@@ -2,14 +2,12 @@
 
     namespace yiitk\helpers;
 
-    use Yii;
-
     /**
-     * Class ShortMessageServiceHelper
+     * Class PhoneHelper
      *
      * @package yiitk\helpers
      */
-    class ShortMessageServiceHelper extends StringHelper
+    class PhoneHelper extends StringHelper
     {
         /**
          * @param string $phone
