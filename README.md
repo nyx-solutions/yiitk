@@ -33,6 +33,13 @@ ou adicionar
 ## Como utilizar o YiiTK
 
 - [DB Migrations](#db-migrations)
+- [Helpers](#helpers)
+- [Behaviors](#behaviors)
+- [Validators](#validators)
+- [ActiveRecord](#activerecord)
+- [Biblioteca: Enum](#biblioteca-enum)
+- [Biblioteca: Curl e MultiCurl](#biblioteca-curl)
+- [Biblioteca: SOAP](#biblioteca-soap)
 
 ### DB Migrations
 
@@ -242,6 +249,204 @@ php yii migrate
 - **mediumText()**: cria um campo `MEDIUMTEXT` (disponível apenas para `MySQL`);
 - **longText()**: cria um campo `LONGTEXT` (disponível apenas para `MySQL`);
 - **tinyText()**: cria um campo `TINYTEXT` (disponível apenas para `MySQL`).
+
+### Helpers
+
+#### yiitk\helpers\ArrayHelper
+
+Estende a classe `\yii\helpers\ArrayHelper` e adiciona o(s) seguinte(s) método(s):
+
+- **asAssociative(array $items)**: retorna um array como associativo
+
+#### yiitk\helpers\ConsoleHelper
+
+Estende a classe `\yii\helpers\Console` sem adicionar nenhum método.
+
+#### yiitk\helpers\DateTimeHelper
+
+Estende a classe `\Carbon\Carbon` sem adicionar nenhum método. Mais informações sobre a biblioteca: https://carbon.nesbot.com/.
+
+#### yiitk\helpers\FileHelper
+
+Estende a classe `\yii\helpers\FileHelper` sem adicionar nenhum método.
+
+#### yiitk\helpers\FormatConverterHelper
+
+Estende a classe `\yii\helpers\FormatConverter` sem adicionar nenhum método.
+
+#### yiitk\helpers\HtmlHelper
+
+Estende a classe `\yii\helpers\Html` sem adicionar nenhum método.
+
+#### yiitk\helpers\HtmlPurifierHelper
+
+Estende a classe `\yii\helpers\HtmlPurifier` sem adicionar nenhum método.
+
+#### yiitk\helpers\InflectorHelper
+
+Estende a classe `\yii\helpers\Inflector` sem adicionar nenhum método.
+
+#### yiitk\helpers\JsonHelper
+
+Estende a classe `\yii\helpers\Json` sem adicionar nenhum método.
+
+#### yiitk\helpers\MarkdownHelper
+
+Estende a classe `\yii\helpers\Markdown` sem adicionar nenhum método.
+
+#### yiitk\helpers\MaskHelper
+
+Estende a classe `\yiitk\helpers\StringHelper` e adiciona o(s) seguinte(s) método(s):
+
+- **mask(string $string, string $mask, string $empty = '')**: retorna uma string formatada com a máscara informada (máscaras padrões: `cpf`, `cnpj`, `zipcode`, `credit-card`). Ex.: `MaskHelper::mask('00000000000', 'cpf', '-')` ou `MaskHelper::mask('0000', '##-##', '-')`
+
+#### yiitk\helpers\NumberHelper
+
+Métodos disponíveis:
+
+- **justNumbers(string $content = '')**: retorna uma string contendo apenas digitos;
+
+#### yiitk\helpers\SlugHelper
+
+Estende a classe `\yiitk\helpers\StringHelper` e adiciona o(s) seguinte(s) método(s):
+
+- **asSlugs(array $items, string $method = SlugHelper::SLUG_METHOD_SINGLE)**: converte o conteúdo de um `array` em `slugs` 
+- **convert($value = '', $spaces = '-', $case = MB_CASE_LOWER)**: converte uma `string` em `slug`
+
+#### yiitk\helpers\StringHelper
+
+- **justNumbers(string $content = '')**: retorna a `string` com apenas digitos
+- **justLetters(string $content = '')**: retorna a `string` com apenas letras
+- **compare(string $originalValue = '', string $targetValue = '')**: compara dois valores retornando `true` ou `false`
+- **asSlug(string $value = '', string $spaces = '-', string $case = MB_CASE_LOWER)**: retorna uma `string` como `slug`
+- **convertCase(string $string, string $mode = StringHelper::CASE_UPPER)**: converte uma `string` em minúscula, maiúscula ou como título
+- **toLowerCase(string $string)**: converte uma `string` para minúscula
+- **toUpperCase(string $string)**: converte uma `string` para maiúscula
+- **generateRandomString(integer $length = 0, integer $upper = 0, integer $lower = 0, integer $digit = 0, integer $special = 0)**: gera uma `string` randômica
+- **obfuscateEmail(string $email)**: ofusca um endereço de e-mail
+- **removeAccents(string $string)**: remove os acentos de uma `string`
+
+#### yiitk\helpers\UrlHelper
+
+Estende a classe `\yii\helpers\Url` sem adicionar nenhum método.
+
+#### yiitk\helpers\VarDumperHelper
+
+Estende a classe `\yii\helpers\VarDumper` sem adicionar nenhum método.
+
+### Behaviors
+
+Documentação pendente...
+
+### Validators
+
+Documentação pendente...
+
+### ActiveRecord
+
+Para configurar sua classe de `ActiveRecord` estenda `yiitk\db\ActiveRecord` para habilitar as funcionalidades de **YiiTK** em seus modelos `ActiveRecord`:
+
+```php
+
+    use yiitk\db\ActiveRecord;
+    
+    /**
+     * Class ActiveRecord
+     */
+    class ActiveRecord extends \yiitk\db\ActiveRecord
+    {
+        
+    }
+
+```
+
+### Generators: Gii
+
+#### Enum
+
+Documentação pendente...
+
+### Biblioteca Enum
+
+Documentação pendente...
+
+### Biblioteca Curl
+
+Requisições HTTP utilizando a extensão do PHP `php-curl` e a biblioteca [PHP Curl Class: HTTP requests made easy](https://github.com/php-curl-class/php-curl-class).
+
+Exemplo:
+
+```php
+<?php
+
+    use yiitk\web\http\Curl;
+    
+    $curl = new Curl();
+    
+    $response = $curl->get('http://www.google.com.br');
+
+```
+
+Mais detalhes e exemplos de uso podem ser encontrados na página oficial da biblioteca [PHP Curl Class: HTTP requests made easy](https://github.com/php-curl-class/php-curl-class).
+
+#### `Métodos` adicionais disponíveis em `yiitk\web\http\Curl` e em `yiitk\web\http\MultiCurl`:
+
+#### Métodos Estáticos
+
+- **isValidUrl(string $url, array $allowedSchemes = ['http', 'https'])**: verifica se uma URL é válida;
+
+### Biblioteca SOAP
+
+`yiitk\web\http\soap\HttpSoapClient` é um wrapper para uso da extensão do PHP `php-soap`.
+
+Para utilizá-la, basta configurará-la como um `Component` na seção `components` do seu arquivo de configuração:
+
+```php
+<?php
+
+    return [
+        //...
+        'components' => [
+            'soap' => [
+                'class' => \yiitk\web\http\soap\HttpSoapClient::class,
+                'endpoint' => 'http://api.endpoint.com/soap',
+                'options' => [
+                    'trace'              => true,
+                    'cache_wsdl'         => WSDL_CACHE_NONE,
+                    'connection_timeout' => 500000,
+                    'keep_alive'         => true
+                ]
+            ]
+        ]
+        //...
+    ];
+
+```
+
+Para utilizar o componente, basta carregá-lo na seção [bootstrap](https://www.yiiframework.com/doc/guide/2.0/en/structure-application-components#bootstrapping-components) do arquivo de configuração ou da forma abaixo (o componente será uma instância de [\SoapClient](http://php.net/manual/pt_BR/class.soapclient.php)):
+
+```php
+<?php
+
+    /** @var object $soap */
+    $soap = \Yii::$app->get('soap');
+    
+    $response = $soap->remoteMethod([]);
+    
+```
+
+Você ainda pode utilizar sem criar um componente, conforme abaixo:
+
+```php
+<?php
+
+    use yiitk\web\http\soap\HttpSoapClient;
+
+    /** @var object $soap */
+    $soap = new HttpSoapClient(['endpoint' => 'http://api.endpoint.com/soap', 'options' => ['trace' => true, 'cache_wsdl' => WSDL_CACHE_NONE, 'connection_timeout' => 500000, 'keep_alive' => true]]);
+    
+    $response = $soap->remoteMethod([]);
+```
 
 ## Licença
 
