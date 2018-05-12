@@ -13,9 +13,6 @@
      */
     class StringHelper extends \yii\helpers\StringHelper
     {
-        const GENDER_MALE       = 'M';
-        const GENDER_FEMALE     = 'F';
-
         const CASE_UPPER        = MB_CASE_UPPER;
         const CASE_LOWER        = MB_CASE_LOWER;
         const CASE_TITLE        = MB_CASE_TITLE;
@@ -887,26 +884,6 @@
                 }
 
                 return sprintf($plural, $n);
-            }
-        }
-
-        /**
-         * @param string $male
-         * @param string $female
-         * @param string $gender
-         *
-         * @return string
-         */
-        public static function asGender($male = '', $female = '', $gender = self::GENDER_MALE)
-        {
-            if (!in_array((string)$gender, [self::GENDER_MALE, self::GENDER_FEMALE])) {
-                $gender = self::GENDER_MALE;
-            }
-
-            if ($gender === self::GENDER_FEMALE) {
-                return $female;
-            } else {
-                return $male;
             }
         }
 

@@ -132,11 +132,7 @@
             $tables        = $schema->getTableNames();
             $realTableName = $schema->getRawTableName($table);
 
-            if (in_array($realTableName, $tables)) {
-                return true;
-            } else {
-                return false;
-            }
+            return (in_array($realTableName, $tables));
         }
 
         /**
@@ -156,14 +152,10 @@
 
                 $columns = $schema->getTableSchema($table)->getColumnNames();
 
-                if (in_array($column, $columns)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
+                return (in_array($column, $columns));
             }
+
+            return false;
         }
 
         /**
