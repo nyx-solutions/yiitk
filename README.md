@@ -36,6 +36,7 @@ ou adicionar
 - [Helpers](#helpers)
 - [Behaviors](#behaviors)
 - [Validators](#validators)
+- [Models](#models)
 - [ActiveRecord](#activerecord)
 - [Biblioteca: Enum](#biblioteca-enum)
 - [Biblioteca: Curl e MultiCurl](#biblioteca-curl)
@@ -342,14 +343,28 @@ Documentação pendente...
 
 Documentação pendente...
 
-### ActiveRecord
+### Models
 
-Para configurar sua classe de `ActiveRecord` estenda `yiitk\db\ActiveRecord` para habilitar as funcionalidades de **YiiTK** em seus modelos `ActiveRecord`:
+Para configurar sua classe `Model` estenda `yiitk\base\Model` para habilitar as funcionalidades de **YiiTK** em seus modelos `Model`:
 
 ```php
 
-    use yiitk\db\ActiveRecord;
-    
+    /**
+     * Class Model
+     */
+    class Model extends \yiitk\base\Models
+    {
+        
+    }
+
+```
+
+### ActiveRecord
+
+Para configurar sua classe `ActiveRecord` estenda `yiitk\db\ActiveRecord` para habilitar as funcionalidades de **YiiTK** em seus modelos `ActiveRecord`:
+
+```php
+
     /**
      * Class ActiveRecord
      */
