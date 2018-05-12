@@ -1,0 +1,65 @@
+{
+  "name": "jsas-development/yiitk",
+  "description": "Yii Framework version 2 Toolkit",
+  "type": "library",
+  "keywords": [
+    "yii2",
+    "extension",
+    "framework",
+    "php"
+  ],
+  "license": "BSD-3-Clause",
+  "version": "1.0.3",
+  "authors": [
+    {
+      "name": "Jonatas Sas",
+      "email": "atendimento@jsas.com.br"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=7.0.0",
+
+    "yiisoft/yii2": "~2.0.15",
+
+    "yiisoft/yii2-queue": "~2.0.0",
+    "yiisoft/yii2-swiftmailer": "~2.0.7",
+
+    "php-curl-class/php-curl-class": "~7.4.0",
+
+    "kartik-v/yii2-krajee-base": "~1.8.0",
+    "kartik-v/yii2-password": "~1.5.0",
+    "yii2mod/yii2-enum": "~1.7.1",
+
+    "nesbot/carbon": "~1.9.0"
+  },
+  "require-dev": {
+    "yiisoft/yii2-debug": "~2.0.0",
+    "yiisoft/yii2-gii": "~2.0.0",
+    "yiisoft/yii2-faker": "~2.0.0",
+
+    "codeception/base": "^2.2.3",
+    "codeception/verify": "~0.3.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "yiitk\\": "src/toolkit"
+    }
+  },
+  "config": {
+    "process-timeout": 1800,
+    "fxp-asset": {
+      "enabled": false
+    }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://asset-packagist.org"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/jsas-development/yiitk"
+    }
+  ]
+}
