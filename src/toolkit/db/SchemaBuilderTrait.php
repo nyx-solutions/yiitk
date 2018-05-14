@@ -7,8 +7,6 @@
 
     /**
      * Trait FileManagerSchemaBuilderTrait
-     *
-     * @package common\components\file\db
      */
     trait SchemaBuilderTrait
     {
@@ -18,6 +16,11 @@
          * @return \yii\db\Connection the database connection to be used for schema building.
          */
         protected abstract function getDb();
+
+        /**
+         * @return bool
+         */
+        protected abstract function isUsingMySqlDriver();
 
         /**
          * Creates a ENUM column
@@ -31,7 +34,7 @@
          */
         public function enum($options = [])
         {
-            if ($this->getDb()->getDriverName() != 'mysql') {
+            if (!$this->isUsingMySqlDriver()) {
                 throw new \yii\base\Exception('ENUM column type is only supported in MySQL.');
             }
 
@@ -59,7 +62,7 @@
          */
         public function mediumText()
         {
-            if ($this->getDb()->getDriverName() != 'mysql') {
+            if (!$this->isUsingMySqlDriver()) {
                 return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TEXT);
             }
 
@@ -75,7 +78,7 @@
          */
         public function longText()
         {
-            if ($this->getDb()->getDriverName() != 'mysql') {
+            if (!$this->isUsingMySqlDriver()) {
                 return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TEXT);
             }
 
@@ -91,7 +94,7 @@
          */
         public function tinyText()
         {
-            if ($this->getDb()->getDriverName() != 'mysql') {
+            if (!$this->isUsingMySqlDriver()) {
                 return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TEXT);
             }
 

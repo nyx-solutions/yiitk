@@ -8,8 +8,6 @@
 
     /**
      * Class Migration
-     *
-     * @package common\components\db
      */
     class Migration extends \yii\db\Migration
     {
@@ -87,7 +85,7 @@
         {
             parent::init();
 
-            if ($this->getDb()->getDriverName() != 'mysql') {
+            if ($this->isUsingMySqlDriver()) {
                 $rowFormat = '';
 
                 if ($this->useMysqlInnoDbRowFormat && strtolower($this->tableEngine) == 'innodb') {
@@ -271,7 +269,7 @@
          */
         public function viewExists($view)
         {
-            if ($this->getDb()->getDriverName() != 'mysql') {
+            if (!$this->isUsingMySqlDriver()) {
                 throw new \yii\base\Exception('The method viewExists is only supported in MySQL.');
             }
 
@@ -284,7 +282,7 @@
          */
         public function createView($view, $select)
         {
-            if ($this->getDb()->getDriverName() != 'mysql') {
+            if (!$this->isUsingMySqlDriver()) {
                 throw new \yii\base\Exception('The method createView is only supported in MySQL.');
             }
 
@@ -296,7 +294,7 @@
          */
         public function dropView($view)
         {
-            if ($this->getDb()->getDriverName() != 'mysql') {
+            if (!$this->isUsingMySqlDriver()) {
                 throw new \yii\base\Exception('The method dropView is only supported in MySQL.');
             }
 
@@ -379,5 +377,15 @@
             return '{{%'.$this->findSimpleTableName().'_'.InflectorHelper::camel2id($name, '_').'}}';
         }
         #endregion
+        #endregion
+
+        #region MySQL
+        /**
+         * @return bool
+         */
+        protected function isUsingMySqlDriver()
+        {
+            return (strtolower($this->getDb()->getDriverName()) == 'mysql');
+        }
         #endregion
     }

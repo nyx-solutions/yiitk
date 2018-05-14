@@ -7,8 +7,6 @@
 
     /**
      * Class OneWordValidator
-     *
-     * @package common\components
      */
     class OneWordValidator extends Validator
     {

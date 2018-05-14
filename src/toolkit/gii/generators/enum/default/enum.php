@@ -23,8 +23,9 @@
      * <?= StringHelper::basename($generator->enumClass); ?> Class
      *
      * In order to configure this Enum Type in your model you need to first
-     * include to your migration the `\common\components\db\SchemaBuilderTrait`
-     * trait and use the method `enum`. Example:
+     * include to your migration the `\yiitk\db\SchemaBuilderTrait` trait or
+     * create your migration file extending the `\yiitk\db\Migration` class
+     * and use the `enum` method. Example:
      *
      * ```php
      * $this->enum(<?= "\\".$generator->enumClass; ?>::range())->defaultValue(<?= "\\".$generator->enumClass; ?>::<?= $generator->defaultConstant; ?>)->notNull()

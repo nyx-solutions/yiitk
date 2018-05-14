@@ -9,8 +9,6 @@
      *
      * @category Validator
      * @author   Jonatas Sas
-     *
-     * @package  common\components\validators
      */
     class DateTimeFilterValidator extends Validator
     {

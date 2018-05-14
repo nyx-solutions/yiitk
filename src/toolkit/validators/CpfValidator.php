@@ -7,8 +7,6 @@
 
     /**
      * Class CpfValidator
-     *
-     * @package common\components\validators
      */
     class CpfValidator extends Validator
     {

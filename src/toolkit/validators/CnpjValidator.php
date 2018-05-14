@@ -7,8 +7,6 @@
 
     /**
      * Class CnpjValidator
-     *
-     * @package common\components\validators
      */
     class CnpjValidator extends Validator
     {
