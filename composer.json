@@ -9,7 +9,7 @@
     "php"
   ],
   "license": "BSD-3-Clause",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "authors": [
     {
       "name": "YiiTK",
@@ -18,6 +18,10 @@
     {
       "name": "Jonatas Sas",
       "email": "atendimento@jsas.com.br"
+    },
+    {
+      "name": "Luis Carlos Meireles",
+      "email": "luis.lc93@hotmail.com"
     }
   ],
   "minimum-stability": "stable",

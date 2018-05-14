@@ -83,3 +83,5 @@ Estende a classe `\yii\helpers\Url` sem adicionar nenhum método.
 ### yiitk\helpers\VarDumperHelper
 
 Estende a classe `\yii\helpers\VarDumper` sem adicionar nenhum método.
+
+[&#171; Voltar](../README.md)

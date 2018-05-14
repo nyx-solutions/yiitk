@@ -15,3 +15,5 @@ Para configurar sua classe `Model` estenda `yiitk\base\Model` para habilitar as 
     }
 
 ```
+
+[&#171; Voltar](../README.md)

@@ -16,3 +16,4 @@ Para configurar sua classe `ActiveRecord` estenda `yiitk\db\ActiveRecord` para h
 
 ```
 
+[&#171; Voltar](../README.md)

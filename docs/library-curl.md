@@ -24,3 +24,5 @@ Mais detalhes e exemplos de uso podem ser encontrados na página oficial da bibl
 ### Métodos Estáticos
 
 - **isValidUrl(string $url, array $allowedSchemes = ['http', 'https'])**: verifica se uma URL é válida;
+
+[&#171; Voltar](../README.md)

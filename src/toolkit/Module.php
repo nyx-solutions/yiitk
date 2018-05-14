@@ -2,7 +2,6 @@
 
     namespace yiitk;
 
-    use yii\console\controllers\MigrateController;
     use yii\i18n\Formatter;
     use yii\i18n\PhpMessageSource;
 
@@ -27,6 +26,26 @@
          * @var string
          */
         public $defaultTimeZone = 'America/Sao_Paulo';
+
+        /**
+         * @var bool
+         */
+        public $useSessionDb = false;
+
+        /**
+         * @var bool
+         */
+        public $useSessionDbFrontend = false;
+
+        /**
+         * @var bool
+         */
+        public $useSessionDbBackend = false;
+
+        /**
+         * @var bool
+         */
+        public $useSessionDbApi = false;
 
         #region Initialization
         /**

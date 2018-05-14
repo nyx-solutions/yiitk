@@ -36,6 +36,8 @@ ou adicionar
 
 - [Módulo Base](docs/base-module.md)
 - [DB Migrations](docs/db-migrations.md)
+- [Sessão via DB](docs/db-sessions.md)
+- [SwiftMailer: QueuedMailer](docs/swiftmailer-queuedmailer.md)
 - [Helpers](docs/helpers.md)
 - [Behaviors](docs/behaviors.md)
 - [Validators](docs/validators.md)

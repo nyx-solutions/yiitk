@@ -3,6 +3,7 @@
     namespace yiitk\db\migrations\session;
 
     use yiitk\db\Migration;
+    use yiitk\Module;
 
     /**
      * Migration: Sessão
@@ -29,6 +30,9 @@
          */
         public function safeUp()
         {
+            /** @var Module $yiitk */
+            $yiitk = Module::getInstance();
+
             $columns = [
                 'id'           => $this->char(40)->notNull(),
                 'expire'       => $this->integer(11)->null(),
@@ -40,16 +44,24 @@
             $sessionFrontendTable = '{{%session_frontend}}';
             $sessionApiTable      = '{{%session_api}}';
 
-            $this->createTable($sessionTable, $columns, $this->getTableOptions());
-            $this->addPrimaryKey('SESSION_PK', $sessionTable, 'id');
+            if ($yiitk->useSessionDb) {
+                $this->createTable($sessionTable, $columns, $this->getTableOptions());
+                $this->addPrimaryKey('SESSION_PK', $sessionTable, 'id');
+            }
 
-            $this->createTable($sessionBackendTable, $columns, $this->getTableOptions());
-            $this->addPrimaryKey('SESSION_PK', $sessionBackendTable, 'id');
+            if ($yiitk->useSessionDbBackend) {
+                $this->createTable($sessionBackendTable, $columns, $this->getTableOptions());
+                $this->addPrimaryKey('SESSION_PK', $sessionBackendTable, 'id');
+            }
 
-            $this->createTable($sessionFrontendTable, $columns, $this->getTableOptions());
-            $this->addPrimaryKey('SESSION_PK', $sessionFrontendTable, 'id');
+            if ($yiitk->useSessionDbFrontend) {
+                $this->createTable($sessionFrontendTable, $columns, $this->getTableOptions());
+                $this->addPrimaryKey('SESSION_PK', $sessionFrontendTable, 'id');
+            }
 
-            $this->createTable($sessionApiTable, $columns, $this->getTableOptions());
-            $this->addPrimaryKey('SESSION_PK', $sessionApiTable, 'id');
+            if ($yiitk->useSessionDbApi) {
+                $this->createTable($sessionApiTable, $columns, $this->getTableOptions());
+                $this->addPrimaryKey('SESSION_PK', $sessionApiTable, 'id');
+            }
         }
     }
