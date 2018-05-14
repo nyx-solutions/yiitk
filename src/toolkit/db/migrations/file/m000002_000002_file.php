@@ -6,6 +6,7 @@
     use yiitk\file\FileManager;
     use yiitk\enum\BooleanEnum;
     use yii\base\InvalidConfigException;
+    use yiitk\Module;
 
     /**
      * Class m000000_000000_file
@@ -78,8 +79,11 @@
          */
         protected function getFileManager()
         {
+            /** @var Module $yiitk */
+            $yiitk = Module::getInstance();
+
             /** @var FileManager $fileManager */
-            $fileManager = \Yii::$app->get('fileManager', true);
+            $fileManager = $yiitk->get('fileManager', true);
 
             if (!$fileManager instanceof FileManager) {
                 throw new InvalidConfigException('The fileManager component must be an instance of '.FileManager::class);

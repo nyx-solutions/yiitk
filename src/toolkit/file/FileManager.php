@@ -5,22 +5,10 @@
     use yii\base\Component;
     use yii\base\InvalidConfigException;
     use yii\db\Migration;
+    use yiitk\Module;
 
     /**
      * Class FileManager
-     *
-     * ```
-     * 'components' => [
-     *     'fileManager' => [
-     *         'class'           => \yiitk\file\FileManager::class,
-     *         'fileTable'       => '{{%file}}',
-     *         'useBigIntegerPk' => true,
-     *         'useBigIntegerFk' => true,
-     *         'pkLength'        => 20,
-     *         'fkLength'        => 20,
-     *         'fkFieldSuffix'   => 20
-     *     ]
-     * ]
      */
     class FileManager extends Component
     {
@@ -103,8 +91,11 @@
          */
         protected static function findFileManager()
         {
+            /** @var Module $yiitk */
+            $yiitk = Module::getInstance();
+
             /** @var static $fileManager */
-            $fileManager = \Yii::$app->get('fileManager', true);
+            $fileManager = $yiitk->get('fileManager', true);
 
             if (!$fileManager instanceof static) {
                 throw new InvalidConfigException('The fileManager component must be an instance of '.static::class);

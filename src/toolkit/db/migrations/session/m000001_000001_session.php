@@ -44,22 +44,22 @@
             $sessionFrontendTable = '{{%session_frontend}}';
             $sessionApiTable      = '{{%session_api}}';
 
-            if ($yiitk->useSessionDb) {
+            if ($yiitk->sessionDb['db']) {
                 $this->createTable($sessionTable, $columns, $this->getTableOptions());
                 $this->addPrimaryKey('SESSION_PK', $sessionTable, 'id');
             }
 
-            if ($yiitk->useSessionDbBackend) {
+            if ($yiitk->sessionDb['dbBackend']) {
                 $this->createTable($sessionBackendTable, $columns, $this->getTableOptions());
                 $this->addPrimaryKey('SESSION_PK', $sessionBackendTable, 'id');
             }
 
-            if ($yiitk->useSessionDbFrontend) {
+            if ($yiitk->sessionDb['dbFrontend']) {
                 $this->createTable($sessionFrontendTable, $columns, $this->getTableOptions());
                 $this->addPrimaryKey('SESSION_PK', $sessionFrontendTable, 'id');
             }
 
-            if ($yiitk->useSessionDbApi) {
+            if ($yiitk->sessionDb['dbApi']) {
                 $this->createTable($sessionApiTable, $columns, $this->getTableOptions());
                 $this->addPrimaryKey('SESSION_PK', $sessionApiTable, 'id');
             }

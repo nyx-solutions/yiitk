@@ -1,4 +1,10 @@
-# YiiTK
+<p align="center">
+    <a href="http://www.yiiframework.com/" target="_blank">
+        <img src="https://www.yiiframework.com/files/logo/yii.png" width="400" alt="Yii Framework" />
+    </a>
+    <h1 align="center">YiiTK extension for Yii 2</h1>
+    <br>
+</p>
 
 ## Yii Framework version 2 Toolkit
 
@@ -14,9 +20,9 @@ YiiTK é uma caixa de ferramentas para o [Framework Yii2](https://www.yiiframewo
 
 ## Instalação
 
-**ATENÇÃO: YiiTK está em estágio de desenvolvimento base; não utilize em ambientes produtivos.**
+**ATENÇÃO: YiiTK está em estágio de desenvolvimento inicial; não utilize em ambiente produtivo.**
 
-O método indicado para a instalação dessa extensão é via [composer](http://getcomposer.org/download/).
+O método indicado para a instalação desta extensão é via [composer](http://getcomposer.org/download/).
 
 Você pode executar
 
@@ -45,10 +51,10 @@ ou adicionar
 - [ActiveRecord](docs/active-record.md)
 - [Biblioteca: Enum](docs/library-enum.md)
 - [Biblioteca: Curl e MultiCurl](docs/library-curl.md)
-- [Biblioteca: SOAP](#biblioteca-soap)
+- [Biblioteca: SOAP](docs/library-soap.md)
 
 ## Licença
 
-**yiitk** está liberado sob a `BSD 3-Clause License`. Leia o arquivo `LICENSE.md` para mais detalhes.
+**YiiTK** está liberado sob a `BSD 3-Clause License`. Leia o arquivo `LICENSE.md` para mais detalhes.
 
 ![Yii2](https://img.shields.io/badge/Powered_by-Yii_Framework-green.svg?style=flat)

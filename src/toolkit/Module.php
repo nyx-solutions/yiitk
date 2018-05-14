@@ -4,6 +4,8 @@
 
     use yii\i18n\Formatter;
     use yii\i18n\PhpMessageSource;
+    use yiitk\file\FileManager;
+    use yiitk\helpers\ArrayHelper;
 
     /**
      * Class Module
@@ -28,24 +30,14 @@
         public $defaultTimeZone = 'America/Sao_Paulo';
 
         /**
-         * @var bool
+         * @var array
          */
-        public $useSessionDb = false;
+        public $sessionDb = [];
 
         /**
-         * @var bool
+         * @var array
          */
-        public $useSessionDbFrontend = false;
-
-        /**
-         * @var bool
-         */
-        public $useSessionDbBackend = false;
-
-        /**
-         * @var bool
-         */
-        public $useSessionDbApi = false;
+        public $fileManager = [];
 
         #region Initialization
         /**
@@ -69,6 +61,8 @@
             $this->setupConfiguration();
             $this->setupTranslations();
             $this->setupFormatter();
+            $this->setupSessionDb();
+            $this->setupFileManager();
         }
 
         /**
@@ -123,6 +117,55 @@
                     $formatter->defaultTimeZone   = $this->defaultTimeZone;
                 }
             }
+        }
+
+        /**
+         * @return void
+         */
+        protected function setupSessionDb()
+        {
+            $sessionDbConfig = [
+                'db'         => false,
+                'dbFrontend' => false,
+                'dbBackend'  => false,
+                'dbApi'      => false
+            ];
+
+            $sessionDbConfig = ArrayHelper::merge($sessionDbConfig, $this->sessionDb);
+
+            $this->sessionDb = [
+                'db'         => (bool)$sessionDbConfig['db'],
+                'dbFrontend' => (bool)$sessionDbConfig['dbFrontend'],
+                'dbBackend'  => (bool)$sessionDbConfig['dbBackend'],
+                'dbApi'      => (bool)$sessionDbConfig['dbApi']
+            ];
+        }
+
+        /**
+         * @return void
+         */
+        protected function setupFileManager()
+        {
+            $fileManagerConfig = [
+                'fileTable'       => '{{%file}}',
+                'useBigIntegerPk' => true,
+                'useBigIntegerFk' => true,
+                'pkLength'        => 20,
+                'fkLength'        => 20,
+                'fkFieldSuffix'   => 'Id'
+            ];
+
+            $fileManagerConfig = ArrayHelper::merge($fileManagerConfig, $this->fileManager);
+
+            /** @var FileManager $fileManager */
+            $fileManager = $this->get('fileManager', true);
+
+            $fileManager->fileTable       = (string)$fileManagerConfig['fileTable'];
+            $fileManager->useBigIntegerPk = (bool)$fileManagerConfig['useBigIntegerPk'];
+            $fileManager->useBigIntegerFk = (bool)$fileManagerConfig['useBigIntegerFk'];
+            $fileManager->pkLength        = (int)$fileManagerConfig['pkLength'];
+            $fileManager->fkLength        = (int)$fileManagerConfig['fkLength'];
+            $fileManager->fkFieldSuffix   = (string)$fileManagerConfig['fkFieldSuffix'];
         }
         #endregion
     }

@@ -8,11 +8,13 @@ uma para `frontend` e uma `api`, sendo possível configurar quais serão executa
 ```php
 'modules' => [
     'yiitk' => [
-        'class'                => \yiitk\Module::class,
-        'useSessionDb'         => true,
-        'useSessionDbFrontend' => true,
-        'useSessionDbBackend'  => true,
-        'useSessionDbApi'      => false
+        'class'     => \yiitk\Module::class,
+        'sessionDb' => [
+            'db'         => true,
+            'dbFrontend' => true,
+            'dbBackend'  => true,
+            'dbApi'      => false
+        ]
     ]
 ]
 ```

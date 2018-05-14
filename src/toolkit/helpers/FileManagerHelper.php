@@ -9,6 +9,7 @@
     use yiitk\behaviors\FileUploadBehavior;
     use yiitk\file\FileManager;
     use yiitk\models\File;
+    use yiitk\Module;
 
     /**
      * Class FileManagerHelper
@@ -258,8 +259,11 @@
          */
         protected static function fileManager()
         {
+            /** @var Module $yiitk */
+            $yiitk = Module::getInstance();
+
             /** @var FileManager $fileManager */
-            $fileManager = \Yii::$app->get('fileManager', true);
+            $fileManager = $yiitk->get('fileManager', true);
 
             if (!$fileManager instanceof FileManager) {
                 throw new InvalidConfigException('The fileManager component must be an instance of '.FileManager::class);

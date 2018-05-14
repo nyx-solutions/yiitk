@@ -2,17 +2,14 @@
 
     return [
         'components' => [
-            'queue' => [
-                'class'     => \yii\queue\db\Queue::class,
-                'db'        => 'db',
-                'tableName' => '{{%queue}}',
-                'channel'   => 'default',
-                'mutex'     => \yii\mutex\MysqlMutex::class,
-                'as log'    => \yii\queue\LogBehavior::class
-            ],
-
-            'cache' => [
-                'class' => \yii\caching\FileCache::class
+            'fileManager' => [
+                'class'           => \yiitk\file\FileManager::class,
+                'fileTable'       => '{{%file}}',
+                'useBigIntegerPk' => true,
+                'useBigIntegerFk' => true,
+                'pkLength'        => 20,
+                'fkLength'        => 20,
+                'fkFieldSuffix'   => 'Id'
             ]
         ],
 
