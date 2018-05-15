@@ -9,7 +9,7 @@
     "php"
   ],
   "license": "BSD-3-Clause",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "authors": [
     {
       "name": "YiiTK",
@@ -30,6 +30,7 @@
 
     "yiisoft/yii2": "~2.0.15",
 
+    "yiisoft/yii2-httpclient": "~2.0.0",
     "yiisoft/yii2-queue": "~2.0.0",
     "yiisoft/yii2-swiftmailer": "~2.0.7",
 
@@ -39,6 +40,10 @@
     "kartik-v/yii2-password": "1.5.3",
 
     "justinvoelker/yii2-separatedpager": "~1.0.2",
+
+    "tedivm/jshrink": "^1.3.0",
+    "natxet/cssmin": "^3.0.6",
+    "mrclay/minify": "^3.0.3",
 
     "nesbot/carbon": "~1.9.0"
   },

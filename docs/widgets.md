@@ -60,5 +60,6 @@ GridView::widget([
         'activePageAsLink' => false,
     ]
 ]);
+```
 
 [&#171; Voltar](../README.md)
