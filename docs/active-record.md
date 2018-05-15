@@ -16,4 +16,6 @@ Para configurar sua classe `ActiveRecord` estenda `yiitk\db\ActiveRecord` para h
 
 ```
 
+Na classe base de ActiveRecord o YiiTK adiciona também a `trait` [yiitk\web\FlashMessagesTrait](widgets.md#alert).
+
 [&#171; Voltar](../README.md)

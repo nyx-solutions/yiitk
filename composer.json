@@ -9,7 +9,7 @@
     "php"
   ],
   "license": "BSD-3-Clause",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "authors": [
     {
       "name": "YiiTK",
@@ -37,6 +37,8 @@
 
     "kartik-v/yii2-krajee-base": "1.8.9",
     "kartik-v/yii2-password": "1.5.3",
+
+    "justinvoelker/yii2-separatedpager": "~1.0.2",
 
     "nesbot/carbon": "~1.9.0"
   },

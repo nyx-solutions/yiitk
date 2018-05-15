@@ -16,4 +16,6 @@ Para configurar sua classe `Model` estenda `yiitk\base\Model` para habilitar as 
 
 ```
 
+Na classe base de Model o YiiTK adiciona também a `trait` [yiitk\web\FlashMessagesTrait](widgets.md#alert).
+
 [&#171; Voltar](../README.md)
