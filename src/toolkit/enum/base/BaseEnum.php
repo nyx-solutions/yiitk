@@ -24,7 +24,7 @@
         /**
          * @var string message category
          */
-        public static $i18nMessageCategory = 'app';
+        protected static $i18nMessageCategory = 'app';
 
         /**
          * @var string

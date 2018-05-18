@@ -67,7 +67,7 @@
         public function enums()
         {
             return [
-                [['deleteOriginal', 'deletable'], 'default' => BooleanEnum::no()]
+                [['deleteOriginal', 'deletable'], 'enumClass' => BooleanEnum::class, 'default' => BooleanEnum::no()]
             ];
         }
         #endregion
