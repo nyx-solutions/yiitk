@@ -35,6 +35,18 @@ Na classe base de Controllers Web o YiiTK adiciona também a `trait` [yiitk\web\
 ```php
 
     /**
+     * Class ActiveRestController
+     */
+    class ActiveRestController extends \yiitk\rest\ActiveController
+    {
+        
+    }
+
+```
+
+```php
+
+    /**
      * Class ConsoleController
      */
     class ConsoleController extends \yiitk\console\Controller
