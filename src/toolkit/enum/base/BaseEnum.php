@@ -172,9 +172,10 @@
 
             foreach (static::findConstantsByKey() as $key => $value) {
                 $items[] = [
-                    'key'   => $key,
-                    'value' => $value,
-                    'label' => static::findLabel($value)
+                    'constant' => $key,
+                    'key'      => InflectorHelper::camelize($key),
+                    'value'    => $value,
+                    'label'    => static::findLabel($value)
                 ];
             }
 
