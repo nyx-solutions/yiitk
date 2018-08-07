@@ -2,6 +2,7 @@
 
     namespace yiitk\enum\base;
 
+    use yii\helpers\Inflector;
     use yiitk\helpers\ArrayHelper;
     use yiitk\helpers\InflectorHelper;
     use yii\base\InvalidCallException;
@@ -75,6 +76,17 @@
 
             $this->loadValidations();
         }
+
+        /**
+         * The current class ID
+         */
+        public static function id()
+        {
+            $id = (new \ReflectionClass(static::class))->getShortName();
+            $id = Inflector::pluralize(str_replace('enum', '', strtolower($id)));
+
+            return $id;
+        }
         #endregion
 
         #region Creations
@@ -129,7 +141,7 @@
 
         #region Listings
         /**
-         * Get list data
+         * Get list data (value => label)
          *
          * @return mixed
          */
@@ -147,6 +159,28 @@
                     return (($useI18n) ? \Yii::t(static::$i18nMessageCategory, $value) : $value);
                 }
             );
+        }
+
+        /**
+         * Get list data (['key' => value, 'label' => label])
+         *
+         * @return mixed
+         */
+        public static function listDataItems()
+        {
+            $useI18n = static::$useI18n;
+
+            if ($useI18n) {
+                static::loadI18n();
+            }
+
+            $items = [];
+
+            foreach (static::findLabels() as $value => $label) {
+                $items[] = ['key' => $value, 'label' => (($useI18n) ? \Yii::t(static::$i18nMessageCategory, $value) : $value)];
+            }
+
+            return $items;
         }
 
         /**
