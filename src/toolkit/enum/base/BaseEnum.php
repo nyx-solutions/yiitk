@@ -177,7 +177,7 @@
             $items = [];
 
             foreach (static::findLabels() as $value => $label) {
-                $items[] = ['key' => $value, 'label' => (($useI18n) ? \Yii::t(static::$i18nMessageCategory, $value) : $value)];
+                $items[] = ['key' => $value, 'label' => (($useI18n) ? \Yii::t(static::$i18nMessageCategory, $label) : $label)];
             }
 
             return $items;
