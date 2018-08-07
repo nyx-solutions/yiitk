@@ -166,18 +166,16 @@
          *
          * @return mixed
          */
-        public static function listDataItems()
+        public static function listDataWithDetails()
         {
-            $useI18n = static::$useI18n;
-
-            if ($useI18n) {
-                static::loadI18n();
-            }
-
             $items = [];
 
-            foreach (static::findLabels() as $value => $label) {
-                $items[] = ['key' => $value, 'label' => (($useI18n) ? \Yii::t(static::$i18nMessageCategory, $label) : $label)];
+            foreach (static::findConstantsByKey() as $key => $value) {
+                $items[] = [
+                    'key'   => $key,
+                    'value' => $value,
+                    'label' => static::findLabel($value)
+                ];
             }
 
             return $items;
