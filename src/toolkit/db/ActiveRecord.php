@@ -22,6 +22,11 @@
         /**
          * @var bool
          */
+        protected $enableFlashMessages = true;
+
+        /**
+         * @var bool
+         */
         protected $isSearch = false;
 
         /**
@@ -86,11 +91,13 @@
          */
         public function afterValidate()
         {
-            $errors = $this->getErrors();
+            if ($this->enableFlashMessages) {
+                $errors = $this->getErrors();
 
-            foreach ($errors as $error) {
-                foreach ($error as $message) {
-                    $this->addErrorMessage($message);
+                foreach ($errors as $error) {
+                    foreach ($error as $message) {
+                        $this->addErrorMessage($message);
+                    }
                 }
             }
 
@@ -104,20 +111,24 @@
          */
         public function delete()
         {
-            try {
-                if (parent::delete()) {
-                    $this->addSuccessMessage(\Yii::t('yiitk', 'The requested entry was successfully removed.'));
+            if ($this->enableFlashMessages) {
+                try {
+                    if (parent::delete()) {
+                        $this->addSuccessMessage(\Yii::t('yiitk', 'The requested entry was successfully removed.'));
 
-                    return true;
-                } else {
-                    $this->addErrorMessage(\Yii::t('yiitk', 'It was not possible to remove the requested entry.'));
+                        return true;
+                    } else {
+                        $this->addErrorMessage(\Yii::t('yiitk', 'It was not possible to remove the requested entry.'));
+
+                        return false;
+                    }
+                } catch (\Exception $e) {
+                    $this->addErrorMessage(\Yii::t('yiitk', 'It was not possible to remove the requested entry because it was attached to another entry in the system.'));
 
                     return false;
                 }
-            } catch (\Exception $e) {
-                $this->addErrorMessage(\Yii::t('yiitk', 'It was not possible to remove the requested entry because it was attached to another entry in the system.'));
-
-                return false;
+            } else {
+                return parent::delete();
             }
         }
 
