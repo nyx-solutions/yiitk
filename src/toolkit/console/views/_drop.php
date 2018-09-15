@@ -10,7 +10,7 @@
 ?>
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
          */
         public function safeUp()
         {
@@ -20,7 +20,7 @@
         }
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
          */
         public function safeDown()
         {

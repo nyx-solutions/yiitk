@@ -10,7 +10,7 @@
 ?>
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
          */
         public function safeUp()
         {
@@ -21,7 +21,8 @@
                         'id'        => $this->bigPrimaryKey($this->pkLength),
                         'createdAt' => $this->dateTime()->notNull(),
                         'updatedAt' => $this->dateTime()->notNull()
-                    ]
+                    ],
+                    $this->tableOptions
                 );
             }
         }
