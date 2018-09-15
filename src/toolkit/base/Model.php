@@ -14,17 +14,24 @@
     {
         use EnumTrait, FlashMessagesTrait;
 
+        /**
+         * @var bool
+         */
+        protected $enableFlashMessages = true;
+
         #region Events
         /**
          * @inheritdoc
          */
         public function afterValidate()
         {
-            $errors = $this->getErrors();
+            if ($this->enableFlashMessages) {
+                $errors = $this->getErrors();
 
-            foreach ($errors as $error) {
-                foreach ($error as $message) {
-                    $this->addErrorMessage($message);
+                foreach ($errors as $error) {
+                    foreach ($error as $message) {
+                        $this->addErrorMessage($message);
+                    }
                 }
             }
 

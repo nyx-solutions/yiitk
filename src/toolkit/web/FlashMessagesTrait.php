@@ -11,12 +11,21 @@
      */
     trait FlashMessagesTrait
     {
+        /**
+         * @var bool
+         */
+        protected $enableFlashMessages = true;
+
         #region Session
         /**
          * @return bool|Session
          */
         private function _getSession()
         {
+            if (!$this->enableFlashMessages) {
+                return false;
+            }
+
             /** @var Session $session */
             $session = \Yii::$app->get('session', false);
 
@@ -38,6 +47,10 @@
          */
         public function addSuccessMessage($message, $removeAfterAccess = true)
         {
+            if (!$this->enableFlashMessages) {
+                return;
+            }
+
             if (($session = $this->_getSession()) !== false) {
                 $session->addFlash('success', (string)$message, (bool)$removeAfterAccess);
             }
@@ -52,6 +65,10 @@
          */
         public function addErrorMessage($message, $removeAfterAccess = true)
         {
+            if (!$this->enableFlashMessages) {
+                return;
+            }
+
             if (($session = $this->_getSession()) !== false) {
                 $session->addFlash('error', (string)$message, (bool)$removeAfterAccess);
             }
@@ -66,6 +83,10 @@
          */
         public function addWarningMessage($message, $removeAfterAccess = true)
         {
+            if (!$this->enableFlashMessages) {
+                return;
+            }
+
             if (($session = $this->_getSession()) !== false) {
                 $session->addFlash('warning', (string)$message, (bool)$removeAfterAccess);
             }
@@ -80,6 +101,10 @@
          */
         public function addInfoMessage($message, $removeAfterAccess = true)
         {
+            if (!$this->enableFlashMessages) {
+                return;
+            }
+
             if (($session = $this->_getSession()) !== false) {
                 $session->addFlash('info', (string)$message, (bool)$removeAfterAccess);
             }
