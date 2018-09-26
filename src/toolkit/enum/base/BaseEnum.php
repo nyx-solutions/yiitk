@@ -83,7 +83,7 @@
         public static function id()
         {
             $id = (new \ReflectionClass(static::class))->getShortName();
-            $id = Inflector::pluralize(str_replace('enum', '', strtolower($id)));
+            $id = lcfirst(Inflector::pluralize(str_replace('enum', '', lcfirst($id))));
 
             return $id;
         }
