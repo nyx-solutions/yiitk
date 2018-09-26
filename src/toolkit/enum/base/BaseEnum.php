@@ -7,6 +7,7 @@
     use yiitk\helpers\InflectorHelper;
     use yii\base\InvalidCallException;
     use yii\i18n\PhpMessageSource;
+    use yiitk\helpers\StringHelper;
 
     /**
      * Class BaseEnum
@@ -83,7 +84,8 @@
         public static function id()
         {
             $id = (new \ReflectionClass(static::class))->getShortName();
-            $id = lcfirst(Inflector::pluralize(str_replace('enum', '', lcfirst($id))));
+            $id = StringHelper::convertCase(InflectorHelper::camel2id($id, '_'), StringHelper::CASE_UPPER);
+            $id = str_replace('_ENUM', '', $id);
 
             return $id;
         }
