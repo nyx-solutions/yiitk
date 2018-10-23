@@ -2,14 +2,9 @@
   "name": "yiitk/yiitk",
   "description": "YiiTK - Yii Framework version 2 Toolkit",
   "type": "library",
-  "keywords": [
-    "yii2",
-    "extension",
-    "framework",
-    "php"
-  ],
+  "keywords": ["yii2", "extension", "framework", "php"],
   "license": "BSD-3-Clause",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "authors": [
     {
       "name": "YiiTK",
@@ -27,6 +22,8 @@
   "minimum-stability": "stable",
   "require": {
     "php": ">=7.0.0",
+    "ext-json": "*",
+    "ext-curl": "*",
 
     "yiisoft/yii2": "~2.0.15",
 

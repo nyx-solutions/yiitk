@@ -39,6 +39,11 @@
          */
         public $fileManager = [];
 
+        /**
+         * @var array
+         */
+        public $i18n = [];
+
         #region Initialization
         /**
          * {@inheritdoc}
@@ -91,10 +96,17 @@
             $translations = \Yii::$app->i18n->translations;
 
             if (!isset($translations['yiitk'])) {
-                $translations['yiitk'] = ['class' => PhpMessageSource::class, 'sourceLanguage' => 'en-US', 'basePath' => $this->translationsBasePath, 'fileMap' => ['yiitk' => 'yiitk.php']];
-            }
+                if (empty($this->i18n)) {
+                    $this->i18n = [
+                        'class'          => PhpMessageSource::class,
+                        'sourceLanguage' => 'en',
+                        'basePath'       => $this->translationsBasePath,
+                        'fileMap'        => ['yiitk' => 'yiitk.php']
+                    ];
+                }
 
-            $translations['yii'] = ['class' => PhpMessageSource::class, 'sourceLanguage' => 'en-US', 'basePath' => $this->translationsBasePath, 'fileMap' => ['yii' => 'yii.php']];
+                $translations['yiitk'] = $this->i18n;
+            }
         }
 
         /**
