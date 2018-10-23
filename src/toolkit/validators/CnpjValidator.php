@@ -39,13 +39,13 @@
          */
         private function validateCnpj($cnpj)
         {
-            $cnpj = StringHelper::justNumbers($cnpj);
+            $cnpj = (int)StringHelper::justNumbers($cnpj);
 
             if ($this->skipOnEmpty && empty($cnpj)) {
                 return true;
             }
 
-            if (strlen($cnpj) != 14) {
+            if (strlen($cnpj) < 14) {
                 return false;
             }
 
