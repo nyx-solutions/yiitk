@@ -92,10 +92,7 @@
          */
         protected function setupTranslations()
         {
-            /** @var array $translations */
-            $translations = \Yii::$app->i18n->translations;
-
-            if (!isset($translations['yiitk'])) {
+            if (!isset(\Yii::$app->i18n->translations['yiitk'])) {
                 if (empty($this->i18n)) {
                     $this->i18n = [
                         'class'          => PhpMessageSource::class,
@@ -105,7 +102,7 @@
                     ];
                 }
 
-                $translations['yiitk'] = $this->i18n;
+                \Yii::$app->i18n->translations['yiitk'] = $this->i18n;
             }
         }
 
