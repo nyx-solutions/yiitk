@@ -38,4 +38,14 @@
             parent::afterValidate();
         }
         #endregion
+
+        #region Fields
+        /**
+         * @inheritdoc
+         */
+        public function fields()
+        {
+            return $this->parseFields(parent::fields());
+        }
+        #endregion
     }
