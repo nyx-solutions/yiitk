@@ -13,6 +13,11 @@
     trait EnumTrait
     {
         /**
+         * @var bool
+         */
+        protected $isSearch = false;
+
+        /**
          * @var array
          */
         private $_enumMethods = [];
@@ -96,6 +101,56 @@
         }
         #endregion
 
+        #region Fields
+        /**
+         * @param array $fields
+         *
+         * @return array
+         */
+        public function parseFields($fields = [])
+        {
+            $enums = $this->enums();
+
+            if (is_array($enums) && count($enums) > 0) {
+                foreach ($enums as $enum) {
+                    if (is_array($enum) && isset($enum[0], $enum['enumClass'])) {
+                        if (is_string($enum[0])) {
+                            $attribute = $enum[0];
+
+                            if (isset($fields[$attribute])) {
+                                $fields[$attribute] = function ($model) use ($attribute) {
+                                    return (string)$model->$attribute;
+                                };
+                            } elseif (in_array($attribute, $fields)) {
+                                $fields = array_diff($fields, [$attribute]);
+
+                                $fields[$attribute] = function ($model) use ($attribute) {
+                                    return (string)$model->$attribute;
+                                };
+                            }
+                        } elseif (is_array($enum[0])) {
+                            foreach ($enum[0] as $attribute) {
+                                if (isset($fields[$attribute])) {
+                                    $fields[$attribute] = function ($model) use ($attribute) {
+                                        return (string)$model->$attribute;
+                                    };
+                                } elseif (in_array($attribute, $fields)) {
+                                    $fields = array_diff($fields, [$attribute]);
+
+                                    $fields[$attribute] = function ($model) use ($attribute) {
+                                        return (string)$model->$attribute;
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return $fields;
+        }
+        #endregion
+
         #region Enum
         /**
          * @return array
@@ -141,7 +196,7 @@
                 $class = new \ReflectionClass($enum);
 
                 if ($class->isSubclassOf(BaseEnum::class)) {
-                    $this->_enumMap[$key] = ['class' => $enum, 'default' => $defaults[$key]];
+                    $this->_enumMap[$key] = ['class' => $enum, 'default' => ((!$this->isSearch) ? $defaults[$key] : '')];
 
                     $attribute = InflectorHelper::camelize($key);
 
