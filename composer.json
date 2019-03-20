@@ -4,7 +4,7 @@
   "type": "library",
   "keywords": ["yii2", "extension", "framework", "php"],
   "license": "BSD-3-Clause",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "authors": [
     {
       "name": "YiiTK",
@@ -13,10 +13,6 @@
     {
       "name": "Jonatas Sas",
       "email": "atendimento@jsas.com.br"
-    },
-    {
-      "name": "Luis Carlos Meireles",
-      "email": "luis.lc93@hotmail.com"
     }
   ],
   "minimum-stability": "stable",
