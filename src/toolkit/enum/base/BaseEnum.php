@@ -2,11 +2,10 @@
 
     namespace yiitk\enum\base;
 
-    use yii\helpers\Inflector;
-    use yiitk\helpers\ArrayHelper;
-    use yiitk\helpers\InflectorHelper;
     use yii\base\InvalidCallException;
     use yii\i18n\PhpMessageSource;
+    use yiitk\helpers\ArrayHelper;
+    use yiitk\helpers\InflectorHelper;
     use yiitk\helpers\StringHelper;
 
     /**
@@ -60,6 +59,7 @@
         protected $validations = [];
 
         #region Constructor
+
         /**
          * Sets the value that will be managed by this type instance.
          *
@@ -97,9 +97,9 @@
          *
          * @param string $name The name of a value
          *
+         * @return $this The new type instance
          * @throws \UnexpectedValueException
          *
-         * @return $this The new type instance
          */
         public static function createByKey($name)
         {
@@ -117,9 +117,9 @@
          *
          * @param mixed $value The value
          *
+         * @return $this The new type instance
          * @throws \UnexpectedValueException
          *
-         * @return $this The new type instance
          */
         public static function createByValue($value)
         {
@@ -249,9 +249,9 @@
         /**
          * Get label by value
          *
+         * @return string label
          * @var string value
          *
-         * @return string label
          */
         public static function findLabel($value)
         {
@@ -271,9 +271,9 @@
         /**
          * Get label by value
          *
+         * @return string label
          * @var string value
          *
-         * @return string label
          */
         public static function findSlug($value)
         {
@@ -419,6 +419,7 @@
         }
 
         #region Magic Validations
+
         /**
          * @throws \ReflectionException
          */
@@ -530,7 +531,7 @@
          * Returns a value when called statically like so: MyEnum::SOME_VALUE() given SOME_VALUE is a class constant
          *
          * @param string $name
-         * @param array $arguments
+         * @param array  $arguments
          *
          * @return static
          *
@@ -555,6 +556,18 @@
         public function __toString()
         {
             return (string)$this->currentValue;
+        }
+
+        /**
+         * @return array
+         */
+        public function __debugInfo()
+        {
+            return [
+                'value'   => $this->currentValue,
+                'label'   => $this->label,
+                'options' => static::listData()
+            ];
         }
         #endregion
     }
