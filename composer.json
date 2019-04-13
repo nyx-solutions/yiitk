@@ -4,7 +4,7 @@
   "type": "library",
   "keywords": ["yii2", "extension", "framework", "php"],
   "license": "BSD-3-Clause",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "authors": [
     {
       "name": "YiiTK",
@@ -29,8 +29,7 @@
 
     "php-curl-class/php-curl-class": "~7.4.0",
 
-    "kartik-v/yii2-krajee-base": "1.8.9",
-    "kartik-v/yii2-password": "1.5.3",
+    "kartik-v/yii2-password": "~1.5.4",
 
     "justinvoelker/yii2-separatedpager": "~1.0.2",
 
