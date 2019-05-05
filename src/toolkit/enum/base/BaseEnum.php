@@ -2,7 +2,13 @@
 
     namespace yiitk\enum\base;
 
+    use BadMethodCallException;
+    use Closure;
+    use ReflectionClass;
+    use ReflectionException;
+    use Yii;
     use yii\base\InvalidCallException;
+    use yii\base\InvalidConfigException;
     use yii\i18n\PhpMessageSource;
     use yiitk\helpers\ArrayHelper;
     use yiitk\helpers\InflectorHelper;
@@ -65,12 +71,12 @@
          *
          * @param mixed $value The value to be managed
          *
-         * @throws \UnexpectedValueException If the value is not valid
+         * @throws InvalidConfigException If the value is not valid
          */
         public function __construct($value)
         {
             if (!static::isValidValue($value)) {
-                throw new \UnexpectedValueException("Value '{$value}' is not part of the enum ".get_called_class());
+                throw new InvalidConfigException("Value '{$value}' is not part of the enum ".get_called_class());
             }
 
             $this->currentValue = $value;
@@ -83,7 +89,7 @@
          */
         public static function id()
         {
-            $id = (new \ReflectionClass(static::class))->getShortName();
+            $id = (new ReflectionClass(static::class))->getShortName();
             $id = StringHelper::convertCase(InflectorHelper::camel2id($id, '_'), StringHelper::CASE_UPPER);
             $id = str_replace('_ENUM', '', $id);
 
@@ -98,7 +104,7 @@
          * @param string $name The name of a value
          *
          * @return $this The new type instance
-         * @throws \UnexpectedValueException
+         * @throws InvalidConfigException
          *
          */
         public static function createByKey($name)
@@ -106,7 +112,7 @@
             $constants = static::findConstantsByKey();
 
             if (!array_key_exists($name, $constants)) {
-                throw new \UnexpectedValueException("Name '{$name}' is not exists in the enum constants list ".get_called_class());
+                throw new InvalidConfigException("Name '{$name}' is not exists in the enum constants list ".get_called_class());
             }
 
             return new static($constants[$name]);
@@ -118,13 +124,13 @@
          * @param mixed $value The value
          *
          * @return $this The new type instance
-         * @throws \UnexpectedValueException
+         * @throws InvalidConfigException
          *
          */
         public static function createByValue($value)
         {
-            if (!array_key_exists($value, static::findConstantsByValue())) {
-                throw new \UnexpectedValueException("Value '{$value}' is not exists in the enum constants list ".get_called_class());
+            if (!is_null($value) && !empty($value) && !array_key_exists($value, static::findConstantsByValue())) {
+                throw new InvalidConfigException("Value '{$value}' is not exists in the enum constants list ".get_called_class());
             }
 
             return new static($value);
@@ -158,7 +164,7 @@
             return ArrayHelper::getColumn(
                 static::findLabels(),
                 function ($value) use ($useI18n) {
-                    return (($useI18n) ? \Yii::t(static::$i18nMessageCategory, $value) : $value);
+                    return (($useI18n) ? Yii::t(static::$i18nMessageCategory, $value) : $value);
                 }
             );
         }
@@ -262,7 +268,7 @@
                     static::loadI18n();
                 }
 
-                return ((static::$useI18n) ? \Yii::t(static::$i18nMessageCategory, $list[$value]) : $list[$value]);
+                return ((static::$useI18n) ? Yii::t(static::$i18nMessageCategory, $list[$value]) : $list[$value]);
             }
 
             return null;
@@ -287,7 +293,7 @@
                         static::loadI18n();
                     }
 
-                    $list[$key] = InflectorHelper::slug(((static::$useI18n) ? \Yii::t(static::$i18nMessageCategory, $label) : $label), '-');
+                    $list[$key] = InflectorHelper::slug(((static::$useI18n) ? Yii::t(static::$i18nMessageCategory, $label) : $label), '-');
                 }
             }
 
@@ -308,7 +314,7 @@
             $class = get_called_class();
 
             if (!array_key_exists($class, static::$keys)) {
-                $reflection = new \ReflectionClass($class);
+                $reflection = new ReflectionClass($class);
 
                 static::$keys[$class] = $reflection->getConstants();
             }
@@ -364,12 +370,12 @@
                 return;
             }
 
-            $class = new \ReflectionClass(get_called_class());
+            $class = new ReflectionClass(get_called_class());
 
             $name = InflectorHelper::camel2id(preg_replace('/^(.*)\.php$/', '$1', basename($class->getFileName())), '-');
             $uid  = "enum/{$name}";
 
-            if (isset(\Yii::$app->i18n->translations[$uid])) {
+            if (isset(Yii::$app->i18n->translations[$uid])) {
                 return;
             }
 
@@ -377,7 +383,7 @@
             $file = "{$name}.php";
 
             if (is_dir($path)) {
-                \Yii::$app->i18n->translations[$uid] = [
+                Yii::$app->i18n->translations[$uid] = [
                     'class'          => PhpMessageSource::class,
                     'sourceLanguage' => 'en-US',
                     'basePath'       => $path,
@@ -415,17 +421,17 @@
          */
         public static function isValidValue($value)
         {
-            return array_key_exists($value, static::findConstantsByValue());
+            return (is_null($value) || empty($value) || array_key_exists($value, static::findConstantsByValue()));
         }
 
         #region Magic Validations
 
         /**
-         * @throws \ReflectionException
+         * @throws ReflectionException
          */
         protected function loadValidations()
         {
-            $class = new \ReflectionClass(get_called_class());
+            $class = new ReflectionClass(get_called_class());
 
             foreach ($class->getConstants() as $constantKey => $constantValue) {
                 $this->_bind(
@@ -469,11 +475,11 @@
 
         /**
          * @param string   $name
-         * @param \Closure $method
+         * @param Closure $method
          */
         private function _bind($name, $method)
         {
-            $this->validations[$name] = \Closure::bind($method, $this, get_class($this));
+            $this->validations[$name] = Closure::bind($method, $this, get_class($this));
         }
         #endregion
 
@@ -535,7 +541,7 @@
          *
          * @return static
          *
-         * @throws \BadMethodCallException
+         * @throws BadMethodCallException
          */
         public static function __callStatic($name, $arguments)
         {
@@ -547,7 +553,7 @@
                 return new static($constants[$name]);
             }
 
-            throw new \BadMethodCallException("No static method or enum constant '{$name}' in class ".get_called_class());
+            throw new BadMethodCallException("No static method or enum constant '{$name}' in class ".get_called_class());
         }
 
         /**

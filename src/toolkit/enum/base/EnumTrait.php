@@ -2,6 +2,9 @@
 
     namespace yiitk\enum\base;
 
+    use Closure;
+    use ReflectionClass;
+    use ReflectionException;
     use yiitk\helpers\InflectorHelper;
     use yii\base\Event;
     use yii\base\InvalidCallException;
@@ -80,8 +83,6 @@
                     if ($sender instanceof BaseActiveRecord) {
                         /** @var BaseEnum $class */
                         foreach ($attributes as $key => $enum) {
-                            $class = $enum['class'];
-
                             if ($sender->$key instanceof BaseEnum) {
                                 $sender->setAttribute($key, $sender->$key->__toString());
                             }
@@ -163,7 +164,7 @@
 
         #region Bind Methods
         /**
-         * @throws \ReflectionException
+         * @throws ReflectionException
          */
         private function _enumBind()
         {
@@ -193,7 +194,7 @@
             }
 
             foreach ($attributes as $key => $enum) {
-                $class = new \ReflectionClass($enum);
+                $class = new ReflectionClass($enum);
 
                 if ($class->isSubclassOf(BaseEnum::class)) {
                     $this->_enumMap[$key] = ['class' => $enum, 'default' => ((!$this->isSearch) ? $defaults[$key] : '')];
@@ -220,6 +221,10 @@
                                 $this->setEnumAttribute($key, $enum::createByKey($value));
                             } elseif ($enum::isValidValue($value)) {
                                 $this->setEnumAttribute($key, $enum::createByValue($value));
+                            } elseif (is_null($value)) {
+                                $this->setEnumAttribute($key, null);
+                            } elseif (empty($value)) {
+                                $this->setEnumAttribute($key, '');
                             } else {
                                 throw new InvalidCallException("The Enum class '{$enum}' does not accept the '{$value}' value.");
                             }
@@ -231,13 +236,13 @@
 
         /**
          * @param string   $name
-         * @param \Closure $method
+         * @param Closure $method
          */
         private function _enumAttach($name, $method)
         {
             $className = get_class($this);
 
-            $binded = \Closure::bind($method, $this, $className);
+            $binded = Closure::bind($method, $this, $className);
 
             $this->_enumMethods[$name] = $binded;
         }
@@ -261,7 +266,7 @@
             if ($value instanceof BaseEnum) {
                 $this->_enumAttributes[$attribute] = $value;
 
-                $this->setAttribute($attribute, $value->__toString());
+                $this->setAttribute($attribute, ((is_null($value)) ? null : $value->__toString()));
             }
         }
         #endregion
