@@ -19,13 +19,18 @@
          */
         protected $enableFlashMessages = true;
 
+        /**
+         * @var bool
+         */
+        protected $addModelsErrosToFlashMessages = false;
+
         #region Events
         /**
          * @inheritdoc
          */
         public function afterValidate()
         {
-            if ($this->enableFlashMessages) {
+            if ($this->enableFlashMessages && $this->addModelsErrosToFlashMessages) {
                 $errors = $this->getErrors();
 
                 foreach ($errors as $error) {
