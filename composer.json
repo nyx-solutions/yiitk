@@ -4,7 +4,7 @@
   "type": "yii2-extension",
   "keywords": ["yii2", "extension", "framework", "php"],
   "license": "BSD-3-Clause",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "authors": [
     {
       "name": "YiiTK",
