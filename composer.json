@@ -1,7 +1,7 @@
 {
   "name": "yiitk/yiitk",
   "description": "YiiTK - Yii Framework version 2 Toolkit",
-  "type": "library",
+  "type": "yii2-extension",
   "keywords": ["yii2", "extension", "framework", "php"],
   "license": "BSD-3-Clause",
   "version": "1.2.5",
