@@ -2,15 +2,13 @@
 
     namespace yiitk\validators;
 
-    use yii\validators\Validator;
-
     /**
      * Class MoneyFilterValidator
      *
      * @category Validator
      * @author   Jonatas Sas
      */
-    class MoneyFilterValidator extends Validator
+    class MoneyFilterValidator extends FilterValidator
     {
         /**
          * @var string
@@ -23,7 +21,7 @@
         public $decimal = ',';
 
         /**
-         * @var int
+         * @var integer
          */
         public $precision = 2;
 
@@ -32,28 +30,21 @@
          */
         public function init()
         {
+            $thousands = $this->thousands;
+            $decimal   = $this->decimal;
+
+            $this->addFilter(
+                function ($value) use ($thousands, $decimal) {
+                    $value = trim((string)$value);
+
+                    $value = str_replace($thousands, '', $value);
+                    $value = str_replace($decimal, '.', $value);
+                    $value = (float)preg_replace('/([^0-9.]+)/', '', (string)$value);
+
+                    return $value;
+                }
+            );
+
             parent::init();
-        }
-
-        /**
-         * @inheritdoc
-         */
-        public function validateAttribute($model, $attribute)
-        {
-            $value = trim((string)$model->$attribute);
-
-            $value = str_replace($this->thousands, '', $value);
-            $value = str_replace($this->decimal, '.', $value);
-            $value = preg_replace('/([^0-9.]+)/', '', (float)$value);
-
-            $model->$attribute = $value;
-        }
-
-        /**
-         * @inheritdoc
-         */
-        public function clientValidateAttribute($model, $attribute, $view)
-        {
-            return null;
         }
     }

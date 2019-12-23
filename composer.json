@@ -37,7 +37,9 @@
     "natxet/cssmin": "^3.0.6",
     "mrclay/minify": "^3.0.3",
 
-    "nesbot/carbon": "~1.9.0"
+    "nesbot/carbon": "~1.9.0",
+
+    "yii2tech/ar-linkmany": "~1.0"
   },
   "require-dev": {
     "yiisoft/yii2-gii": "~2.0.0",

@@ -2,15 +2,15 @@
 
     namespace yiitk\validators;
 
-    use yiitk\helpers\StringHelper;
+    use yiitk\helpers\MaskHelper;
 
     /**
-     * Class JustNumbersFilterValidator
+     * Class PhoneNumberFilterValidator
      *
      * @category Validator
      * @author   Jonatas Sas
      */
-    class JustNumbersFilterValidator extends FilterValidator
+    class PhoneNumberFilterValidator extends FilterValidator
     {
         /**
          * @inheritdoc
@@ -19,7 +19,7 @@
         {
             $this->addFilter(
                 function ($value) {
-                    return StringHelper::justNumbers($value);
+                    return MaskHelper::maskPhone($value);
                 }
             );
 

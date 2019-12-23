@@ -6,9 +6,9 @@
     use yii\validators\Validator;
 
     /**
-     * Class CnpjValidator
+     * Class CompanyTaxIdValidator
      */
-    class CnpjValidator extends Validator
+    class CompanyTaxIdValidator extends Validator
     {
         /**
          * @inheritdoc
@@ -25,7 +25,7 @@
          */
         public function validateAttribute($model, $attribute)
         {
-            if (!$this->validateCnpj($model->$attribute)) {
+            if (!$this->validateTaxId($model->$attribute)) {
                 $this->addError($model, $attribute, $this->message);
             }
         }
@@ -33,45 +33,45 @@
         /**
          * Validates a if a value is a valid CPF number.
          *
-         * @param $cnpj string CNPJ Number
+         * @param $taxId string CNPJ Number
          *
          * @return bool
          */
-        private function validateCnpj($cnpj)
+        private function validateTaxId($taxId)
         {
-            $cnpj = (int)StringHelper::justNumbers($cnpj);
+            $taxId = StringHelper::justNumbers($taxId);
 
-            if ($this->skipOnEmpty && empty($cnpj)) {
+            if ($this->skipOnEmpty && empty($taxId)) {
                 return true;
             }
 
-            if (strlen($cnpj) < 14) {
+            if (strlen($taxId) < 14 || strlen($taxId) > 14) {
                 return false;
             }
 
             for ($i = 0, $j = 5, $sum = 0; $i < 12; $i++) {
-                $sum += $cnpj{$i} * $j;
+                $sum += $taxId[$i] * $j;
 
                 $j = ($j == 2) ? 9 : $j - 1;
             }
 
             $residual = $sum % 11;
 
-            if ($cnpj{12} != ($residual < 2 ? 0 : 11 - $residual)) {
+            if ($taxId[12] != ($residual < 2 ? 0 : 11 - $residual)) {
                 return false;
             }
 
 
             for ($i = 0, $j = 6, $sum = 0; $i < 13; $i++) {
 
-                $sum += $cnpj{$i} * $j;
+                $sum += $taxId[$i] * $j;
 
                 $j = ($j == 2) ? 9 : $j - 1;
             }
 
             $residual = ($sum % 11);
 
-            return $cnpj{13} == ($residual < 2 ? 0 : 11 - $residual);
+            return $taxId[13] == ($residual < 2 ? 0 : 11 - $residual);
         }
 
         /**
@@ -79,7 +79,7 @@
          */
         public function validateValue($value)
         {
-            if (!$this->validateCnpj($value)) {
+            if (!$this->validateTaxId($value)) {
                 return [$this->message, []];
             } else {
                 return null;

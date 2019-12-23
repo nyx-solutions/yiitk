@@ -3,7 +3,9 @@
     namespace yiitk\db;
 
     use yii\behaviors\SluggableBehavior;
+    use yii\db\Expression;
     use yiitk\behaviors\DateTimeBehavior;
+    use yiitk\behaviors\LinkManyBehavior;
     use yiitk\enum\base\EnumTrait;
     use yiitk\web\FlashMessagesTrait;
 
@@ -14,7 +16,7 @@
      */
     class ActiveRecord extends \yii\db\ActiveRecord
     {
-        use EnumTrait, FlashMessagesTrait;
+        use EnumTrait, FlashMessagesTrait, ManyToManyTrait;
 
         const SCENARIO_INSERT = 'insert';
         const SCENARIO_UPDATE = 'update';
@@ -79,6 +81,19 @@
 
             if ($this->hasAttribute('slug')) {
                 $behaviors['sluggable'] = ['class' => SluggableBehavior::class, 'attribute' => $this->slugAttribute, 'slugAttribute' => 'slug', 'ensureUnique'  => $this->slugEnsureUnique, 'immutable' => $this->slugImmutable];
+            }
+
+            $linkManyAttributes = $this->linkManyToManyRelations();
+
+            if (is_array($linkManyAttributes) && count($linkManyAttributes) > 0) {
+                for ($i = 0; $i < count($linkManyAttributes); $i++) {
+                    $attribute        = $linkManyAttributes[$i];
+                    $keyAttribute     = ucfirst($attribute);
+                    $key              = "link{$keyAttribute}Behavior";
+                    $populateProperty = "{$attribute}Ids";
+
+                    $behaviors[$key] = ['class' => LinkManyBehavior::class, 'relation' => $attribute, 'relationReferenceAttribute' => $populateProperty, 'extraColumns' => ['createdAt' => new Expression('NOW()'), 'updatedAt' => new Expression('NOW()')]];
+                }
             }
 
             return $behaviors;

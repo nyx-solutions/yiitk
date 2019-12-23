@@ -266,6 +266,9 @@
          * @param string $view
          *
          * @return bool
+         *
+         * @throws NotSupportedException
+         * @throws \yii\base\Exception
          */
         public function viewExists($view)
         {
@@ -279,6 +282,8 @@
         /**
          * @param string $view
          * @param string $select
+         *
+         * @throws \yii\base\Exception
          */
         public function createView($view, $select)
         {
@@ -291,6 +296,9 @@
 
         /**
          * @param string $view
+         *
+         * @throws NotSupportedException
+         * @throws \yii\base\Exception
          */
         public function dropView($view)
         {
@@ -362,9 +370,7 @@
 
             $fieldName = InflectorHelper::camel2id($name, '_');
 
-            $newFieldName = "{$tableNameInitials}_{$fieldName}";
-
-            return $newFieldName;
+            return "{$tableNameInitials}_{$fieldName}";
         }
 
         /**

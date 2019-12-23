@@ -6,9 +6,9 @@
     use yii\validators\Validator;
 
     /**
-     * Class CpfValidator
+     * Class PersonTaxIdValidator
      */
-    class CpfValidator extends Validator
+    class PersonTaxIdValidator extends Validator
     {
         /**
          * @inheritdoc
@@ -25,7 +25,7 @@
          */
         public function validateAttribute($model, $attribute)
         {
-            if (!$this->validateCpf($model->$attribute)) {
+            if (!$this->validateTaxId($model->$attribute)) {
                 $this->addError($model, $attribute, $this->message);
             }
         }
@@ -37,7 +37,7 @@
          *
          * @return bool
          */
-        public function validateCpf($cpf)
+        public function validateTaxId($cpf)
         {
             $cpf = StringHelper::justNumbers((string)$cpf);
 
@@ -45,7 +45,7 @@
                 return true;
             }
 
-            return self::isCpfValid($cpf);
+            return self::isTaxIdValid($cpf);
         }
 
         /**
@@ -53,7 +53,7 @@
          *
          * @return bool
          */
-        public static function isCpfValid($cpf)
+        public static function isTaxIdValid($cpf)
         {
             $cpf = StringHelper::justNumbers($cpf);
 
@@ -74,12 +74,12 @@
             } else {
                 for ($t = 9; $t < 11; $t++) {
                     for ($d = 0, $c = 0; $c < $t; $c++) {
-                        $d += $cpf{$c} * (($t + 1) - $c);
+                        $d += $cpf[$c] * (($t + 1) - $c);
                     }
 
                     $d = ((10 * $d) % 11) % 10;
 
-                    if ($cpf{$c} != $d) {
+                    if ($cpf[$c] != $d) {
                         return false;
                     }
                 }
@@ -93,7 +93,7 @@
          */
         public function validateValue($value)
         {
-            if (!$this->validateCpf($value)) {
+            if (!$this->validateTaxId($value)) {
                 return [$this->message, []];
             } else {
                 return null;
