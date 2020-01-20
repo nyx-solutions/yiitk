@@ -2,15 +2,13 @@
 
     namespace yiitk\validators;
 
-    use yii\validators\Validator;
-
     /**
      * Class DateTimeFilterValidator
      *
      * @category Validator
      * @author   Jonatas Sas
      */
-    class DateTimeFilterValidator extends Validator
+    class DateTimeFilterValidator extends FilterValidator
     {
         /**
          * @var string
@@ -27,30 +25,23 @@
          */
         public function init()
         {
+            $format  = $this->format;
+            $useTime = $this->useTime;
+
+            $this->addFilter(
+                function ($value) use ($format, $useTime) {
+                    $date = \DateTime::createFromFormat($format, (string)$value, new \DateTimeZone(\Yii::$app->getTimeZone()));
+
+                    $dbFormat = 'Y-m-d';
+
+                    if ($useTime) {
+                        $dbFormat .= ' H:i:s';
+                    }
+
+                    return $date->format($dbFormat);
+                }
+            );
+
             parent::init();
-        }
-
-        /**
-         * @inheritdoc
-         */
-        public function validateAttribute($model, $attribute)
-        {
-            $value = (string)$model->$attribute;
-            $date = \DateTime::createFromFormat($this->format, $value, new \DateTimeZone(\Yii::$app->getTimeZone()));
-            $dataBaseFormat = 'Y-m-d';
-
-            if ($this->useTime) {
-                $dataBaseFormat .= ' H:i:s';
-            }
-
-            $model->$attribute = $date->format($dataBaseFormat);
-        }
-
-        /**
-         * @inheritdoc
-         */
-        public function clientValidateAttribute($model, $attribute, $view)
-        {
-            return null;
         }
     }

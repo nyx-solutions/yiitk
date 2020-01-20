@@ -13,6 +13,11 @@
         use \yii\db\SchemaBuilderTrait;
 
         /**
+         * @var bool
+         */
+        protected $useJsonColumn = true;
+
+        /**
          * @return \yii\db\Connection the database connection to be used for schema building.
          */
         protected abstract function getDb();
@@ -99,5 +104,17 @@
             }
 
             return $this->getDb()->getSchema()->createColumnSchemaBuilder('tinytext');
+        }
+
+        /**
+         * @inheritdoc
+         */
+        public function json()
+        {
+            if ($this->useJsonColumn) {
+                return parent::json();
+            }
+
+            return $this->longText();
         }
     }

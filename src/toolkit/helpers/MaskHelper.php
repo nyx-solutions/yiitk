@@ -13,10 +13,12 @@
          * @var array
          */
         protected static $patters = [
-            'cpf'         => '###.###.###-###',
-            'cnpj'        => '##.###.###/####-##',
-            'zipcode'     => '#####-###',
-            'credit-card' => '#### #### #### ####',
+            'cpf'            => '###.###.###-###',
+            'person-tax-id'  => '###.###.###-###',
+            'cnpj'           => '##.###.###/####-##',
+            'company-tax-id' => '##.###.###/####-##',
+            'zipcode'        => '#####-###',
+            'credit-card'    => '#### #### #### ####',
         ];
 
         /**
@@ -57,5 +59,24 @@
             }
 
             return $maskared;
+        }
+
+        /**
+         * @param string $phone
+         *
+         * @return string
+         */
+        public static function maskPhone($phone)
+        {
+            $phone = (int)static::justNumbers($phone);
+            $phone = (string)$phone;
+
+            if (strlen($phone) === 11) {
+                return static::mask($phone, '(##) #####-####');
+            } elseif (strlen($phone) === 10) {
+                return static::mask($phone, '(##) ####-####');
+            }
+
+            return '';
         }
     }

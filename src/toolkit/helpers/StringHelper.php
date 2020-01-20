@@ -78,21 +78,31 @@
 
         /**
          * @param string $string
+         * @param bool   $trim
          *
          * @return string
          */
-        public static function toLowerCase($string)
+        public static function toLowerCase($string, $trim = false)
         {
+            if ($trim) {
+                $string = trim($string);
+            }
+
             return static::convertCase($string, self::CASE_LOWER);
         }
 
         /**
          * @param string $string
+         * @param bool   $trim
          *
          * @return string
          */
-        public static function toUpperCase($string)
+        public static function toUpperCase($string, $trim = false)
         {
+            if ($trim) {
+                $string = trim($string);
+            }
+
             return static::convertCase($string, self::CASE_UPPER);
         }
 

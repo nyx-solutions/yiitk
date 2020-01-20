@@ -3,9 +3,7 @@
     namespace yiitk\console\controllers;
 
     /**
-     * Class MigrateController
-     *
-     * @package console\controllers
+     * Manages application migrations.
      */
     class MigrateController extends \yii\console\controllers\MigrateController
     {
