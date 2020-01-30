@@ -29,9 +29,9 @@
         public static $useI18n = true;
 
         /**
-         * @var string message category
+         * @var array message categories
          */
-        protected static $i18nMessageCategory = 'app';
+        public static $i18nMessageCategories = ['app' => 'app'];
 
         /**
          * @var string
@@ -65,13 +65,13 @@
         protected $validations = [];
 
         #region Constructor
-
         /**
          * Sets the value that will be managed by this type instance.
          *
          * @param mixed $value The value to be managed
          *
          * @throws InvalidConfigException If the value is not valid
+         * @throws ReflectionException
          */
         public function __construct($value)
         {
@@ -104,8 +104,9 @@
          * @param string $name The name of a value
          *
          * @return $this The new type instance
-         * @throws InvalidConfigException
          *
+         * @throws InvalidConfigException
+         * @throws ReflectionException
          */
         public static function createByKey($name)
         {
@@ -124,8 +125,9 @@
          * @param mixed $value The value
          *
          * @return $this The new type instance
-         * @throws InvalidConfigException
          *
+         * @throws InvalidConfigException
+         * @throws ReflectionException
          */
         public static function createByValue($value)
         {
@@ -152,10 +154,13 @@
          * Get list data (value => label)
          *
          * @return mixed
+         *
+         * @throws ReflectionException
          */
         public static function listData()
         {
-            $useI18n = static::$useI18n;
+            $useI18n      = static::$useI18n;
+            $i18nCategory = static::findI18nCategory(get_called_class());
 
             if ($useI18n) {
                 static::loadI18n();
@@ -163,8 +168,8 @@
 
             return ArrayHelper::getColumn(
                 static::findLabels(),
-                function ($value) use ($useI18n) {
-                    return (($useI18n) ? Yii::t(static::$i18nMessageCategory, $value) : $value);
+                function ($value) use ($useI18n, $i18nCategory) {
+                    return (($useI18n) ? Yii::t($i18nCategory, $value) : $value);
                 }
             );
         }
@@ -173,6 +178,8 @@
          * Get list data (['key' => value, 'label' => label])
          *
          * @return mixed
+         *
+         * @throws ReflectionException
          */
         public static function listDataWithDetails()
         {
@@ -192,6 +199,8 @@
 
         /**
          * @return array
+         *
+         * @throws ReflectionException
          */
         public static function range()
         {
@@ -206,6 +215,8 @@
 
         /**
          * @return array
+         *
+         * @throws ReflectionException
          */
         protected static function findLabels()
         {
@@ -243,9 +254,11 @@
         /**
          * get constant key by value(label)
          *
-         * @param $value
+         * @param mixed $value
          *
          * @return mixed
+         *
+         * @throws ReflectionException
          */
         public static function findValueByKey($value)
         {
@@ -255,20 +268,23 @@
         /**
          * Get label by value
          *
-         * @return string label
-         * @var string value
+         * @param string value
          *
+         * @return string label
+         *
+         * @throws ReflectionException
          */
         public static function findLabel($value)
         {
-            $list = static::findLabels();
+            $list         = static::findLabels();
+            $i18nCategory = static::findI18nCategory(get_called_class());
 
             if (isset($list[$value])) {
                 if (static::$useI18n) {
                     static::loadI18n();
                 }
 
-                return ((static::$useI18n) ? Yii::t(static::$i18nMessageCategory, $list[$value]) : $list[$value]);
+                return ((static::$useI18n) ? Yii::t($i18nCategory, $list[$value]) : $list[$value]);
             }
 
             return null;
@@ -277,23 +293,27 @@
         /**
          * Get label by value
          *
-         * @return string label
-         * @var string value
+         * @param string value
          *
+         * @return string label
+         *
+         * @throws ReflectionException
          */
         public static function findSlug($value)
         {
             $list = static::slugs();
 
             if (!is_array($list) || count($list) <= 0) {
-                $list = [];
+                $list         = [];
+                $i18nCategory = static::findI18nCategory(get_called_class());
 
                 foreach (static::findLabels() as $key => $label) {
+
                     if (static::$useI18n) {
                         static::loadI18n();
                     }
 
-                    $list[$key] = InflectorHelper::slug(((static::$useI18n) ? Yii::t(static::$i18nMessageCategory, $label) : $label), '-');
+                    $list[$key] = InflectorHelper::slug(((static::$useI18n) ? Yii::t($i18nCategory, $label) : $label), '-');
                 }
             }
 
@@ -308,6 +328,8 @@
          * Returns the list of constants (by name) for this type.
          *
          * @return array The list of constants by name
+         *
+         * @throws ReflectionException
          */
         public static function findConstantsByKey()
         {
@@ -326,6 +348,8 @@
          * Returns the list of constants (by value) for this type.
          *
          * @return array The list of constants by value
+         *
+         * @throws ReflectionException
          */
         public static function findConstantsByValue()
         {
@@ -344,6 +368,8 @@
          * Returns the name of the value.
          *
          * @return array|string The name, or names, of the value
+         *
+         * @throws ReflectionException
          */
         public function getKey()
         {
@@ -364,6 +390,9 @@
         #endregion
 
         #region i18n
+        /**
+         * @throws ReflectionException
+         */
         protected static function loadI18n()
         {
             if (!static::$useI18n) {
@@ -387,13 +416,27 @@
                     'class'          => PhpMessageSource::class,
                     'sourceLanguage' => 'en-US',
                     'basePath'       => $path,
-                    'fileMap'        => [
-                        $uid => $file
-                    ]
+                    'fileMap'        => [$uid => $file]
                 ];
 
-                static::$i18nMessageCategory = $uid;
+                self::$i18nMessageCategories[get_called_class()] = $uid;
             }
+        }
+
+        /**
+         * @param string $className
+         *
+         * @return string
+         *
+         * @throws ReflectionException
+         */
+        public static function findI18nCategory($className)
+        {
+            if (!isset(self::$i18nMessageCategories[$className])) {
+                static::loadI18n();
+            }
+
+            return ((isset(self::$i18nMessageCategories[$className])) ? self::$i18nMessageCategories[$className] : 'app');
         }
         #endregion
 
@@ -405,6 +448,8 @@
          *
          * @return bool If the name is valid for this type, `true` is returned.
          * Otherwise, the name is not valid and `false` is returned
+         *
+         * @throws ReflectionException
          */
         public static function isValidKey($name)
         {
@@ -418,6 +463,8 @@
          *
          * @return bool If the value is valid for this type, `true` is returned.
          * Otherwise, the value is not valid and `false` is returned
+         *
+         * @throws ReflectionException
          */
         public static function isValidValue($value)
         {
@@ -425,7 +472,6 @@
         }
 
         #region Magic Validations
-
         /**
          * @throws ReflectionException
          */
@@ -541,7 +587,8 @@
          *
          * @return static
          *
-         * @throws BadMethodCallException
+         * @throws InvalidConfigException
+         * @throws ReflectionException
          */
         public static function __callStatic($name, $arguments)
         {
@@ -566,6 +613,8 @@
 
         /**
          * @return array
+         *
+         * @throws ReflectionException
          */
         public function __debugInfo()
         {
