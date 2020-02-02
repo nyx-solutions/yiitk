@@ -7,6 +7,10 @@
     use yiitk\behaviors\DateTimeBehavior;
     use yiitk\behaviors\LinkManyBehavior;
     use yiitk\enum\base\EnumTrait;
+    use yiitk\helpers\ArrayHelper;
+    use yiitk\helpers\NumberHelper;
+    use yiitk\validators\BrazilianMoneyValidator;
+    use yiitk\validators\PercentageValidator;
     use yiitk\web\FlashMessagesTrait;
 
     /**
@@ -58,6 +62,77 @@
             $scenarios[self::SCENARIO_UPDATE] = $scenarios[self::SCENARIO_DEFAULT];
 
             return $scenarios;
+        }
+        #endregion
+
+        #region Rulesets
+        /**
+         * @inheritdoc
+         */
+        public function rules()
+        {
+            $filters = [];
+            $rules   = [];
+
+            $moneyAttributes      = $this->moneyAttributes();
+            $percentageAttributes = $this->percentageAttributes();
+
+            if (is_array($moneyAttributes) && count($moneyAttributes) > 0) {
+                $filters[] = [array_keys($moneyAttributes), 'filter', 'filter' => fn ($value) => NumberHelper::brazilianCurrencyToFloat($value)];
+
+                foreach ($moneyAttributes as $k => $attrRules) {
+                    $min = ((isset($attrRules['min'])) ? (float)$attrRules['min'] : null);
+                    $max = ((isset($attrRules['max'])) ? (float)$attrRules['max'] : null);
+
+                    $rules[] = [$k, BrazilianMoneyValidator::class, 'min' => $min, 'max' => $max];
+                }
+            }
+
+            if (is_array($percentageAttributes) && count($percentageAttributes) > 0) {
+                $filters[] = [array_keys($percentageAttributes), 'filter', 'filter' => fn ($value) => NumberHelper::percentToFloat($value)];
+
+                foreach ($percentageAttributes as $k => $attrRules) {
+                    $min = ((isset($attrRules['min'])) ? (float)$attrRules['min'] : null);
+                    $max = ((isset($attrRules['max'])) ? (float)$attrRules['max'] : null);
+
+                    $rules[] = [$k, PercentageValidator::class, 'min' => $min, 'max' => $max];
+                }
+            }
+
+            return ArrayHelper::merge($filters, $rules);
+        }
+        #endregion
+
+        #region Money Attributes
+        /**
+         * @return array
+         */
+        final public function money()
+        {
+            return array_keys($this->moneyAttributes());
+        }
+
+        public function moneyAttributes()
+        {
+            return [];
+        }
+        #endregion
+
+        #region Percentages Attributes
+        /**
+         * @return array
+         */
+        final public function percentage()
+        {
+            return array_keys($this->percentageAttributes());
+        }
+
+        /**
+         * @return array
+         */
+        public function percentageAttributes()
+        {
+            return [];
         }
         #endregion
 
@@ -149,6 +224,8 @@
 
         /**
          * @return bool
+         *
+         * @throws \Throwable
          */
         public function softDelete()
         {
@@ -165,6 +242,9 @@
 
         /**
          * @return false|int
+         *
+         * @throws \Throwable
+         * @throws \yii\db\StaleObjectException
          */
         public function hardDelete()
         {
