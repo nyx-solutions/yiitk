@@ -301,6 +301,9 @@
         /**
          * @param $name
          * @param $value
+         *
+         * @throws ReflectionException
+         * @throws \yii\base\UnknownPropertyException
          */
         public function __set($name, $value)
         {
@@ -324,6 +327,9 @@
          * @param $name
          *
          * @return mixed|null
+         *
+         * @throws ReflectionException
+         * @throws \yii\base\UnknownPropertyException
          */
         public function __get($name)
         {
@@ -343,6 +349,8 @@
          * @param string $name
          *
          * @return bool
+         *
+         * @throws ReflectionException
          */
         public function __isset($name)
         {
@@ -360,6 +368,8 @@
 
         /**
          * @param string $name
+         *
+         * @throws ReflectionException
          */
         public function __unset($name)
         {
