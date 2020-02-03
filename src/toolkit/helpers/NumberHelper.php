@@ -83,4 +83,18 @@
 
             return (float)$amount;
         }
+
+        /**
+         * @param string $amount
+         *
+         * @return float
+         */
+        public static function toFloat($amount)
+        {
+            if (!empty($amount) && is_numeric($amount)) {
+                return (float)$amount;
+            }
+
+            return 0.00;
+        }
     }

@@ -33,31 +33,33 @@
         /**
          * Validates a if a value is a valid CPF number.
          *
-         * @param $cpf string CPF Number
+         * @param $taxId string CPF Number
          *
          * @return bool
          */
-        public function validateTaxId($cpf)
+        public function validateTaxId($taxId)
         {
-            $cpf = StringHelper::justNumbers((string)$cpf);
+            $taxId = (string)StringHelper::justNumbers((string)$taxId);
 
-            if ($this->skipOnEmpty && empty($cpf)) {
+            $taxId = str_pad($taxId, 11, '0', STR_PAD_LEFT);
+
+            if ($this->skipOnEmpty && empty($taxId)) {
                 return true;
             }
 
-            return self::isTaxIdValid($cpf);
+            return self::isTaxIdValid($taxId);
         }
 
         /**
-         * @param string $cpf
+         * @param string $taxId
          *
          * @return bool
          */
-        public static function isTaxIdValid($cpf)
+        public static function isTaxIdValid($taxId)
         {
-            $cpf = StringHelper::justNumbers($cpf);
+            $taxId = StringHelper::justNumbers($taxId);
 
-            if (strlen($cpf) !== 11 || in_array($cpf, [
+            if (strlen($taxId) !== 11 || in_array($taxId, [
                     '00000000000',
                     '11111111111',
                     '22222222222',
@@ -74,12 +76,12 @@
             } else {
                 for ($t = 9; $t < 11; $t++) {
                     for ($d = 0, $c = 0; $c < $t; $c++) {
-                        $d += $cpf[$c] * (($t + 1) - $c);
+                        $d += $taxId[$c] * (($t + 1) - $c);
                     }
 
                     $d = ((10 * $d) % 11) % 10;
 
-                    if ($cpf[$c] != $d) {
+                    if ($taxId[$c] != $d) {
                         return false;
                     }
                 }

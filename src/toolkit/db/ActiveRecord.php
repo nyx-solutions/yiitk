@@ -83,8 +83,13 @@
                 foreach ($moneyAttributes as $k => $attrRules) {
                     $min = ((isset($attrRules['min'])) ? (float)$attrRules['min'] : null);
                     $max = ((isset($attrRules['max'])) ? (float)$attrRules['max'] : null);
+                    $required = ((isset($attrRules['required'])) ? (bool)$attrRules['required'] : true);
 
                     $rules[] = [$k, BrazilianMoneyValidator::class, 'min' => $min, 'max' => $max];
+
+                    if ($required) {
+                        $rules[] = [$k, 'required'];
+                    }
                 }
             }
 
@@ -92,10 +97,15 @@
                 $filters[] = [array_keys($percentageAttributes), 'filter', 'filter' => fn ($value) => NumberHelper::percentToFloat($value)];
 
                 foreach ($percentageAttributes as $k => $attrRules) {
-                    $min = ((isset($attrRules['min'])) ? (float)$attrRules['min'] : null);
-                    $max = ((isset($attrRules['max'])) ? (float)$attrRules['max'] : null);
+                    $min      = ((isset($attrRules['min'])) ? (float)$attrRules['min'] : null);
+                    $max      = ((isset($attrRules['max'])) ? (float)$attrRules['max'] : 100);
+                    $required = ((isset($attrRules['required'])) ? (bool)$attrRules['required'] : true);
 
                     $rules[] = [$k, PercentageValidator::class, 'min' => $min, 'max' => $max];
+
+                    if ($required) {
+                        $rules[] = [$k, 'required'];
+                    }
                 }
             }
 
@@ -103,6 +113,30 @@
         }
         #endregion
 
+        #region Float Attributes
+        /**
+         * @param array $attributes
+         *
+         * @return array
+         */
+        protected function parseFloatAttributesRules($attributes = [])
+        {
+            $realRules = [];
+
+            if (!is_array($attributes)) {
+                $attributes = [];
+            }
+
+            foreach ($attributes as $k => $v) {
+                if (is_array($v)) {
+                    $realRules[$k] = $v;
+                } else {
+                    $realRules[$v] = [];
+                }
+            }
+
+            return $realRules;
+        }
         #region Money Attributes
         /**
          * @return array
@@ -134,6 +168,7 @@
         {
             return [];
         }
+        #endregion
         #endregion
 
         #region Behaviors

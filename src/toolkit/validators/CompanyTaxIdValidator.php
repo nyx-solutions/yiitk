@@ -39,11 +39,13 @@
          */
         private function validateTaxId($taxId)
         {
-            $taxId = StringHelper::justNumbers($taxId);
+            $taxId = (string)StringHelper::justNumbers($taxId);
 
             if ($this->skipOnEmpty && empty($taxId)) {
                 return true;
             }
+
+            $taxId = str_pad($taxId, 14, '0', STR_PAD_LEFT);
 
             if (strlen($taxId) < 14 || strlen($taxId) > 14) {
                 return false;
