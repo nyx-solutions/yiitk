@@ -50,7 +50,7 @@
          */
         private function _validateTaxId($number)
         {
-            $number = StringHelper::justNumbers($number);
+            $number = (string)StringHelper::justNumbers($number);
 
             if ($this->_isPersonsTaxId($number)) {
                 return $this->_validatePersonsTaxId($number);
@@ -72,7 +72,7 @@
                 return false;
             }
 
-            $number = str_pad($number, 11, '0', STR_PAD_LEFT);
+            $number = str_pad((string)$number, 11, '0', STR_PAD_LEFT);
 
             if (strlen($number) != 11) {
                 return false;
@@ -116,7 +116,7 @@
                 return false;
             }
 
-            $number = str_pad($number, 14, '0', STR_PAD_LEFT);
+            $number = str_pad((string)$number, 14, '0', STR_PAD_LEFT);
 
             $soma = 0;
             $soma += ($number[0] * 5);
