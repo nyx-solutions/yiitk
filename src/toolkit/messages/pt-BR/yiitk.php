@@ -30,4 +30,5 @@
         // Widgets
         // GmapWidget
         'Enter a location...'                                                                                       => 'Digite uma Localização...',
+        'Click to view real content...'                                                                             => 'Clique para visualizar conteúdo real...',
     ];
