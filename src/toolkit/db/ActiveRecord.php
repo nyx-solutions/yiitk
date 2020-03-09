@@ -196,13 +196,25 @@
             $linkManyAttributes = $this->linkManyToManyRelations();
 
             if (is_array($linkManyAttributes) && count($linkManyAttributes) > 0) {
-                for ($i = 0; $i < count($linkManyAttributes); $i++) {
-                    $attribute        = $linkManyAttributes[$i];
+                foreach ($linkManyAttributes as $key => $value) {
+                    $extraColumns = [];
+                    $attribute    = $value;
+
+                    if (is_array($value)) {
+                        $attribute    = $key;
+                        $extraColumns = $value;
+                    }
+
                     $keyAttribute     = ucfirst($attribute);
-                    $key              = "link{$keyAttribute}Behavior";
+                    $behaviorKey      = "link{$keyAttribute}Behavior";
                     $populateProperty = "{$attribute}Ids";
 
-                    $behaviors[$key] = ['class' => LinkManyBehavior::class, 'relation' => $attribute, 'relationReferenceAttribute' => $populateProperty, 'extraColumns' => ['createdAt' => new Expression('NOW()'), 'updatedAt' => new Expression('NOW()')]];
+                    $behaviors[$behaviorKey] = [
+                        'class'                      => LinkManyBehavior::class,
+                        'relation'                   => $attribute,
+                        'relationReferenceAttribute' => $populateProperty,
+                        'extraColumns'               => ArrayHelper::merge($extraColumns, ['createdAt' => new Expression('NOW()'), 'updatedAt' => new Expression('NOW()')])
+                    ];
                 }
             }
 
