@@ -173,6 +173,6 @@
 
             return Html::tag('span', $hidden, ['class' => 'sensitive-data', 'onclick' => "$(this).html('{$value}').attr('title', '').css('cursor', 'auto');", 'style' => 'cursor:pointer;', 'title' => \Yii::t('yiitk', 'Click to view real content...')]);
         }
-        #region
+        #endregion
         #endregion
     }
