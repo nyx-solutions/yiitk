@@ -188,6 +188,10 @@
                     }
                 } else {
                     if ($this->isGroupRow($attribute)) {
+                        if (isset($attribute['visible']) && !$attribute['visible']) {
+                            continue;
+                        }
+
                         $currentRowClasses = 'detail-view-table-group';
 
                         $options = ['class' => 'detail-view-table-group', 'colspan' => $cols];

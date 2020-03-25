@@ -719,7 +719,7 @@
                     $final .= $aux[0];
                 }
 
-                return $final;
+                return str_shuffle($final);
             } else {
                 return (string)rand(100000, 999999);
             }
