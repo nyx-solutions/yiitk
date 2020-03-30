@@ -153,21 +153,35 @@
         /**
          * Get list data (value => label)
          *
+         * @param array $exclude
+         *
          * @return mixed
          *
          * @throws ReflectionException
          */
-        public static function listData()
+        public static function listData($exclude = [])
         {
             $useI18n      = static::$useI18n;
             $i18nCategory = static::findI18nCategory(get_called_class());
+
+            $labels = [];
+
+            if (!is_array($exclude) || empty($exclude)) {
+                $labels = static::findLabels();
+            } else {
+                foreach (static::findLabels() as $k => $v) {
+                    if (!in_array($k, $exclude)) {
+                        $labels[$k] = $v;
+                    }
+                }
+            }
 
             if ($useI18n) {
                 static::loadI18n();
             }
 
             return ArrayHelper::getColumn(
-                static::findLabels(),
+                $labels,
                 function ($value) use ($useI18n, $i18nCategory) {
                     return (($useI18n) ? Yii::t($i18nCategory, $value) : $value);
                 }
