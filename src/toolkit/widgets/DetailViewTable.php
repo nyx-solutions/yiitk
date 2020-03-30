@@ -149,6 +149,8 @@
 
             foreach ($this->attributes as $attribute) {
                 if (!ArrayHelper::isAssociative($attribute, false) && !empty($attribute)) {
+                    $attribute = array_values($attribute);
+
                     $totalCols = (count($attribute) * 2);
 
                     if ($totalCols > $cols) {
@@ -177,6 +179,8 @@
                 $currentHtmlRow = '';
 
                 if (!ArrayHelper::isAssociative($attribute, false) && !empty($attribute)) {
+                    $attribute = array_values($attribute);
+
                     for ($j = 0; $j < count($attribute); $j++) {
                         $availableCols = ($availableCols - 2);
 
