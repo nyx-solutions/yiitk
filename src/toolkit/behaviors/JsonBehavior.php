@@ -69,7 +69,7 @@
                 $value = $this->owner->getAttribute($attribute);
 
                 if (is_string($value)) {
-                    $value = json_decode($value, true);
+                    $value = static::jsonDecode($value);
                 }
 
                 $this->owner->setAttribute($attribute, $value);
@@ -88,9 +88,7 @@
                     $value = $this->emptyValue;
                 }
 
-                if (is_array($value) || is_object($value)) {
-                    $value = json_encode($value, JSON_UNESCAPED_UNICODE);
-                }
+                $value = static::jsonEncode($value);
 
                 $this->owner->setAttribute($attribute, (string)$value ?: $this->emptyValue);
             }
@@ -102,5 +100,43 @@
         protected function encodeValidate()
         {
             $this->encode();
+        }
+
+        /**
+         * @param $value
+         *
+         * @return string|null
+         */
+        public static function jsonEncode($value)
+        {
+            if (is_array($value) || is_object($value)) {
+                $value = json_encode($value, JSON_UNESCAPED_UNICODE);
+            } else {
+                $value = null;
+            }
+
+            if ($value === false) {
+                $value = null;
+            }
+
+            return $value;
+        }
+
+        /**
+         * @param string $value
+         *
+         * @return array|object|null
+         */
+        public static function jsonDecode($value)
+        {
+            if (is_string($value)) {
+                $value = json_decode($value, true);
+            }
+
+            if (is_array($value) || is_object($value)) {
+                return $value;
+            }
+
+            return null;
         }
     }
