@@ -13,6 +13,16 @@
         public $generatorTemplateFiles = [];
 
         /**
+         * @var bool
+         */
+        public $forceNamespace = false;
+
+        /**
+         * @var string
+         */
+        public $forcedMigrationNamespace = 'console\migrations';
+
+        /**
          * {@inheritdoc}
          */
         public function init()
@@ -33,6 +43,10 @@
             $migrationName  = $params['name'];
 
             $extendedParams['migrationSubview'] = '_create';
+
+            if ((bool)$this->forceNamespace && (!isset($params['namespace']) || empty($params['namespace']))) {
+                $params['namespace'] = $this->forcedMigrationNamespace;
+            }
 
             if (preg_match('/^update_.*$/', $migrationName)) {
                 $extendedParams['migrationSubview'] = '_update';
