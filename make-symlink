@@ -1,0 +1,48 @@
+#!/usr/bin/php7.4
+<?php
+
+    /**
+     * Creates symlink for development (without the /vendor folder)
+     * Usage: ./make-symlink (using the default path: ../../../adm) or ./make-symlink /path/to/symlink.
+     */
+
+    $basePath = dirname(dirname(dirname(dirname(__FILE__)))).'/adm';
+
+    if (isset($argv[1]) && is_dir($argv[1])) {
+        $basePath = $argv[1];
+    }
+
+    $source = __DIR__;
+    $target = "{$basePath}/yiitk/yiitk";
+
+    if (!is_dir($target)) {
+        mkdir($target, 0755, true);
+    }
+
+    $src                = "{$source}/src";
+    $composer           = "{$source}/composer.json";
+    $composerLock       = "{$source}/composer.lock";
+
+    $targetSrc          = "{$target}/src";
+    $targetComposer     = "{$target}/composer.json";
+    $targetComposerLock = "{$target}/composer.lock";
+
+    if (is_link($targetSrc)) {
+        unlink($targetSrc);
+    }
+
+    if (is_link($targetComposer)) {
+        unlink($targetComposer);
+    }
+
+    if (is_link($targetComposerLock)) {
+        unlink($targetComposerLock);
+    }
+
+    symlink($src, $targetSrc);
+    symlink($composer, $targetComposer);
+    symlink($composerLock, $targetComposerLock);
+
+    echo 'Symlinks Created';
+
+    exit(0);
