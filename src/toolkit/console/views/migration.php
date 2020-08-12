@@ -29,14 +29,10 @@
      * Class <?= $className."\n"; ?>
      */
     class <?= $className; ?> extends <?= $migrationClassName; ?>
+
     {
         /**
          * @inheritdoc
-         */
-        protected $tableName = '<?= $tableName; ?>';
-
-        /**
-         * {@inheritdoc}
          *
          * @noinspection ReturnTypeCanBeDeclaredInspection
          */
