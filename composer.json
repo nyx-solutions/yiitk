@@ -2,9 +2,14 @@
   "name": "yiitk/yiitk",
   "description": "YiiTK - Yii Framework version 2 Toolkit",
   "type": "yii2-extension",
-  "keywords": ["yii2", "extension", "framework", "php"],
+  "keywords": [
+    "yii2",
+    "extension",
+    "framework",
+    "php"
+  ],
   "license": "BSD-3-Clause",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "authors": [
     {
       "name": "YiiTK",
@@ -20,36 +25,28 @@
     "php": ">=7.4.0",
     "ext-json": "*",
     "ext-curl": "*",
-
     "yiisoft/yii2": "~2.0.15",
-
     "yiisoft/yii2-httpclient": "~2.0.0",
     "yiisoft/yii2-queue": "~2.0.0",
     "yiisoft/yii2-swiftmailer": "~2.0.7",
-
     "php-curl-class/php-curl-class": "~7.4.0",
-
     "kartik-v/yii2-password": "~1.5.4",
-
     "justinvoelker/yii2-separatedpager": "~1.0.2",
-
     "tedivm/jshrink": "^1.3.0",
     "natxet/cssmin": "^3.0.6",
     "mrclay/minify": "^3.0.3",
-
     "nesbot/carbon": "~1.9.0",
-
     "yii2tech/ar-linkmany": "~1.0"
   },
   "require-dev": {
-      "yiisoft/yii2-gii": "~2.0.0",
-      "yiisoft/yii2-faker": "~2.0.0",
-
-      "codeception/codeception": "^4.0",
-      "codeception/module-asserts": "^1.0",
-      "codeception/module-yii2": "^1.0",
-      "codeception/module-filesystem": "^1.0",
-      "codeception/verify": "~0.5.0 || ~1.1.0"
+    "roave/security-advisories": "dev-master",
+    "yiisoft/yii2-gii": "~2.0.0",
+    "yiisoft/yii2-faker": "~2.0.0",
+    "codeception/codeception": "^4.0",
+    "codeception/module-asserts": "^1.0",
+    "codeception/module-yii2": "^1.0",
+    "codeception/module-filesystem": "^1.0",
+    "codeception/verify": "~0.5.0 || ~1.1.0"
   },
   "autoload": {
     "psr-4": {

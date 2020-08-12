@@ -2,7 +2,6 @@
 
     /**
      * @var string $tableName
-     * @var string $tableSimpleName
      * @var string $className
      * @var string $namespace
      */

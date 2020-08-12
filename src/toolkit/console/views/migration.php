@@ -9,9 +9,10 @@
     /**
      * @var string $migrationSubview
      * @var string $tableName
-     * @var string $tableSimpleName
      * @var string $className
      * @var string $namespace
+     * @var string $migrationClass
+     * @var string $migrationClassName
      */
 
     echo "<?php\n";
@@ -22,16 +23,29 @@
 
 ?>
 
-    use yiitk\db\Migration;
+    use <?= $migrationClass; ?>;
 
     /**
      * Class <?= $className."\n"; ?>
      */
-    class <?= $className; ?> extends Migration
+    class <?= $className; ?> extends <?= $migrationClassName; ?>
     {
         /**
          * @inheritdoc
          */
         protected $tableName = '<?= $tableName; ?>';
-<?= $this->render($migrationSubview, ['tableName' => $tableName, 'tableSimpleName' => $tableSimpleName, 'className' => $className, 'namespace' => $namespace]); ?>
+
+        /**
+         * {@inheritdoc}
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
+         */
+        public function init()
+        {
+            $this->tableName = '<?= $tableName; ?>';
+
+            parent::init();
+        }
+
+<?= $this->render($migrationSubview, ['tableName' => $tableName, 'className' => $className, 'namespace' => $namespace]); ?>
     }
