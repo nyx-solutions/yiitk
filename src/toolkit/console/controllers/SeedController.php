@@ -2,7 +2,10 @@
 
     namespace yiitk\console\controllers;
 
+    use DirectoryIterator;
+    use Yii;
     use yii\db\Connection;
+    use yii\db\Exception;
     use yii\di\Instance;
     use yii\helpers\Console;
     use yiitk\console\Controller;
@@ -10,6 +13,8 @@
 
     /**
      * Manages application database seeds.
+     *
+     * @noinspection ContractViolationInspection
      */
     class SeedController extends Controller
     {
@@ -43,6 +48,8 @@
         /**
          * Initializes the migration.
          * This method will set [[db]] to be the 'db' application component, if it is `null`.
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
@@ -59,16 +66,18 @@
         #region Actions
         /**
          * Seeds the database with stored data.
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function actionRun()
         {
-            $version = \Yii::getVersion();
+            $version = Yii::getVersion();
 
             $this->stdout("Yii Seed Tool (based on Yii v{$version})\n\n");
 
             $runAll = Console::confirm('Do you want to run all seed actions? This will try to truncate populated tables.', false);
 
-            $this->executeSeeds((bool)$runAll);
+            $this->executeSeeds($runAll);
         }
         #endregion
 
@@ -86,9 +95,9 @@
         /**
          * @param bool $all
          *
-         * @throws \yii\db\Exception
+         * @throws Exception
          */
-        protected function executeSeeds(bool $all = false)
+        protected function executeSeeds(bool $all = false): void
         {
             $seeds = $this->seeds();
 
@@ -113,7 +122,7 @@
                     }
 
                     $name           = $seed[0];
-                    $source         = ((isset($seed['source']) && !empty($seed['source'])) ? $seed['source'] : null);
+                    $source         = ((!empty($seed['source'])) ? $seed['source'] : null);
                     $loadData       = ((isset($seed['loadData']) && is_callable($seed['loadData'])) ? $seed['loadData'] : null);
                     $model          = $seed['model'];
                     $tableName      = $model::tableName();
@@ -121,13 +130,11 @@
 
                     if (!is_null($source)) {
                         if ($this->truncate($name, $model, !$all)) {
-                            $sourceItems = $this->loadFromSource($source);
-
-                            foreach ($sourceItems as $sourceItem) {
+                            foreach ($this->loadFromSource($source) as $sourceItem) {
                                 $data = $sourceItem;
 
                                 if (!is_null($loadData)) {
-                                    $data = call_user_func($loadData, $sourceItem);
+                                    $data = $loadData($sourceItem);
                                 }
 
                                 if (is_array($data)) {
@@ -140,7 +147,7 @@
                         }
                     } elseif (method_exists($this, $seedMethodName)) {
                         if ($this->truncate($name, $model, !$all)) {
-                            call_user_func_array([$this, $seedMethodName], [$tableName]);
+                            $this->$seedMethodName($tableName);
                         } else {
                             $this->stdout("Seed {$i}: user canceled or could not truncate the table {$tableName}. Skipping execution...\n\n", Console::FG_RED);
                         }
@@ -186,9 +193,10 @@
             }
 
             if (!$truncate) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $primaryKey = $model::primaryKey();
 
-                if (is_array($primaryKey) && isset($primaryKey[0]) && !empty($primaryKey[0])) {
+                if (is_array($primaryKey) && !empty($primaryKey[0])) {
                     $primaryKey = $primaryKey[0];
                 } else {
                     $primaryKey = null;
@@ -198,6 +206,7 @@
                     try {
                         $this->delete($tableName, "{$primaryKey} > 0");
 
+                        /** @noinspection SqlNoDataSourceInspection */
                         $this->db->createCommand("ALTER TABLE {$tableName} AUTO_INCREMENT = 1")->execute();
                     } catch (\Exception $exception) {
                         return false;
@@ -212,18 +221,18 @@
          * @param string $path
          *
          * @return array
+         *
+         * @throws \Exception
          */
         protected function loadFromSource(string $path): array
         {
             $items = [];
 
             if (is_dir($path)) {
-                $iterator = new \DirectoryIterator($path);
-
-                foreach ($iterator as $file) {
-                    if ($file->isFile() && $file->getExtension() == 'json') {
+                foreach (new DirectoryIterator($path) as $file) {
+                    if ($file->isFile() && $file->getExtension() === 'json') {
                         $contents = file_get_contents($path.'/'.$file->getFilename(), LOCK_EX);
-                        $contents = json_decode($contents, true);
+                        $contents = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
 
                         if ($contents && is_array($contents)) {
                             foreach ($contents as $item) {
@@ -237,9 +246,11 @@
             return $items;
         }
 
-        protected function seed($action)
+        /**
+         * @param $action
+         */
+        protected function seed($action): void
         {
-            \Yii::$app->db;
         }
         #endregion
 
@@ -250,7 +261,7 @@
          * @param string $description the description for the command, to be output to the console.
          * @return float the time before the command is executed, for the time elapsed to be calculated.
          */
-        protected function beginCommand($description)
+        protected function beginCommand($description): float
         {
             if (!$this->compact) {
                 echo "    > $description ...";
@@ -263,7 +274,7 @@
          *
          * @param float $time the time before the command was executed.
          */
-        protected function endCommand($time)
+        protected function endCommand($time): void
         {
             if (!$this->compact) {
                 echo ' done (time: ' . sprintf('%.3f', microtime(true) - $time) . "s)\n";
@@ -279,10 +290,11 @@
          * @param string $table   the table that new rows will be inserted into.
          * @param array  $columns the column data (name => value) to be inserted into the table.
          *
-         * @throws \yii\db\Exception
+         * @throws Exception
          */
-        public function insert($table, $columns)
+        public function insert($table, $columns): void
         {
+            /** @noinspection SqlNoDataSourceInspection */
             $time = $this->beginCommand("insert into $table");
 
             $this->db->createCommand()->insert($table, $columns)->execute();
@@ -298,10 +310,11 @@
          * @param array  $columns the column names.
          * @param array  $rows    the rows to be batch inserted into the table
          *
-         * @throws \yii\db\Exception
+         * @throws Exception
          */
-        public function batchInsert($table, $columns, $rows)
+        public function batchInsert($table, $columns, $rows): void
         {
+            /** @noinspection SqlNoDataSourceInspection */
             $time = $this->beginCommand("insert into $table");
 
             $this->db->createCommand()->batchInsert($table, $columns, $rows)->execute();
@@ -319,9 +332,9 @@
          *                                refer to [[Query::where()]] on how to specify conditions.
          * @param array        $params    the parameters to be bound to the query.
          *
-         * @throws \yii\db\Exception
+         * @throws Exception
          */
-        public function update($table, $columns, $condition = '', $params = [])
+        public function update($table, $columns, $condition = '', $params = []): void
         {
             $time = $this->beginCommand("update $table");
 
@@ -338,10 +351,14 @@
          *                                refer to [[Query::where()]] on how to specify conditions.
          * @param array        $params    the parameters to be bound to the query.
          *
-         * @throws \yii\db\Exception
+         * @throws Exception
          */
-        public function delete($table, $condition = '', $params = [])
+        public function delete($table, $condition = '', $params = []): void
         {
+            /**
+             * @noinspection SqlNoDataSourceInspection
+             * @noinspection SqlWithoutWhere
+             */
             $time = $this->beginCommand("delete from $table");
 
             $this->db->createCommand()->delete($table, $condition, $params)->execute();
@@ -354,9 +371,9 @@
          *
          * @param string $table the table to be truncated. The name will be properly quoted by the method.
          *
-         * @throws \yii\db\Exception
+         * @throws Exception
          */
-        public function truncateTable($table)
+        public function truncateTable($table): void
         {
             $time = $this->beginCommand("truncate table $table");
 

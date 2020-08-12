@@ -2,22 +2,27 @@
 
     namespace yiitk\console\controllers;
 
+    use yii\base\ErrorException;
     use yiitk\helpers\FileHelper;
 
     /**
      * Class AssetController
+     *
+     * @noinspection ContractViolationInspection
      */
     class AssetController extends \yii\console\controllers\AssetController
     {
         /**
          * @var array
          */
-        public $paths = [];
+        public array $paths = [];
 
         /**
          * Flush generated asset files defined in the $paths param.
          *
-         * @throws \yii\base\ErrorException
+         * @throws ErrorException
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function actionFlush()
         {
