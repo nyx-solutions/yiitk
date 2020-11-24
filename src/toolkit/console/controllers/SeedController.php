@@ -15,6 +15,8 @@
      * Manages application database seeds.
      *
      * @noinspection ContractViolationInspection
+     *
+     * @deprecated
      */
     class SeedController extends Controller
     {
@@ -44,7 +46,7 @@
          */
         public $db = 'db';
 
-        #region Initialization
+        //region Initialization
         /**
          * Initializes the migration.
          * This method will set [[db]] to be the 'db' application component, if it is `null`.
@@ -61,9 +63,9 @@
 
             $this->db->enableSlaves = false;
         }
-        #endregion
+        //endregion
 
-        #region Actions
+        //region Actions
         /**
          * Seeds the database with stored data.
          *
@@ -79,9 +81,9 @@
 
             $this->executeSeeds($runAll);
         }
-        #endregion
+        //endregion
 
-        #region Seeds
+        //region Seeds
         /**
          * @return array
          */
@@ -89,9 +91,9 @@
         {
             return [];
         }
-        #endregion
+        //endregion
 
-        #region Run
+        //region Run
         /**
          * @param bool $all
          *
@@ -252,16 +254,16 @@
         protected function seed($action): void
         {
         }
-        #endregion
+        //endregion
 
-        #region Command Methods
+        //region Command Methods
         /**
          * Prepares for a command to be executed, and outputs to the console.
          *
          * @param string $description the description for the command, to be output to the console.
          * @return float the time before the command is executed, for the time elapsed to be calculated.
          */
-        protected function beginCommand($description): float
+        protected function beginCommand(string $description): float
         {
             if (!$this->compact) {
                 echo "    > $description ...";
@@ -274,15 +276,15 @@
          *
          * @param float $time the time before the command was executed.
          */
-        protected function endCommand($time): void
+        protected function endCommand(float $time): void
         {
             if (!$this->compact) {
                 echo ' done (time: ' . sprintf('%.3f', microtime(true) - $time) . "s)\n";
             }
         }
-        #endregion
+        //endregion
 
-        #region Data Base Methods
+        //region Data Base Methods
         /**
          * Creates and executes an INSERT SQL statement.
          * The method will properly escape the column names, and bind the values to be inserted.
@@ -292,7 +294,7 @@
          *
          * @throws Exception
          */
-        public function insert($table, $columns): void
+        public function insert(string $table, array $columns): void
         {
             /** @noinspection SqlNoDataSourceInspection */
             $time = $this->beginCommand("insert into $table");
@@ -312,7 +314,7 @@
          *
          * @throws Exception
          */
-        public function batchInsert($table, $columns, $rows): void
+        public function batchInsert(string $table, array $columns, array $rows): void
         {
             /** @noinspection SqlNoDataSourceInspection */
             $time = $this->beginCommand("insert into $table");
@@ -334,7 +336,7 @@
          *
          * @throws Exception
          */
-        public function update($table, $columns, $condition = '', $params = []): void
+        public function update(string $table, array $columns, $condition = '', array $params = []): void
         {
             $time = $this->beginCommand("update $table");
 
@@ -353,7 +355,7 @@
          *
          * @throws Exception
          */
-        public function delete($table, $condition = '', $params = []): void
+        public function delete(string $table, $condition = '', array $params = []): void
         {
             /**
              * @noinspection SqlNoDataSourceInspection
@@ -373,7 +375,7 @@
          *
          * @throws Exception
          */
-        public function truncateTable($table): void
+        public function truncateTable(string $table): void
         {
             $time = $this->beginCommand("truncate table $table");
 
@@ -381,9 +383,9 @@
 
             $this->endCommand($time);
         }
-        #endregion
+        //endregion
 
-        #region Getters
+        //region Getters
         /**
          * @return array|string|Connection
          */
@@ -391,5 +393,5 @@
         {
             return $this->db;
         }
-        #endregion
+        //endregion
     }

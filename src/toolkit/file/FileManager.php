@@ -42,7 +42,7 @@
          */
         public $fkFieldSuffix = 'Id';
 
-        #region Migrations Helpers
+        //region Migrations Helpers
         /**
          * @param Migration $migration
          * @param string    $name
@@ -103,5 +103,5 @@
 
             return $fileManager;
         }
-        #endregion
+        //endregion
     }

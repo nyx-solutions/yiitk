@@ -16,7 +16,9 @@
     class m000002_000002_file extends Migration
     {
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection RepetitiveMethodCallsInspection
          */
         public function safeUp()
         {
@@ -71,7 +73,7 @@
             }
         }
 
-        #region Getters
+        //region Getters
         /**
          * @return FileManager
          *
@@ -91,5 +93,5 @@
 
             return $fileManager;
         }
-        #endregion
+        //endregion
     }

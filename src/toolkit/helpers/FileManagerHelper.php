@@ -16,104 +16,104 @@
      */
     class FileManagerHelper extends BaseObject
     {
-        const SCENARIO_DEFAULT = 'default';
-        const SCENARIO_INSERT  = 'insert';
-        const SCENARIO_UPDATE  = 'update';
+        public const SCENARIO_DEFAULT = 'default';
+        public const SCENARIO_INSERT  = 'insert';
+        public const SCENARIO_UPDATE  = 'update';
 
         /**
          * @var string
          */
-        public static $id = 'file';
+        public static string $id = 'file';
 
         /**
          * @var bool
          */
-        public static $image = false;
+        public static bool $image = false;
+
+        /**
+         * @var string|null
+         */
+        public static ?string $modelClass = null;
 
         /**
          * @var string
          */
-        public static $modelClass = null;
+        public static string $attribute = 'file';
 
         /**
          * @var string
          */
-        public static $attribute = 'file';
+        public static string $tmpPath = '@webroot/tmp';
 
         /**
          * @var string
          */
-        public static $tmpPath = '@webroot/tmp';
+        public static string $path = '@webroot/upload';
 
         /**
          * @var string
          */
-        public static $path = '@webroot/upload';
-
-        /**
-         * @var string
-         */
-        public static $url = '@web/upload';
+        public static string $url = '@web/upload';
 
         /**
          * @var bool
          */
-        public static $keepFileName = false;
+        public static bool $keepFileName = false;
 
         /**
          * @var bool
          */
-        public static $requiredOnInsert = true;
+        public static bool $requiredOnInsert = true;
 
         /**
          * @var string
          */
-        public static $filesContentTypes = 'application/pdf, application/x-pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword, application/rtf, text/richtext, application/vnd.oasis.opendocument.text';
+        public static string $filesContentTypes = 'application/pdf, application/x-pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword, application/rtf, text/richtext, application/vnd.oasis.opendocument.text';
 
         /**
          * @var string
          */
-        public static $filesExtensions = 'doc, docx, rtf, odt, pdf';
+        public static string $filesExtensions = 'doc, docx, rtf, odt, pdf';
 
         /**
          * @var string
          */
-        public static $imagesContentTypes = 'image/gif, image/jpeg, image/png';
+        public static string $imagesContentTypes = 'image/gif, image/jpeg, image/png';
 
         /**
          * @var string
          */
-        public static $imagesExtensions = 'jpeg, jpg, gif, png';
+        public static string $imagesExtensions = 'jpeg, jpg, gif, png';
 
         /**
-         * @var integer
+         * @var int|null
          */
-        public static $imageMinWidth = null;
+        public static ?int $imageMinWidth = null;
 
         /**
-         * @var integer
+         * @var int|null
          */
-        public static $imageMaxWidth = null;
+        public static ?int $imageMaxWidth = null;
 
         /**
-         * @var integer
+         * @var int|null
          */
-        public static $imageMinHeight = null;
+        public static ?int $imageMinHeight = null;
 
         /**
-         * @var integer
+         * @var int|null
          */
-        public static $imageMaxHeight = null;
+        public static ?int $imageMaxHeight = null;
 
         /**
          * @var array
          */
-        public static $variations = [];
+        public static array $variations = [];
 
         /**
-         * @return string
+         * @return string|null
          */
-        public static function tableName()
+        public static function tableName(): ?string
         {
             $modelClass = static::$modelClass;
 
@@ -126,8 +126,10 @@
 
         /**
          * @return string
+         *
+         * @throws InvalidConfigException
          */
-        public static function tableColumnName()
+        public static function tableColumnName(): string
         {
             $fileManager = static::fileManager();
 
@@ -136,8 +138,10 @@
 
         /**
          * @return array
+         *
+         * @throws InvalidConfigException
          */
-        public static function rules()
+        public static function rules(): array
         {
             $fileManager = static::fileManager();
 
@@ -214,8 +218,10 @@
          * @param bool   $instanceByName
          *
          * @return array
+         *
+         * @throws InvalidConfigException
          */
-        public static function behavior($name, $instanceByName = false)
+        public static function behavior(string $name, bool $instanceByName = false): array
         {
             $fileManager  = static::fileManager();
             $keepFileName = static::$keepFileName;
@@ -232,23 +238,23 @@
                 'tmpPath'         => static::$tmpPath,
                 'url'             => static::$url,
                 'variations'      => static::$variations,
-                'generateNewName' => function ($file) use ($keepFileName) {
+                'generateNewName' => static function ($file) use ($keepFileName) {
                     /** @var UploadedFile $file */
                     $extension = strtolower($file->extension);
 
                     if ($keepFileName) {
                         return Inflector::slug($file->baseName, '-', true).".{$extension}";
-                    } else {
-                        return sha1(uniqid(rand().date('YmdHis'), true)).".{$extension}";
                     }
+
+                    return sha1(uniqid(mt_rand().date('YmdHis'), true)).".{$extension}";
                 },
-                'afterUploadCallback' => function ($model, $file) {
+                'afterUploadCallback' => static function ($model, $file) {
 
                 },
                 'unlinkOnSave'    => true,
                 'unlinkOnDelete'  => true,
                 'deleteTempFile'  => true,
-                'instanceByName'  => (bool)$instanceByName,
+                'instanceByName'  => $instanceByName,
             ];
         }
 
@@ -257,7 +263,7 @@
          *
          * @throws InvalidConfigException
          */
-        protected static function fileManager()
+        protected static function fileManager(): FileManager
         {
             /** @var Module $yiitk */
             $yiitk = Module::getInstance();

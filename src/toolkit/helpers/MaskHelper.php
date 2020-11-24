@@ -4,15 +4,13 @@
 
     /**
      * Class MaskHelper
-     *
-     * @package yiitk\helpers
      */
     class MaskHelper extends StringHelper
     {
         /**
          * @var array
          */
-        protected static $patters = [
+        protected static array $patters = [
             'cpf'            => '###.###.###-###',
             'person-tax-id'  => '###.###.###-###',
             'cnpj'           => '##.###.###/####-##',
@@ -30,13 +28,13 @@
          *
          * @return string
          */
-        public static function mask($string, $mask, $empty = '')
+        public static function mask(string $string, string $mask, $empty = ''): string
         {
             if (isset(static::$patters[strtolower($mask)])) {
                 $mask = static::$patters[strtolower($mask)];
             }
 
-            $string = trim((string)$string);
+            $string = trim($string);
 
             if (empty($string)) {
                 return $empty;
@@ -47,14 +45,12 @@
             $k = 0;
 
             for ($i = 0; $i <= (strlen($mask) - 1); $i++) {
-                if ($mask[$i] == '#') {
+                if ($mask[$i] === '#') {
                     if (isset($string[$k])) {
                         $maskared .= $string[$k++];
                     }
-                } else {
-                    if (isset($mask[$i])) {
-                        $maskared .= $mask[$i];
-                    }
+                } elseif (isset($mask[$i])) {
+                    $maskared .= $mask[$i];
                 }
             }
 
@@ -62,18 +58,20 @@
         }
 
         /**
-         * @param string $phone
+         * @param string $basePhone
          *
          * @return string
          */
-        public static function maskPhone($phone)
+        public static function maskPhone(string $basePhone): string
         {
-            $phone = (int)static::justNumbers($phone);
+            $phone = (int)static::justNumbers($basePhone);
             $phone = (string)$phone;
 
             if (strlen($phone) === 11) {
                 return static::mask($phone, '(##) #####-####');
-            } elseif (strlen($phone) === 10) {
+            }
+
+            if (strlen($phone) === 10) {
                 return static::mask($phone, '(##) ####-####');
             }
 

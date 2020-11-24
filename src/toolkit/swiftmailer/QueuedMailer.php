@@ -2,6 +2,10 @@
 
     namespace yiitk\swiftmailer;
 
+    use Yii;
+    use yii\queue\file\Queue;
+    use yii\swiftmailer\Mailer;
+    use yii\swiftmailer\Message;
     use yiitk\jobs\MailerJob;
 
     /**
@@ -9,24 +13,26 @@
      *
      * @package yiitk\swiftmailer
      */
-    class QueuedMailer extends \yii\swiftmailer\Mailer
+    class QueuedMailer extends Mailer
     {
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         protected function sendMessage($message)
         {
-            /** @var \yii\swiftmailer\Message $message */
+            /** @var Message $message */
             $address = $message->getTo();
 
             if (is_array($address)) {
                 $address = implode(', ', array_keys($address));
             }
 
-            \Yii::info('Sending email "'.$message->getSubject().'" to "'.$address.'"', __METHOD__);
+            Yii::info('Sending email "'.$message->getSubject().'" to "'.$address.'"', __METHOD__);
 
-            /** @var \yii\queue\file\Queue $queue */
-            $queue = \Yii::$app->get('queue');
+            /** @var Queue $queue */
+            $queue = Yii::$app->get('queue');
 
             $queue->push(new MailerJob(['mailer' => $this, 'message' => $message]));
 

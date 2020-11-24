@@ -11,8 +11,11 @@
      */
     class PercentageValidator extends NumberValidator
     {
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
@@ -20,9 +23,13 @@
 
             $this->integerOnly = false;
         }
+        //endregion
 
+        //region Validations
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function clientValidateAttribute($model, $attribute, $view)
         {
@@ -33,4 +40,5 @@
             return 'yii.validation.number(parseFloat(value.replace(/([^0-9\.]+)/gi, \'\')), messages, ' . Json::htmlEncode($options) . ');';
 
         }
+        //endregion
     }

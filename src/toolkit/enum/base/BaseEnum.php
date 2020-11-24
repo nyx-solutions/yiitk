@@ -26,31 +26,31 @@
         /**
          * @var bool
          */
-        public static $useI18n = true;
+        public static bool $useI18n = true;
 
         /**
          * @var array message categories
          */
-        public static $i18nMessageCategories = ['app' => 'app'];
+        public static array $i18nMessageCategories = ['app' => 'app'];
 
         /**
          * @var string
          */
-        public static $preposition = 'is';
+        public static string $preposition = 'is';
 
         /**
          * The cached list of constants by name.
          *
          * @var array
          */
-        protected static $keys = [];
+        protected static array $keys = [];
 
         /**
          * The cached list of constants by value.
          *
          * @var array
          */
-        protected static $values = [];
+        protected static array $values = [];
 
         /**
          * The value managed by this type instance.
@@ -62,9 +62,9 @@
         /**
          * @var array
          */
-        protected $validations = [];
+        protected array $validations = [];
 
-        #region Constructor
+        //region Constructor
         /**
          * Sets the value that will be managed by this type instance.
          *
@@ -76,7 +76,7 @@
         public function __construct($value)
         {
             if (!static::isValidValue($value)) {
-                throw new InvalidConfigException("Value '{$value}' is not part of the enum ".get_called_class());
+                throw new InvalidConfigException("Value '{$value}' is not part of the enum ".static::class);
             }
 
             $this->currentValue = $value;
@@ -95,25 +95,25 @@
 
             return $id;
         }
-        #endregion
+        //endregion
 
-        #region Creations
+        //region Creations
         /**
          * Creates a new type instance using the name of a value.
          *
          * @param string $name The name of a value
          *
-         * @return $this The new type instance
+         * @return static The new type instance
          *
          * @throws InvalidConfigException
          * @throws ReflectionException
          */
-        public static function createByKey($name)
+        public static function createByKey(string $name): BaseEnum
         {
             $constants = static::findConstantsByKey();
 
             if (!array_key_exists($name, $constants)) {
-                throw new InvalidConfigException("Name '{$name}' is not exists in the enum constants list ".get_called_class());
+                throw new InvalidConfigException("Name '{$name}' is not exists in the enum constants list ".static::class);
             }
 
             return new static($constants[$name]);
@@ -129,17 +129,17 @@
          * @throws InvalidConfigException
          * @throws ReflectionException
          */
-        public static function createByValue($value)
+        public static function createByValue($value): BaseEnum
         {
-            if (!is_null($value) && !empty($value) && !array_key_exists($value, static::findConstantsByValue())) {
-                throw new InvalidConfigException("Value '{$value}' is not exists in the enum constants list ".get_called_class());
+            if (!empty($value) && !array_key_exists($value, static::findConstantsByValue())) {
+                throw new InvalidConfigException("Value '{$value}' is not exists in the enum constants list ".static::class);
             }
 
             return new static($value);
         }
-        #endregion
+        //endregion
 
-        #region Default
+        //region Default
         /**
          * @return mixed
          */
@@ -147,9 +147,9 @@
         {
             return null;
         }
-        #endregion
+        //endregion
 
-        #region Listings
+        //region Listings
         /**
          * Get list data (value => label)
          *
@@ -162,7 +162,7 @@
         public static function listData($exclude = [])
         {
             $useI18n      = static::$useI18n;
-            $i18nCategory = static::findI18nCategory(get_called_class());
+            $i18nCategory = static::findI18nCategory(static::class);
 
             $labels = [];
 
@@ -170,7 +170,7 @@
                 $labels = static::findLabels();
             } else {
                 foreach (static::findLabels() as $k => $v) {
-                    if (!in_array($k, $exclude)) {
+                    if (!in_array($k, $exclude, true)) {
                         $labels[$k] = $v;
                     }
                 }
@@ -182,7 +182,7 @@
 
             return ArrayHelper::getColumn(
                 $labels,
-                function ($value) use ($useI18n, $i18nCategory) {
+                static function ($value) use ($useI18n, $i18nCategory) {
                     return (($useI18n) ? Yii::t($i18nCategory, $value) : $value);
                 }
             );
@@ -216,7 +216,7 @@
          *
          * @throws ReflectionException
          */
-        public static function range()
+        public static function range(): array
         {
             $range = [];
 
@@ -232,7 +232,7 @@
          *
          * @throws ReflectionException
          */
-        protected static function findLabels()
+        protected static function findLabels(): array
         {
             $labels = static::labels();
 
@@ -250,7 +250,7 @@
         /**
          * @return array
          */
-        protected static function labels()
+        protected static function labels(): array
         {
             return [];
         }
@@ -258,13 +258,13 @@
         /**
          * @return array
          */
-        protected static function slugs()
+        protected static function slugs(): array
         {
             return [];
         }
-        #endregion
+        //endregion
 
-        #region Find
+        //region Find
         /**
          * get constant key by value(label)
          *
@@ -276,7 +276,7 @@
          */
         public static function findValueByKey($value)
         {
-            return array_search($value, static::listData());
+            return array_search($value, static::listData(), true);
         }
 
         /**
@@ -288,10 +288,10 @@
          *
          * @throws ReflectionException
          */
-        public static function findLabel($value)
+        public static function findLabel($value): ?string
         {
             $list         = static::findLabels();
-            $i18nCategory = static::findI18nCategory(get_called_class());
+            $i18nCategory = static::findI18nCategory(static::class);
 
             if (isset($list[$value])) {
                 if (static::$useI18n) {
@@ -313,13 +313,13 @@
          *
          * @throws ReflectionException
          */
-        public static function findSlug($value)
+        public static function findSlug($value): ?string
         {
             $list = static::slugs();
 
             if (!is_array($list) || count($list) <= 0) {
                 $list         = [];
-                $i18nCategory = static::findI18nCategory(get_called_class());
+                $i18nCategory = static::findI18nCategory(static::class);
 
                 foreach (static::findLabels() as $key => $label) {
 
@@ -331,11 +331,7 @@
                 }
             }
 
-            if (isset($list[$value])) {
-                return $list[$value];
-            }
-
-            return null;
+            return $list[$value] ?? null;
         }
 
         /**
@@ -345,14 +341,12 @@
          *
          * @throws ReflectionException
          */
-        public static function findConstantsByKey()
+        public static function findConstantsByKey(): array
         {
-            $class = get_called_class();
+            $class = static::class;
 
             if (!array_key_exists($class, static::$keys)) {
-                $reflection = new ReflectionClass($class);
-
-                static::$keys[$class] = $reflection->getConstants();
+                static::$keys[$class] = (new ReflectionClass($class))->getConstants();
             }
 
             return static::$keys[$class];
@@ -365,9 +359,9 @@
          *
          * @throws ReflectionException
          */
-        public static function findConstantsByValue()
+        public static function findConstantsByValue(): array
         {
-            $class = get_called_class();
+            $class = static::class;
 
             if (!isset(static::$values[$class])) {
                 static::$values[$class] = array_flip(static::findConstantsByKey());
@@ -375,9 +369,9 @@
 
             return static::$values[$class];
         }
-        #endregion
+        //endregion
 
-        #region Getters
+        //region Getters
         /**
          * Returns the name of the value.
          *
@@ -401,19 +395,19 @@
         {
             return $this->currentValue;
         }
-        #endregion
+        //endregion
 
-        #region i18n
+        //region i18n
         /**
-         * @throws ReflectionException
+         * @return void
          */
-        protected static function loadI18n()
+        protected static function loadI18n(): void
         {
             if (!static::$useI18n) {
                 return;
             }
 
-            $class = new ReflectionClass(get_called_class());
+            $class = new ReflectionClass(static::class);
 
             $name = InflectorHelper::camel2id(preg_replace('/^(.*)\.php$/', '$1', basename($class->getFileName())), '-');
             $uid  = "enum/{$name}";
@@ -433,7 +427,7 @@
                     'fileMap'        => [$uid => $file]
                 ];
 
-                self::$i18nMessageCategories[get_called_class()] = $uid;
+                self::$i18nMessageCategories[static::class] = $uid;
             }
         }
 
@@ -441,20 +435,18 @@
          * @param string $className
          *
          * @return string
-         *
-         * @throws ReflectionException
          */
-        public static function findI18nCategory($className)
+        public static function findI18nCategory(string $className): string
         {
             if (!isset(self::$i18nMessageCategories[$className])) {
                 static::loadI18n();
             }
 
-            return ((isset(self::$i18nMessageCategories[$className])) ? self::$i18nMessageCategories[$className] : 'app');
+            return (self::$i18nMessageCategories[$className] ?? 'app');
         }
-        #endregion
+        //endregion
 
-        #region Validations
+        //region Validations
         /**
          * Checks if a name is valid for this type.
          *
@@ -465,7 +457,7 @@
          *
          * @throws ReflectionException
          */
-        public static function isValidKey($name)
+        public static function isValidKey(string $name): bool
         {
             return array_key_exists($name, static::findConstantsByKey());
         }
@@ -480,30 +472,28 @@
          *
          * @throws ReflectionException
          */
-        public static function isValidValue($value)
+        public static function isValidValue(string $value): bool
         {
             return (is_null($value) || empty($value) || array_key_exists($value, static::findConstantsByValue()));
         }
 
-        #region Magic Validations
+        //region Magic Validations
         /**
-         * @throws ReflectionException
+         * @return void
          */
-        protected function loadValidations()
+        protected function loadValidations(): void
         {
-            $class = new ReflectionClass(get_called_class());
-
-            foreach ($class->getConstants() as $constantKey => $constantValue) {
+            foreach ((new ReflectionClass(static::class))->getConstants() as $constantKey => $constantValue) {
                 $this->_bind(
                     strtolower(static::$preposition).InflectorHelper::camelize(strtolower($constantKey)),
                     function () use ($constantValue) {
-                        return ($this->getValue() == $constantValue);
+                        return ($this->getValue() === $constantValue);
                     }
                 );
 
                 $this->_bind(
                     lcfirst(InflectorHelper::camelize(strtolower($constantKey))),
-                    function () use ($constantValue) {
+                    static function () use ($constantValue) {
                         return $constantValue;
                     }
                 );
@@ -531,23 +521,25 @@
             );
         }
 
-        #region Bind
+        //region Bind
 
         /**
          * @param string   $name
          * @param Closure $method
          */
-        private function _bind($name, $method)
+        private function _bind(string $name, Closure $method): void
         {
             $this->validations[$name] = Closure::bind($method, $this, get_class($this));
         }
-        #endregion
+        //endregion
 
-        #region Magic Methods
+        //region Magic Methods
         /**
          * @param string $name
          *
          * @return bool
+         *
+         * @noinspection PhpMissingParamTypeInspection
          */
         public function __get($name)
         {
@@ -561,6 +553,8 @@
         /**
          * @param string $name
          * @param mixed  $value
+         *
+         * @noinspection PhpMissingParamTypeInspection
          */
         public function __set($name, $value)
         {
@@ -571,6 +565,8 @@
 
         /**
          * @param string $name
+         *
+         * @noinspection PhpMissingParamTypeInspection
          */
         public function __unset($name)
         {
@@ -583,16 +579,18 @@
          * @param string $name
          *
          * @return bool
+         *
+         * @noinspection PhpMissingParamTypeInspection
          */
         public function __isset($name)
         {
             return array_key_exists($name, $this->validations);
         }
-        #endregion
-        #endregion
-        #endregion
+        //endregion
+        //endregion
+        //endregion
 
-        #region Magic Methods
+        //region Magic Methods
         /**
          * Returns a value when called statically like so: MyEnum::SOME_VALUE() given SOME_VALUE is a class constant
          *
@@ -603,6 +601,8 @@
          *
          * @throws InvalidConfigException
          * @throws ReflectionException
+         *
+         * @noinspection PhpMissingParamTypeInspection
          */
         public static function __callStatic($name, $arguments)
         {
@@ -614,7 +614,7 @@
                 return new static($constants[$name]);
             }
 
-            throw new BadMethodCallException("No static method or enum constant '{$name}' in class ".get_called_class());
+            throw new BadMethodCallException("No static method or enum constant '{$name}' in class ".static::class);
         }
 
         /**
@@ -638,5 +638,5 @@
                 'options' => static::listData()
             ];
         }
-        #endregion
+        //endregion
     }

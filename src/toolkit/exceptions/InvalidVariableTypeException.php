@@ -2,6 +2,7 @@
 
     namespace yiitk\exceptions;
 
+    use Throwable;
     use yii\base\Exception;
 
     /**
@@ -10,11 +11,12 @@
     class InvalidVariableTypeException extends Exception
     {
         /**
-         * @param string $type
+         * @inheritdoc
          */
-        public function __construct($type)
+        public function __construct($message = '', $code = 0, Throwable $previous = null)
         {
-            $this->message = "The variable must be of the type \"{$type}\".";
-            $this->code    = 0;
+            $message = "The variable must be of the type \"{$message}\".";
+
+            parent::__construct($message, $code, $previous);
         }
     }

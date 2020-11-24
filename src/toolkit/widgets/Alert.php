@@ -3,6 +3,7 @@
     namespace yiitk\widgets;
 
     use Yii;
+    use yii\bootstrap\Widget;
 
     /**
      * Alert widget renders a message from session flash. All flash messages are displayed
@@ -23,7 +24,7 @@
      * @author Kartik Visweswaran <kartikv2@gmail.com>
      * @author Alexander Makarov <sam@rmcreative.ru>
      */
-    class Alert extends \yii\bootstrap\Widget
+    class Alert extends Widget
     {
         /**
          * @var array the alert types configuration for the flash messages.
@@ -31,7 +32,7 @@
          * - key: the name of the session flash variable
          * - value: the bootstrap alert type (i.e. danger, success, info, warning)
          */
-        public $alertTypes = [
+        public array $alertTypes = [
             'error'   => 'alert-danger',
             'danger'  => 'alert-danger',
             'success' => 'alert-success',
@@ -43,10 +44,11 @@
          * @var array the options for rendering the close button tag.
          * Array will be passed to [[\yii\bootstrap\Alert::closeButton]].
          */
-        public $closeButton = [];
+        public array $closeButton = [];
 
+        //region Run
         /**
-         * {@inheritdoc}
+         * @inheritdoc
          */
         public function run()
         {
@@ -73,4 +75,5 @@
                 $session->removeFlash($type);
             }
         }
+        //endregion
     }

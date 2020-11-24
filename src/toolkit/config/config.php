@@ -1,9 +1,11 @@
 <?php
 
+    use yiitk\file\FileManager;
+
     return [
         'components' => [
             'fileManager' => [
-                'class'           => \yiitk\file\FileManager::class,
+                'class'           => FileManager::class,
                 'fileTable'       => '{{%file}}',
                 'useBigIntegerPk' => true,
                 'useBigIntegerFk' => true,

@@ -18,8 +18,8 @@
      */
     class GenderEnum extends BaseEnum
     {
-        const MALE   = 'male';
-        const FEMALE = 'female';
+        public const MALE   = 'male';
+        public const FEMALE = 'female';
 
         /**
          * {@inheritdoc}
@@ -32,7 +32,7 @@
         /**
          * {@inheritdoc}
          */
-        protected static function labels()
+        protected static function labels(): array
         {
             return [
                 self::MALE   => 'Male',

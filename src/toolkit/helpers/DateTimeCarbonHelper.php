@@ -2,14 +2,14 @@
 
     namespace yiitk\helpers;
 
-    use DateTime;
+    use Carbon\Carbon;
     use DateTimeZone;
     use Yii;
 
     /**
      * Class DateTimeHelper
      */
-    class DateTimeHelper extends DateTime
+    class DateTimeCarbonHelper extends Carbon
     {
         /**
          * {@inheritdoc}
@@ -18,10 +18,6 @@
         {
             if (is_null($tz)) {
                 $tz = new DateTimeZone(static::findCurrentTimeZone());
-            }
-
-            if ($time === null) {
-                $time = 'now';
             }
 
             parent::__construct($time, $tz);

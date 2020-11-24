@@ -6,6 +6,7 @@
     use yii\gii\CodeFile;
     use yiitk\helpers\InflectorHelper;
     use yiitk\helpers\StringHelper;
+    use yiitk\enum\base\BaseEnum;
 
     /**
      * This generator will generate a enum and one or a few action view files.
@@ -18,29 +19,29 @@
         /**
          * @var string the enum class name
          */
-        public $enumClass = '';
+        public string $enumClass = '';
 
         /**
          * @var string the base class of the enum
          */
-        public $baseClass = 'yiitk\enum\base\BaseEnum';
+        public string $baseClass = BaseEnum::class;
 
         /**
          * @var string list of constants
          */
-        public $constants = '';
+        public string $constants = '';
 
         /**
          * @var string the default constant of the class
          */
-        public $defaultConstant = '';
+        public string $defaultConstant = '';
 
         /**
          * @var string the languages Ids to generate i18n files.
          */
-        public $languages = 'pt-BR';
+        public string $languages = 'pt-BR';
 
-        #region Rulesets
+        //region Rulesets
         /**
          * {@inheritdoc}
          */
@@ -62,9 +63,10 @@
          * An inline validator that checks if the attribute value is valid.
          *
          * @param string $attribute the attribute being validated
-         * @param array $params the validation options
+         *
+         * @noinspection PhpUnused
          */
-        public function validateConstants($attribute, $params)
+        public function validateConstants(string $attribute): void
         {
             $constants = $this->findConstants();
 
@@ -77,9 +79,8 @@
          * An inline validator that checks if the attribute value is valid.
          *
          * @param string $attribute the attribute being validated
-         * @param array $params the validation options
          */
-        public function validateDefaultConstant($attribute, $params)
+        public function validateDefaultConstant(string $attribute): void
         {
             $constants = $this->findConstants();
 
@@ -87,11 +88,13 @@
                 $this->addError($attribute, "The default constant must be listed in the constants definitions.");
             }
         }
-        #endregion
+        //endregion
 
-        #region Attribute Labels and Hints
+        //region Attribute Labels and Hints
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function attributeLabels()
         {
@@ -105,7 +108,9 @@
         }
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function hints()
         {
@@ -144,17 +149,21 @@
         }
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function stickyAttributes()
         {
             return ['baseClass'];
         }
-        #endregion
+        //endregion
 
-        #region Required Templates
+        //region Required Templates
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function requiredTemplates()
         {
@@ -163,21 +172,25 @@
                 'language.php',
             ];
         }
-        #endregion
+        //endregion
 
-        #region Success Message
+        //region Success Message
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function successMessage()
         {
             return 'The Enum has been generated successfully.';
         }
-        #endregion
+        //endregion
 
-        #region Generation
+        //region Generation
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function generate()
         {
@@ -197,11 +210,13 @@
 
             return $files;
         }
-        #endregion
+        //endregion
 
-        #region Getters
+        //region Getters
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function getName()
         {
@@ -209,15 +224,17 @@
         }
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function getDescription()
         {
             return 'This generator helps you to quickly generate a new Enum class.';
         }
-        #endregion
+        //endregion
 
-        #region Strategic Helpers
+        //region Strategic Helpers
 
 
         /**
@@ -225,7 +242,7 @@
          *
          * @return array an array of action IDs entered by the user
          */
-        public function findLanguagesIDs()
+        public function findLanguagesIDs(): array
         {
             $languages = array_unique(preg_split('/[\s,]+/', $this->languages, -1, PREG_SPLIT_NO_EMPTY));
 
@@ -237,12 +254,10 @@
         /**
          * @return array
          */
-        public function findConstants()
+        public function findConstants(): array
         {
             $constants     = [];
-            $baseConstants = explode("\n", $this->constants);
-
-            foreach ($baseConstants as $constant) {
+            foreach (explode("\n", $this->constants) as $constant) {
                 $pairs = explode(',', $constant);
 
                 if (isset($pairs[0], $pairs[1], $pairs[2])) {
@@ -264,15 +279,17 @@
         /**
          * @return string the enum class file path
          */
-        public function findEnumFile()
+        public function findEnumFile(): string
         {
             return Yii::getAlias('@'.str_replace('\\', '/', $this->enumClass)).'.php';
         }
 
         /**
          * @return string the enum ID
+         *
+         * @noinspection SubStrShortHandUsageInspection
          */
-        public function findEnumID()
+        public function findEnumID(): string
         {
             $name = StringHelper::basename($this->enumClass);
 
@@ -282,7 +299,7 @@
         /**
          * @return string the enum ID
          */
-        public function findEnumAttribute()
+        public function findEnumAttribute(): string
         {
             $id = StringHelper::basename($this->enumClass);
 
@@ -294,7 +311,7 @@
          *
          * @return string the language file path
          */
-        public function findLanguageFile($language)
+        public function findLanguageFile(string $language): string
         {
             return Yii::getAlias('@'.str_replace('\\', '/', $this->findEnumNamespace())).'/messages/'.$language.'/'.InflectorHelper::camel2id(StringHelper::basename($this->enumClass)).'.php';
         }
@@ -302,7 +319,7 @@
         /**
          * @return string the namespace of the enum class
          */
-        public function findEnumNamespace()
+        public function findEnumNamespace(): string
         {
             $name = StringHelper::basename($this->enumClass);
 
@@ -312,11 +329,11 @@
         /**
          * @return string the namespace of the base class
          */
-        public function findBaseNamespace()
+        public function findBaseNamespace(): string
         {
             $name = StringHelper::basename($this->baseClass);
 
             return ltrim(substr($this->baseClass, 0, -(strlen($name) + 1)), '\\');
         }
-        #endregion
+        //endregion
     }

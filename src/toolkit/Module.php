@@ -44,7 +44,7 @@
          */
         public $i18n = [];
 
-        #region Initialization
+        //region Initialization
         /**
          * {@inheritdoc}
          */
@@ -54,9 +54,9 @@
 
             parent::init();
         }
-        #endregion
+        //endregion
 
-        #region Setup
+        //region Setup
         /**
          * @return void
          */
@@ -176,5 +176,5 @@
             $fileManager->fkLength        = (int)$fileManagerConfig['fkLength'];
             $fileManager->fkFieldSuffix   = (string)$fileManagerConfig['fkFieldSuffix'];
         }
-        #endregion
+        //endregion
     }

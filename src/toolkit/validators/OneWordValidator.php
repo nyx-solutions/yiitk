@@ -2,6 +2,8 @@
 
     namespace yiitk\validators;
 
+    use JsonException;
+    use Yii;
     use yii\validators\Validator;
     use yiitk\base\Model;
 
@@ -10,18 +12,25 @@
      */
     class OneWordValidator extends Validator
     {
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
             parent::init();
 
-            $this->message = \Yii::t('yiitk', 'The field "{attribute}" must have only one word (without numbers, special chars or spaces).');
+            $this->message = Yii::t('yiitk', 'The field "{attribute}" must have only one word (without numbers, special chars or spaces).');
         }
+        //endregion
 
+        //region Validations
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function validateAttribute($model, $attribute)
         {
@@ -38,7 +47,7 @@
          *
          * @return bool
          */
-        private function validateWord($word)
+        private function validateWord(string $word): bool
         {
             if ($this->skipOnEmpty && empty($word)) {
                 return true;
@@ -47,52 +56,14 @@
             if (preg_match('/( )/', $word)) {
                 return false;
             }
-            if (preg_match('/([0-9]+)/', $word)) {
+            if (preg_match('/([\d]+)/', $word)) {
                 return false;
             }
 
-            $specialChars = [
-                '"',
-                '\'',
-                '!',
-                '@',
-                '#',
-                '$',
-                '%',
-                '¨',
-                '&',
-                '*',
-                '(',
-                ')',
-                '_',
-                '-',
-                '+',
-                '=',
-                '§',
-                'ª',
-                'º',
-                '{',
-                '}',
-                '[',
-                ']',
-                '?',
-                '/',
-                '\\',
-                ';',
-                ':',
-                '.',
-                ',',
-                '<',
-                '>',
-                '|',
-                '´',
-                '`',
-                '^',
-                '~'
-            ];
+            $specialChars = ['"', '\'', '!', '@', '#', '$', '%', '¨', '&', '*', '(', ')', '_', '-', '+', '=', '§', 'ª', 'º', '{', '}', '[', ']', '?', '/', '\\', ';', ':', '.', ',', '<', '>', '|', '´', '`', '^', '~'];
 
             foreach ($specialChars as $specialChar) {
-                if (strpos($word, $specialChar) !== false) {
+                if (str_contains($word, $specialChar)) {
                     return false;
                 }
             }
@@ -107,33 +78,41 @@
          *
          * @return string Message
          */
-        private function getMessage($attribute)
+        protected function getMessage(string $attribute): string
         {
-            return (string)preg_replace('/\{attribute\}/', $attribute, $this->message);
+            return (string)preg_replace('/{attribute}/', $attribute, $this->message);
         }
 
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
-        public function validateValue($value)
+        protected function validateValue($value)
         {
-            if (!$this->validateWord($value)) {
-                return ['O valor deve ser uma única palavra (sem números, caracteres especiais ou espaços).', []];
-            } else {
+            if ($this->validateWord($value)) {
                 return null;
             }
+
+            return ['O valor deve ser uma única palavra (sem números, caracteres especiais ou espaços).', []];
         }
 
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function clientValidateAttribute($model, $attribute, $view)
         {
-            $message = json_encode($this->getMessage($model->getAttributeLabel($attribute)));
+            try {
+                $message = json_encode($this->getMessage($model->getAttributeLabel($attribute)), JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                $message = '';
+            }
 
             $skipOnEmpty = (($this->skipOnEmpty) ? 'if(word == \'\') return true;' : '');
 
-            return <<<JS
+            return /** @lang TEXT */ <<<JS
 if(typeof(validateOneWord) != 'function'){
 	function validateOneWord(word){
 		{$skipOnEmpty}
@@ -156,6 +135,6 @@ if(!validateOneWord(value)){
 }
 
 JS;
-
         }
+        //endregion
     }

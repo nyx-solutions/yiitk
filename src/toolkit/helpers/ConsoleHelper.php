@@ -6,8 +6,6 @@
 
     /**
      * Class ConsoleHelper
-     *
-     * @package yiitk\helpers
      */
     class ConsoleHelper extends Console
     {

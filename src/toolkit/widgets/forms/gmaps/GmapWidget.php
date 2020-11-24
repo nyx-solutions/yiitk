@@ -2,6 +2,7 @@
 
     namespace yiitk\widgets\forms\gmaps;
 
+    use Yii;
     use yii\base\Widget;
 
     /**
@@ -14,57 +15,60 @@
      */
     class GmapWidget extends Widget
     {
-        const DEFAULT_LATITUDE = -23.5505199;
-        const DEFAULT_LONGITUDE = -46.63330939999997;
-
-        /**
-         * @inheritdoc
-         */
-        public $name = 'gmap';
-
-        /**
-         * @var integer
-         */
-        public $mapId;
+        public const DEFAULT_LATITUDE = -23.5505199;
+        public const DEFAULT_LONGITUDE = -46.63330939999997;
 
         /**
          * @var string
          */
-        public $searchPlaceholder = '';
+        public string $name = 'gmap';
 
         /**
-         * @var float
+         * @var int|null
          */
-        public $latitude = self::DEFAULT_LATITUDE;
-
-        /**
-         * @var float
-         */
-        public $longitude = self::DEFAULT_LONGITUDE;
-
-        /**
-         * @var integer
-         */
-        public $mapHeight = 400;
-
-        /**
-         * @var integer
-         */
-        public $mapMarginBottom = 25;
+        public ?int $mapId = null;
 
         /**
          * @var string
          */
-        public $googleApiKey = '';
+        public string $searchPlaceholder = '';
 
         /**
+         * @var float
+         */
+        public float $latitude = self::DEFAULT_LATITUDE;
+
+        /**
+         * @var float
+         */
+        public float $longitude = self::DEFAULT_LONGITUDE;
+
+        /**
+         * @var int
+         */
+        public int $mapHeight = 400;
+
+        /**
+         * @var int
+         */
+        public int $mapMarginBottom = 25;
+
+        /**
+         * @var string
+         */
+        public string $googleApiKey = '';
+
+        //region Initialization
+        /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
             parent::init();
 
-            $this->mapId = date('YmdHis').rand(100000, 999999);
+            $this->mapId = date('YmdHis').random_int(100000, 999999);
 
             $view = $this->getView();
 
@@ -77,14 +81,16 @@
             }
 
             if (empty($this->searchPlaceholder)) {
-                $this->searchPlaceholder = \Yii::t('yiitk', 'Enter a location...');
+                $this->searchPlaceholder = Yii::t('yiitk', 'Enter a location...');
             }
 
             GmapInputWidgetAsset::$googleApiKey = $this->googleApiKey;
 
             GmapInputWidgetAsset::register($view);
         }
+        //endregion
 
+        //region Run
         /**
          * @inheritdoc
          */
@@ -98,13 +104,13 @@
         /**
          * @return string
          */
-        private function _styles()
+        private function _styles(): string
         {
             $id        = $this->id;
             $mapId     = $this->mapId;
             $mapHeight = (int)$this->mapHeight;
 
-            return <<<STYLES
+            return /** @lang TEXT */ <<<STYLES
 <style type="text/css">
     div#gmap-{$id}-{$mapId}-canvas{height:{$mapHeight}px;margin:0;padding:0}
 </style>
@@ -114,14 +120,14 @@ STYLES;
         /**
          * @return string
          */
-        private function _scripts()
+        private function _scripts(): string
         {
             $id        = $this->id;
             $mapId     = $this->mapId;
             $latitude  = $this->latitude;
             $longitude = $this->longitude;
 
-            return <<<SCRIPT
+            return /** @lang TEXT */ <<<SCRIPT
 <script type="text/javascript">
     function initializeGmap_{$id}_{$mapId}() {
         var elements = {
@@ -159,13 +165,14 @@ SCRIPT;
         /**
          * @return string
          */
-        private function _html()
+        private function _html(): string
         {
             $id    = $this->id;
             $mapId = $this->mapId;
 
-            return <<<HTML
+            return /** @lang TEXT */ <<<HTML
 <div id="gmap-{$id}-{$mapId}-canvas"></div>
 HTML;
         }
+        //endregion
     }

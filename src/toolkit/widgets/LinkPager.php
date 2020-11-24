@@ -1,5 +1,9 @@
 <?php
 
+    /**
+     * @noinspection PhpMissingFieldTypeInspection
+     */
+
     namespace yiitk\widgets;
 
     /**
@@ -8,7 +12,7 @@
     class LinkPager extends \justinvoelker\separatedpager\LinkPager
     {
         /**
-         * @var integer
+         * @var int
          */
         public $maxButtonCount = 7;
     }

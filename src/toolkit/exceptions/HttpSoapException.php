@@ -6,13 +6,13 @@
 
     /**
      * Class HttpSoapException
-     *
-     * @package yiitk\exceptions
      */
     class HttpSoapException extends Exception
     {
         /**
          * @return string
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function getName()
         {

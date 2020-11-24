@@ -6,8 +6,6 @@
 
     /**
      * Trait TaxIdValidatorTrait
-     *
-     * @package common\components\validators
      */
     trait TaxIdValidatorTrait
     {
@@ -16,13 +14,16 @@
          *
          * @param string $attribute attribute name
          * @param string $error new error message
+         *
+         * @noinspection PhpMissingParamTypeInspection
          */
         abstract public function addError($attribute, $error = '');
 
+        //region Validations
         /**
          * @param string $attribute the attribute currently being validated
          */
-        public function validateTaxId($attribute)
+        public function validateTaxId(string $attribute): void
         {
             if (!$this->_validateTaxId($this->$attribute)) {
                 $type = (($this->_isPersonsTaxId($this->$attribute)) ? 'CPF' : 'CNPJ');
@@ -32,11 +33,11 @@
         }
 
         /**
-         * @param $number
+         * @param string $number
          *
          * @return bool
          */
-        private function _isPersonsTaxId($number)
+        private function _isPersonsTaxId(string $number): bool
         {
             $number = StringHelper::justNumbers($number);
 
@@ -48,71 +49,65 @@
          *
          * @return bool
          */
-        private function _validateTaxId($number)
+        private function _validateTaxId(string $number): bool
         {
             $number = (string)StringHelper::justNumbers($number);
 
             if ($this->_isPersonsTaxId($number)) {
                 return $this->_validatePersonsTaxId($number);
-            } else {
-                return $this->_validateCompaniesTaxId($number);
             }
+
+            return $this->_validateCompaniesTaxId($number);
         }
 
         /**
-         * @param string $number
+         * @param string|null $taxIdNumber
          *
          * @return bool
          */
-        private function _validatePersonsTaxId($number)
+        private function _validatePersonsTaxId(?string $taxIdNumber): bool
         {
-            $number = (int)StringHelper::justNumbers($number);
+            $number = (int)StringHelper::justNumbers($taxIdNumber);
 
-            if(empty($number)) {
+            if (empty($number)) {
                 return false;
             }
 
             $number = str_pad((string)$number, 11, '0', STR_PAD_LEFT);
 
-            if (strlen($number) != 11) {
+            if (strlen($number) !== 11) {
                 return false;
-            } else if ($number == '00000000000' ||
-                $number == '11111111111' ||
-                $number == '22222222222' ||
-                $number == '33333333333' ||
-                $number == '44444444444' ||
-                $number == '55555555555' ||
-                $number == '66666666666' ||
-                $number == '77777777777' ||
-                $number == '88888888888' ||
-                $number == '99999999999') {
+            }
 
+            if (in_array($number, ['00000000000','11111111111','22222222222','33333333333','44444444444','55555555555','66666666666','77777777777','88888888888','99999999999'], true)) {
                 return false;
-            } else {
-                for ($t = 9; $t < 11; $t++) {
-                    for ($d = 0, $c = 0; $c < $t; $c++) {
-                        $d += $number[$c] * (($t + 1) - $c);
-                    }
-                    $d = ((10 * $d) % 11) % 10;
-                    if ($number[$c] != $d) {
-                        return false;
-                    }
+            }
+
+            for ($t = 9; $t < 11; $t++) {
+                for ($d = 0, $c = 0; $c < $t; $c++) {
+                    $d += $number[$c] * (($t + 1) - $c);
                 }
 
-                return true;
+                $d = ((10 * $d) % 11) % 10;
+
+                if ((int)$number[$c] !== $d) {
+                    return false;
+                }
             }
+
+            return true;
         }
 
         /**
-         * @param string $number
+         * @param string|null $taxIdNumber
          *
          * @return bool
          */
-        private function _validateCompaniesTaxId($number)
+        private function _validateCompaniesTaxId(?string $taxIdNumber): bool
         {
-            $number = (int)StringHelper::justNumbers($number);
+            $number = (int)StringHelper::justNumbers($taxIdNumber);
 
-            if(empty($number)) {
+            if (empty($number)) {
                 return false;
             }
 
@@ -153,11 +148,7 @@
             $d2 = $soma % 11;
             $d2 = $d2 < 2 ? 0 : 11 - $d2;
 
-            if ($number[12] == $d1 && $number[13] == $d2) {
-                return true;
-            } else {
-                return false;
-            }
+            return (int)$number[12] === $d1 && (int)$number[13] === $d2;
         }
 
         /**
@@ -165,7 +156,7 @@
          *
          * @return string
          */
-        protected function formatTaxId($number)
+        protected function formatTaxId(string $number): string
         {
             $number = StringHelper::justNumbers($number);
 
@@ -179,4 +170,5 @@
 
             return (string)$number;
         }
+        //endregion
     }

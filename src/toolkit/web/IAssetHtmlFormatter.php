@@ -14,6 +14,9 @@
          * @param string $content
          *
          * @return string
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
+         * @noinspection PhpMissingParamTypeInspection
          */
         public function format($content);
     }

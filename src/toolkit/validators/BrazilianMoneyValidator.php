@@ -11,8 +11,11 @@
      */
     class BrazilianMoneyValidator extends NumberValidator
     {
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
@@ -20,9 +23,13 @@
 
             $this->integerOnly = false;
         }
+        //endregion
 
+        //region Client Validation
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function clientValidateAttribute($model, $attribute, $view)
         {
@@ -31,6 +38,6 @@
             $options = $this->getClientOptions($model, $attribute);
 
             return 'yii.validation.number(parseFloat(value.replace(/(\.)/gi, \'\').replace(/(\,)/gi, \'.\').replace(/([^0-9\.]+)/gi, \'\')), messages, ' . Json::htmlEncode($options) . ');';
-
         }
+        //endregion
     }

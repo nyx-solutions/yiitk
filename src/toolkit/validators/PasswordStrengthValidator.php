@@ -4,6 +4,7 @@
 
     use kartik\password\StrengthValidator;
     use Yii;
+    use yii\i18n\PhpMessageSource;
 
     /**
      * Class PasswordStrengthValidator
@@ -12,8 +13,11 @@
      */
     class PasswordStrengthValidator extends StrengthValidator
     {
+        //region Initialization
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
@@ -21,7 +25,7 @@
 
             if (empty($this->i18n)) {
                 $this->i18n = [
-                    'class'          => \yii\i18n\PhpMessageSource::class,
+                    'class'          => PhpMessageSource::class,
                     'sourceLanguage' => 'en-US',
                     'basePath'       => '@pwdstrength/messages'
                 ];
@@ -33,4 +37,5 @@
 
             parent::init();
         }
+        //endregion
     }

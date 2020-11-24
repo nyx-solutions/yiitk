@@ -6,8 +6,6 @@
 
     /**
      * Class FormatConverterHelper
-     *
-     * @package yiitk\helpers
      */
     class FormatConverterHelper extends FormatConverter
     {

@@ -25,7 +25,7 @@
          */
         public string $baseMigrationClass = Migration::class;
 
-        #region Initialization
+        //region Initialization
         /**
          * {@inheritdoc}
          *
@@ -41,7 +41,7 @@
 
             parent::init();
         }
-        #endregion
+        //endregion
 
         /**
          * @inheritdoc

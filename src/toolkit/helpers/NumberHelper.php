@@ -18,20 +18,20 @@
          *
          * @see StringHelper::justNumbers
          */
-        public static function justNumbers($content = '')
+        public static function justNumbers(string $content = ''): string
         {
             return StringHelper::justNumbers($content);
         }
 
         /**
-         * @param int      $value
-         * @param bool|int $upper
+         * @param int  $value
+         * @param bool $upper
          *
          * @return string
          *
          * @see StringHelper::toSpelled
          */
-        public static function toSpelled($value = 0, $upper = false)
+        public static function toSpelled(int $value = 0, bool $upper = false): string
         {
             return StringHelper::toSpelledNumber($value, $upper);
         }
@@ -44,7 +44,7 @@
          *
          * @see StringHelper::toMoney
          */
-        public static function toBrazilianCurrency($amount, $withPrefix = true)
+        public static function toBrazilianCurrency(float $amount, bool $withPrefix = true): string
         {
             return StringHelper::toBrazilianCurrency($amount, $withPrefix);
         }
@@ -55,9 +55,9 @@
          *
          * @return string
          */
-        public static function toPercentText($amount, $withPrefix = true)
+        public static function toPercentText(float $amount, bool $withPrefix = true): string
         {
-            return number_format((float)$amount, 2, '.', '').(($withPrefix) ? '%' : '');
+            return number_format($amount, 2, '.', '').(($withPrefix) ? '%' : '');
         }
 
         /**
@@ -65,9 +65,9 @@
          *
          * @return float
          */
-        public static function percentToFloat($amount)
+        public static function percentToFloat(string $amount): float
         {
-            return (float)preg_replace('/([^0-9\.]+)/', '', (string)$amount);
+            return (float)preg_replace('/([^0-9.]+)/', '', $amount);
         }
 
         /**
@@ -75,11 +75,10 @@
          *
          * @return float
          */
-        public static function brazilianCurrencyToFloat($amount)
+        public static function brazilianCurrencyToFloat(string $amount): float
         {
-            $amount = str_replace('.', '', (string)$amount);
-            $amount = str_replace(',', '.', $amount);
-            $amount = preg_replace('/([^0-9\.]+)/', '', $amount);
+            $amount = str_replace(['.', ','], ['', '.'], $amount);
+            $amount = preg_replace('/([^0-9.]+)/', '', $amount);
 
             return (float)$amount;
         }
@@ -89,7 +88,7 @@
          *
          * @return float
          */
-        public static function toFloat($amount)
+        public static function toFloat(string $amount): float
         {
             if (!empty($amount) && is_numeric($amount)) {
                 return (float)$amount;

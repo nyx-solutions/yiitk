@@ -6,8 +6,6 @@
 
     /**
      * Class InflectorHelper
-     *
-     * @package yiitk\helpers
      */
     class InflectorHelper extends Inflector
     {

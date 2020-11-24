@@ -13,17 +13,12 @@
         /**
          * @var string
          */
-        public $tableEngine = 'MyISAM';
+        public string $tableEngine = 'MyISAM';
 
         /**
          * @var bool
          */
-        public $useMysqlInnoDbRowFormat = false;
-
-        /**
-         * @var bool
-         */
-        public $useMysqlInnoDbBarracudaFileFormat = false;
+        public bool $useMysqlInnoDbRowFormat = false;
 
         /**
          * {@inheritdoc}

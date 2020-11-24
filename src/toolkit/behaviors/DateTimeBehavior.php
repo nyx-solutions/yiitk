@@ -18,13 +18,13 @@
          * @var string the attribute that will receive date/time value
          * Set this property to false if you do not want to record the creation time.
          */
-        public $createdAtAttribute = 'createdAt';
+        public string $createdAtAttribute = 'createdAt';
 
         /**
          * @var string the attribute that will receive date/time value.
          * Set this property to false if you do not want to record the update time.
          */
-        public $updatedAtAttribute = 'updatedAt';
+        public string $updatedAtAttribute = 'updatedAt';
 
         /**
          * @var callable|Expression The expression that will be used for generating the datetime.
@@ -34,8 +34,11 @@
          */
         public $value;
 
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
@@ -48,7 +51,9 @@
                 ];
             }
         }
+        //endregion
 
+        //region Getters
         /**
          * @inheritdoc
          */
@@ -56,11 +61,13 @@
         {
             if ($this->value instanceof Expression) {
                 return $this->value;
-            } else {
-                return (($this->value !== null) ? call_user_func($this->value, $event) : new Expression('NOW()'));
             }
-        }
 
+            return (($this->value !== null) ? call_user_func($this->value, $event) : new Expression('NOW()'));
+        }
+        //endregion
+
+        //region Touch
         /**
          * Updates a date/time attribute to the current date/time.
          *
@@ -68,11 +75,13 @@
          * $model->touch('lastVisit');
          * ```
          *
-         * @param string $attribute the name of the attribute to update.
+         * @param string|array $attribute the name of the attribute to update.
+         *
+         * @noinspection PhpPossiblePolymorphicInvocationInspection
          */
-        public function touch($attribute)
+        public function touch($attribute): void
         {
-            /** @noinspection PhpUndefinedMethodInspection */
             $this->owner->updateAttributes(array_fill_keys((array)$attribute, $this->getValue(null)));
         }
+        //endregion
     }

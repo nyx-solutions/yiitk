@@ -5,6 +5,7 @@
     use Closure;
     use ReflectionClass;
     use ReflectionException;
+    use yii\base\UnknownPropertyException;
     use yiitk\helpers\InflectorHelper;
     use yii\base\Event;
     use yii\base\InvalidCallException;
@@ -12,32 +13,36 @@
 
     /**
      * Trait EnumTrait
+     *
+     * @noinspection LowerAccessLevelInspection
      */
     trait EnumTrait
     {
         /**
          * @var bool
          */
-        protected $isSearch = false;
+        protected bool $isSearch = false;
 
         /**
          * @var array
          */
-        private $_enumMethods = [];
+        private array $_enumMethods = [];
 
         /**
          * @var array
          */
-        private $_enumMap = [];
+        private array $_enumMap = [];
 
         /**
          * @var array
          */
-        private $_enumAttributes = [];
+        private array $_enumAttributes = [];
 
-        #region Initialization
+        //region Initialization
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
@@ -60,7 +65,7 @@
                     }
                 }
 
-                $findEvent = function ($event) use ($attributes) {
+                $findEvent = static function ($event) use ($attributes) {
                     /** @var Event $event */
                     /** @var BaseActiveRecord $sender */
                     $sender = $event->sender;
@@ -68,14 +73,12 @@
                     if ($sender instanceof BaseActiveRecord) {
                         /** @var BaseEnum $class */
                         foreach ($attributes as $key => $enum) {
-                            $class = $enum['class'];
-
-                            $sender->$key = $class::createByValue($sender->getAttribute($key));
+                            $sender->$key = $enum['class']::createByValue($sender->getAttribute($key));
                         }
                     }
                 };
 
-                $saveEvent = function ($event) use ($attributes) {
+                $saveEvent = static function ($event) use ($attributes) {
                     /** @var Event $event */
                     /** @var BaseActiveRecord $sender */
                     $sender = $event->sender;
@@ -100,45 +103,45 @@
                 parent::init();
             }
         }
-        #endregion
+        //endregion
 
-        #region Fields
+        //region Fields
         /**
          * @param array $fields
          *
          * @return array
          */
-        public function parseFields($fields = [])
+        public function parseFields(array $fields = []): array
         {
             $enums = $this->enums();
 
-            if (is_array($enums) && count($enums) > 0) {
+            if (is_array($enums) && !empty($enums)) {
                 foreach ($enums as $enum) {
                     if (is_array($enum) && isset($enum[0], $enum['enumClass'])) {
                         if (is_string($enum[0])) {
                             $attribute = $enum[0];
 
                             if (isset($fields[$attribute])) {
-                                $fields[$attribute] = function ($model) use ($attribute) {
+                                $fields[$attribute] = static function ($model) use ($attribute) {
                                     return (string)$model->$attribute;
                                 };
-                            } elseif (in_array($attribute, $fields)) {
+                            } elseif (in_array($attribute, $fields, true)) {
                                 $fields = array_diff($fields, [$attribute]);
 
-                                $fields[$attribute] = function ($model) use ($attribute) {
+                                $fields[$attribute] = static function ($model) use ($attribute) {
                                     return (string)$model->$attribute;
                                 };
                             }
                         } elseif (is_array($enum[0])) {
                             foreach ($enum[0] as $attribute) {
                                 if (isset($fields[$attribute])) {
-                                    $fields[$attribute] = function ($model) use ($attribute) {
+                                    $fields[$attribute] = static function ($model) use ($attribute) {
                                         return (string)$model->$attribute;
                                     };
-                                } elseif (in_array($attribute, $fields)) {
+                                } elseif (in_array($attribute, $fields, true)) {
                                     $fields = array_diff($fields, [$attribute]);
 
-                                    $fields[$attribute] = function ($model) use ($attribute) {
+                                    $fields[$attribute] = static function ($model) use ($attribute) {
                                         return (string)$model->$attribute;
                                     };
                                 }
@@ -150,23 +153,25 @@
 
             return $fields;
         }
-        #endregion
+        //endregion
 
-        #region Enum
+        //region Enum
         /**
          * @return array
          */
-        public function enums()
+        public function enums(): array
         {
             return [];
         }
-        #endregion
+        //endregion
 
-        #region Bind Methods
+        //region Bind Methods
         /**
          * @throws ReflectionException
+         *
+         * @noinspection IsEmptyFunctionUsageInspection
          */
-        private function _enumBind()
+        private function _enumBind(): void
         {
             if (count($this->_enumMethods) > 0) {
                 return;
@@ -177,7 +182,7 @@
             $attributes = [];
             $defaults   = [];
 
-            if (is_array($enums) && count($enums) > 0) {
+            if (is_array($enums) && !empty($enums)) {
                 foreach ($enums as $enum) {
                     if (is_array($enum) && isset($enum[0], $enum['enumClass'])) {
                         if (is_string($enum[0])) {
@@ -238,13 +243,11 @@
          * @param string   $name
          * @param Closure $method
          */
-        private function _enumAttach($name, $method)
+        private function _enumAttach(string $name, Closure $method): void
         {
             $className = get_class($this);
 
-            $binded = Closure::bind($method, $this, $className);
-
-            $this->_enumMethods[$name] = $binded;
+            $this->_enumMethods[$name] = Closure::bind($method, $this, $className);
         }
 
         /**
@@ -252,16 +255,16 @@
          *
          * @return BaseEnum
          */
-        public function getEnumAttribute($attribute)
+        public function getEnumAttribute(string $attribute): ?BaseEnum
         {
-            return ((isset($this->_enumAttributes[$attribute])) ? $this->_enumAttributes[$attribute] : null);
+            return ($this->_enumAttributes[$attribute] ?? null);
         }
 
         /**
          * @param string $attribute
          * @param mixed  $value
          */
-        public function setEnumAttribute($attribute, $value)
+        public function setEnumAttribute(string $attribute, $value): void
         {
             if ($value instanceof BaseEnum) {
                 $this->_enumAttributes[$attribute] = $value;
@@ -269,15 +272,15 @@
                 $this->setAttribute($attribute, ((is_null($value)) ? null : $value->__toString()));
             }
         }
-        #endregion
+        //endregion
 
-        #region Generic Methods
+        //region Generic Methods
         /**
          * @param string $name
          *
          * @return string
          */
-        private function _enumGetter($name)
+        private function _enumGetter(string $name): string
         {
             $name = InflectorHelper::camel2id($name, '_');
 
@@ -289,21 +292,21 @@
          *
          * @return string
          */
-        private function _enumSetter($name)
+        private function _enumSetter(string $name): string
         {
             $name = InflectorHelper::camel2id($name, '_');
 
             return 'set'.InflectorHelper::camelize($name);
         }
-        #endregion
+        //endregion
 
-        #region Magic Methods
+        //region Magic Methods
         /**
          * @param $name
          * @param $value
          *
          * @throws ReflectionException
-         * @throws \yii\base\UnknownPropertyException
+         * @throws UnknownPropertyException
          */
         public function __set($name, $value)
         {
@@ -329,7 +332,7 @@
          * @return mixed|null
          *
          * @throws ReflectionException
-         * @throws \yii\base\UnknownPropertyException
+         * @throws UnknownPropertyException
          */
         public function __get($name)
         {
@@ -351,6 +354,8 @@
          * @return bool
          *
          * @throws ReflectionException
+         *
+         * @noinspection PhpMissingParamTypeInspection
          */
         public function __isset($name)
         {
@@ -370,6 +375,8 @@
          * @param string $name
          *
          * @throws ReflectionException
+         *
+         * @noinspection PhpMissingParamTypeInspection
          */
         public function __unset($name)
         {
@@ -386,5 +393,5 @@
                 parent::__unset($name);
             }
         }
-        #endregion
+        //endregion
     }

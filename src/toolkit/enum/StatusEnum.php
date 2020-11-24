@@ -24,10 +24,10 @@
      */
     class StatusEnum extends BaseEnum
     {
-        const ACTIVE               = 'active';
-        const INACTIVE             = 'inactive';
-        const BLOCKED              = 'blocked';
-        const WAITING_CONFIRMATION = 'waiting_confirmation';
+        public const ACTIVE               = 'active';
+        public const INACTIVE             = 'inactive';
+        public const BLOCKED              = 'blocked';
+        public const WAITING_CONFIRMATION = 'waiting_confirmation';
 
         /**
          * {@inheritdoc}
@@ -40,7 +40,7 @@
         /**
          * {@inheritdoc}
          */
-        protected static function labels()
+        protected static function labels(): array
         {
             return [
                 self::ACTIVE               => 'Active',

@@ -27,6 +27,8 @@
 
     /**
      * Class <?= $className."\n"; ?>
+     *
+     * @noinspection PhpIllegalPsrClassPathInspection
      */
     class <?= $className; ?> extends <?= $migrationClassName; ?>
 

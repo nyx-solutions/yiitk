@@ -2,6 +2,7 @@
 
     namespace yiitk\behaviors;
 
+    use JsonException;
     use yii\base\Behavior;
     use yii\db\ActiveRecord;
 
@@ -13,20 +14,35 @@
         /**
          * @var array
          */
-        public $attributes = [];
+        public array $attributes = [];
 
         /**
-         * @var null|string
+         * @var string|null
          */
-        public $emptyValue;
+        public ?string $emptyValue = null;
 
         /**
          * @var bool
          */
-        public $encodeBeforeValidation = true;
+        public bool $encodeBeforeValidation = true;
 
+        //region Initialization
+        /**
+         * @return void
+         */
+        protected function initialization(): void
+        {
+            foreach ($this->attributes as $attribute) {
+                $this->owner->setAttribute($attribute, []);
+            }
+        }
+        //endregion
+
+        //region Events
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function events()
         {
@@ -49,33 +65,9 @@
                 },
             ];
         }
+        //endregion
 
-        /**
-         * @return void
-         */
-        protected function initialization(): void
-        {
-            foreach ($this->attributes as $attribute) {
-                $this->owner->setAttribute($attribute, []);
-            }
-        }
-
-        /**
-         * @return void
-         */
-        protected function decode(): void
-        {
-            foreach ($this->attributes as $attribute) {
-                $value = $this->owner->getAttribute($attribute);
-
-                if (is_string($value)) {
-                    $value = static::jsonDecode($value);
-                }
-
-                $this->owner->setAttribute($attribute, $value);
-            }
-        }
-
+        //region Encode & Decode
         /**
          * @return void
          */
@@ -97,9 +89,17 @@
         /**
          * @return void
          */
-        protected function encodeValidate()
+        protected function decode(): void
         {
-            $this->encode();
+            foreach ($this->attributes as $attribute) {
+                $value = $this->owner->getAttribute($attribute);
+
+                if (is_string($value)) {
+                    $value = static::jsonDecode($value);
+                }
+
+                $this->owner->setAttribute($attribute, $value);
+            }
         }
 
         /**
@@ -107,10 +107,14 @@
          *
          * @return string|null
          */
-        public static function jsonEncode($value)
+        public static function jsonEncode($value): ?string
         {
             if (is_array($value) || is_object($value)) {
-                $value = json_encode($value, JSON_UNESCAPED_UNICODE);
+                try {
+                    $value = json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                } catch (JsonException $e) {
+                    $value = null;
+                }
             } else {
                 $value = null;
             }
@@ -123,14 +127,18 @@
         }
 
         /**
-         * @param string $value
+         * @param mixed $value
          *
          * @return array|object|null
          */
         public static function jsonDecode($value)
         {
             if (is_string($value)) {
-                $value = json_decode($value, true);
+                try {
+                    $value = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
+                } catch (JsonException $e) {
+                    $value = null;
+                }
             }
 
             if (is_array($value) || is_object($value)) {
@@ -139,4 +147,13 @@
 
             return null;
         }
+
+        /**
+         * @return void
+         */
+        protected function encodeValidate(): void
+        {
+            $this->encode();
+        }
+        //endregion
     }

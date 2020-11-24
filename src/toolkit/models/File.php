@@ -2,48 +2,52 @@
 
     namespace yiitk\models;
 
+    use Yii;
+    use yii\base\InvalidConfigException;
     use yiitk\db\ActiveRecord;
     use yiitk\enum\BooleanEnum;
     use yiitk\file\FileManager;
-    use yiitk\Module;
+    use yiitk\Module as YiiTkModule;
 
     /**
      * File Model
      *
-     * @property integer $id
-     * @property string  $name
-     * @property string  $basePath
-     * @property string  $baseUrl
-     * @property string  $originalName
-     * @property string  $extension
-     * @property string  $data
-     * @property string  $tmpData
-     * @property string  $tmpPath
-     * @property string  $tableName
-     * @property string  $tableColumnName
-     * @property integer $tableColumnId
-     * @property string  $deleteOriginal
-     * @property string  $deletable
-     * @property string  $createdAt
-     * @property string  $updatedAt
+     * @property int    $id
+     * @property string $name
+     * @property string $basePath
+     * @property string $baseUrl
+     * @property string $originalName
+     * @property string $extension
+     * @property string $data
+     * @property string $tmpData
+     * @property string $tmpPath
+     * @property string $tableName
+     * @property string $tableColumnName
+     * @property int    $tableColumnId
+     * @property string $deleteOriginal
+     * @property string $deletable
+     * @property string $createdAt
+     * @property string $updatedAt
      */
     class File extends ActiveRecord
     {
-        #region Table Name
+        //region Table Name
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public static function tableName()
         {
-            $fileManager = static::findFileManager();
-
-            return $fileManager->fileTable;
+            return static::findFileManager()->fileTable;
         }
-        #endregion
+        //endregion
 
-        #region Rulesets
+        //region Rulesets
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function rules()
         {
@@ -58,62 +62,69 @@
                 [['data', 'tmpData'], 'safe']
             ];
         }
-        #endregion
+        //endregion
 
-        #region Enums
+        //region Enums
         /**
          * {@inheritdoc}
          */
-        public function enums()
+        public function enums(): array
         {
             return [
                 [['deleteOriginal', 'deletable'], 'enumClass' => BooleanEnum::class, 'default' => BooleanEnum::no()]
             ];
         }
-        #endregion
+        //endregion
 
-        #region Attribute Labels
+        //region Attribute Labels
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function attributeLabels()
         {
             return [
-                'id'              => \Yii::t('yiitk', 'ID'),
-                'name'            => \Yii::t('yiitk', 'Name'),
-                'basePath'        => \Yii::t('yiitk', 'Base Path'),
-                'baseUrl'         => \Yii::t('yiitk', 'Base URL'),
-                'originalName'    => \Yii::t('yiitk', 'Original Name'),
-                'extension'       => \Yii::t('yiitk', 'Extension'),
-                'data'            => \Yii::t('yiitk', 'Data'),
-                'tmpData'         => \Yii::t('yiitk', 'Temporary Data'),
-                'tmpPath'         => \Yii::t('yiitk', 'Temporary Path'),
-                'tableName'       => \Yii::t('yiitk', 'Table Name'),
-                'tableColumnName' => \Yii::t('yiitk', 'Table Column Name'),
-                'tableColumnId'   => \Yii::t('yiitk', 'Table Column ID'),
-                'deleteOriginal'  => \Yii::t('yiitk', 'Delete Original?'),
-                'deletable'       => \Yii::t('yiitk', 'Deletable?'),
-                'createdAt'       => \Yii::t('yiitk', 'Created At'),
-                'updatedAt'       => \Yii::t('yiitk', 'Updated At'),
+                'id'              => Yii::t('yiitk', 'ID'),
+                'name'            => Yii::t('yiitk', 'Name'),
+                'basePath'        => Yii::t('yiitk', 'Base Path'),
+                'baseUrl'         => Yii::t('yiitk', 'Base URL'),
+                'originalName'    => Yii::t('yiitk', 'Original Name'),
+                'extension'       => Yii::t('yiitk', 'Extension'),
+                'data'            => Yii::t('yiitk', 'Data'),
+                'tmpData'         => Yii::t('yiitk', 'Temporary Data'),
+                'tmpPath'         => Yii::t('yiitk', 'Temporary Path'),
+                'tableName'       => Yii::t('yiitk', 'Table Name'),
+                'tableColumnName' => Yii::t('yiitk', 'Table Column Name'),
+                'tableColumnId'   => Yii::t('yiitk', 'Table Column ID'),
+                'deleteOriginal'  => Yii::t('yiitk', 'Delete Original?'),
+                'deletable'       => Yii::t('yiitk', 'Deletable?'),
+                'createdAt'       => Yii::t('yiitk', 'Created At'),
+                'updatedAt'       => Yii::t('yiitk', 'Updated At'),
             ];
         }
-        #endregion
+        //endregion
 
-        #region File Manager
+        //region File Manager
 
         /**
-         * @return FileManager
+         * @return FileManager|null
          *
-         * @throws \yii\base\InvalidConfigException
+         * @throws InvalidConfigException
          */
-        protected static function findFileManager()
+        protected static function findFileManager(): ?FileManager
         {
-            $yiitk = Module::getInstance();
+            $yiitk = YiiTkModule::getInstance();
 
-            /** @var FileManager $fileManager */
-            $fileManager = $yiitk->get('fileManager');
+            if ($yiitk instanceof YiiTkModule) {
+                /** @var FileManager $fileManager */
 
-            return $fileManager;
+                $fileManager = $yiitk->get('fileManager');
+
+                return $fileManager;
+            }
+
+            return null;
         }
-        #endregion
+        //endregion
     }

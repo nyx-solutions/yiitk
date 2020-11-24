@@ -2,6 +2,10 @@
 
     namespace yiitk\validators;
 
+    use DateTime;
+    use DateTimeZone;
+    use Yii;
+
     /**
      * Class DateTimeFilterValidator
      *
@@ -13,15 +17,18 @@
         /**
          * @var string
          */
-        public $format = 'd/m/Y H:i:s';
+        public string $format = 'd/m/Y H:i:s';
 
         /**
          * @var bool
          */
-        public $useTime = true;
+        public bool $useTime = true;
 
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
@@ -29,8 +36,8 @@
             $useTime = $this->useTime;
 
             $this->addFilter(
-                function ($value) use ($format, $useTime) {
-                    $date = \DateTime::createFromFormat($format, (string)$value, new \DateTimeZone(\Yii::$app->getTimeZone()));
+                static function ($value) use ($format, $useTime) {
+                    $date = DateTime::createFromFormat($format, (string)$value, new DateTimeZone(Yii::$app->getTimeZone()));
 
                     $dbFormat = 'Y-m-d';
 
@@ -44,4 +51,5 @@
 
             parent::init();
         }
+        //endregion
     }

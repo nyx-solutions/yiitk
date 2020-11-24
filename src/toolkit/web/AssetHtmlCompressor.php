@@ -2,6 +2,7 @@
 
     namespace yiitk\web;
 
+    use Exception;
     use yii\helpers\ArrayHelper;
 
     /**
@@ -11,7 +12,7 @@
     class AssetHtmlCompressor
     {
         /**
-         * @param string     $data    is either a handle to an open file, or an HTML string
+         * @param mixed      $data    is either a handle to an open file, or an HTML string
          * @param null|array $options key => value array of execute options
          *                            The possible keys are:
          *
@@ -22,10 +23,12 @@
          * Example: HtmlCompressor::compress($HtmlCode, $options = ['no-comments' => true])
          *
          * @return string
+         *
+         * @throws Exception
          */
-        public static function compress($data, $options = null)
+        public static function compress($data, $options = null): string
         {
-            return (new static)->htmlCompress($data, $options);
+            return (new static())->htmlCompress($data, $options);
         }
 
         /**
@@ -63,6 +66,14 @@
          * @param null|array $options
          *
          * @return bool|mixed|string
+         *
+         * @throws Exception
+         *
+         * @noinspection SuspiciousBinaryOperationInspection
+         * @noinspection StrContainsCanBeUsedInspection
+         * @noinspection NestedPositiveIfStatementsInspection
+         * @noinspection PhpSeparateElseIfInspection
+         * @noinspection TypeUnsafeComparisonInspection
          */
         private function htmlCompress($data, $options = null)
         {
@@ -77,20 +88,20 @@
             while ($line = $this->getLine($data)) {
                 $bytecount += strlen($line);
                 if ($inside_pre) {
-                    list($line, $inside_pre) = $this->checkInsidePre($line);
+                    [$line, $inside_pre] = $this->checkInsidePre($line);
                 } elseif ($inside_textarea) {
-                    list($line, $inside_textarea) = $this->checkInsideTextarea($line);
+                    [$line, $inside_textarea] = $this->checkInsideTextarea($line);
                 } else {
                     if (strpos($line, '<pre') !== false) {
                         // Only trim the beginning since we just entered a <pre> block...
                         $line = ltrim($line);
                         // If the <pre> ends on the same line, don't turn on $inside_pre...
-                        list($line, $inside_pre) = $this->checkInsidePre($line);
+                        [$line, $inside_pre] = $this->checkInsidePre($line);
                     } elseif (strpos($line, '<textarea') !== false) {
                         // Only trim the beginning since we just entered a <textarea> block...
                         $line = ltrim($line);
                         // If the <textarea> ends on the same line, don't turn on $inside_textarea...
-                        list($line, $inside_textarea) = $this->checkInsideTextarea($line);
+                        [$line, $inside_textarea] = $this->checkInsideTextarea($line);
                     } else {
                         // Since we're not inside a <pre> block, we can trim both ends of the line
                         $line = trim($line);
@@ -135,8 +146,10 @@
          * @param $line
          *
          * @return array
+         *
+         * @noinspection StrContainsCanBeUsedInspection
          */
-        private function checkInsidePre($line)
+        private function checkInsidePre($line): array
         {
             $inside_pre = true;
             if ((strpos($line, '</pre') !== false) && (strripos($line, '</pre') >= strripos($line, '<pre'))) {
@@ -151,8 +164,10 @@
          * @param $line
          *
          * @return array
+         *
+         * @noinspection StrContainsCanBeUsedInspection
          */
-        private function checkInsideTextarea($line)
+        private function checkInsideTextarea($line): array
         {
             $inside_textarea = true;
             if ((strpos($line, '</textarea') !== false) && (strripos($line, '</textarea') >= strripos($line, '<textarea'))) {
@@ -169,6 +184,8 @@
          * @param $data
          *
          * @return bool|string
+         *
+         * @noinspection StrlenInEmptyStringCheckContextInspection
          */
         private function getLine(&$data)
         {
@@ -182,9 +199,9 @@
                     $data   = substr($data, $pos + 1);
 
                     return $return;
-                } else {
-                    return false;
                 }
+
+                return false;
             }
 
             return false;

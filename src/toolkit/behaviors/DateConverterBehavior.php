@@ -2,8 +2,12 @@
 
     namespace yiitk\behaviors;
 
+    use DateInterval;
+    use DateTime;
+    use DateTimeZone;
+    use Yii;
     use yii\base\Behavior;
-    use yii\base\Exception;
+    use yii\base\Exception as YiiException;
     use yii\base\InvalidArgumentException;
     use yii\db\BaseActiveRecord;
     use yii\i18n\Formatter;
@@ -16,70 +20,77 @@
      */
     class DateConverterBehavior extends Behavior
     {
-        const EVENT_SAVE = 'save';
-        const EVENT_FIND = 'find';
+        public const EVENT_SAVE = 'save';
+        public const EVENT_FIND = 'find';
 
         /**
          * @var array
          */
-        public $attributes = [];
+        public array $attributes = [];
 
         /**
-         * @var Formatter
+         * @var Formatter|null
          */
-        public $formatter;
-
-        /**
-         * @var string
-         */
-        public $dateSaveFormat = 'Y-m-d';
+        public ?Formatter $formatter;
 
         /**
          * @var string
          */
-        public $datetimeSaveFormat = 'Y-m-d H:i:s';
+        public string $dateSaveFormat = 'Y-m-d';
 
         /**
          * @var string
          */
-        public $timeSaveFormat = 'H:i:s';
+        public string $datetimeSaveFormat = 'Y-m-d H:i:s';
 
         /**
          * @var string
          */
-        public $dateDisplayFormat = 'Y-m-d';
+        public string $timeSaveFormat = 'H:i:s';
 
         /**
          * @var string
          */
-        public $datetimeDisplayFormat = 'Y-m-d H:i:s';
+        public string $dateDisplayFormat = 'Y-m-d';
 
         /**
          * @var string
          */
-        public $timeDisplayFormat = 'H:i:s';
+        public string $datetimeDisplayFormat = 'Y-m-d H:i:s';
 
         /**
          * @var string
          */
-        public $userTimezone;
+        public string $timeDisplayFormat = 'H:i:s';
 
+        /**
+         * @var string|null
+         */
+        public ?string $userTimezone;
+
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
             if (is_null($this->formatter)) {
-                $this->formatter = \Yii::$app->formatter;
+                $this->formatter = Yii::$app->formatter;
             } elseif (is_array($this->formatter)) {
-                $this->formatter = \Yii::createObject($this->formatter);
+                $this->formatter = Yii::createObject($this->formatter);
             }
 
-            $this->userTimezone = $this->userTimezone ?? \Yii::$app->timeZone ?? 'GMT';
+            $this->userTimezone = $this->userTimezone ?? Yii::$app->timeZone ?? 'GMT';
         }
+        //endregion
 
+        //region Events
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function events()
         {
@@ -94,8 +105,10 @@
          * Before save event
          *
          * @return void
+         *
+         * @throws YiiException
          */
-        public function onBeforeSave()
+        public function onBeforeSave(): void
         {
             $this->updateAttributes($this->saveFormats(), self::EVENT_SAVE);
         }
@@ -104,11 +117,14 @@
          * After find event
          *
          * @return void
+         *
+         * @throws YiiException
          */
-        public function onAfterFind()
+        public function onAfterFind(): void
         {
             $this->updateAttributes($this->displayFormats(), self::EVENT_FIND);
         }
+        //endregion
 
         /**
          * Update attributes
@@ -116,9 +132,9 @@
          * @param array  $formats
          * @param string $event
          *
-         * @throws InvalidArgumentException|Exception
+         * @throws InvalidArgumentException|YiiException
          */
-        protected function updateAttributes($formats, $event)
+        protected function updateAttributes(array $formats, string $event): void
         {
             foreach ($this->attributes as $attribute => $format) {
                 if ($value = $this->owner->getAttribute($attribute)) {
@@ -126,17 +142,17 @@
                         throw new InvalidArgumentException('The $format property has an incorrect value.');
                     }
 
-                    if (!is_int($value)) {
-                        $fromFormats = (($event === self::EVENT_SAVE) ? $this->displayFormats() : $this->saveFormats());
-                        $date        = \DateTime::createFromFormat(ArrayHelper::getValue($fromFormats, $format), $value);
-                        $formatDate  = (($date) ? $date->format('Y-m-d H:i:s') : $value);
-                    } else {
+                    if (is_int($value)) {
                         $formatDate = date('Y-m-d H:i:s', $value);
+                    } else {
+                        $fromFormats = (($event === self::EVENT_SAVE) ? $this->displayFormats() : $this->saveFormats());
+                        $date        = DateTime::createFromFormat(ArrayHelper::getValue($fromFormats, $format), $value);
+                        $formatDate  = (($date) ? $date->format('Y-m-d H:i:s') : $value);
                     }
 
-                    $userTimezone = new \DateTimeZone($this->userTimezone);
-                    $gmtTimezone  = new \DateTimeZone('UTC');
-                    $myDateTime   = new \DateTime($formatDate, $gmtTimezone);
+                    $userTimezone = new DateTimeZone($this->userTimezone);
+                    $gmtTimezone  = new DateTimeZone('UTC');
+                    $myDateTime   = new DateTime($formatDate, $gmtTimezone);
 
                     switch ($event) {
                         case self::EVENT_FIND: {
@@ -152,11 +168,11 @@
                         }
 
                         default: {
-                            throw new Exception('Unknown event.');
+                            throw new YiiException('Unknown event.');
                         }
                     }
 
-                    $myInterval = \DateInterval::createFromDateString((string)$offset.'seconds');
+                    $myInterval = DateInterval::createFromDateString("{$offset}seconds");
 
                     $myDateTime->add($myInterval);
 
@@ -174,7 +190,7 @@
          *
          * @return array
          */
-        protected function saveFormats()
+        protected function saveFormats(): array
         {
             return ['date' => $this->dateSaveFormat, 'datetime' => $this->datetimeSaveFormat, 'time' => $this->timeSaveFormat];
         }
@@ -184,7 +200,7 @@
          *
          * @return array
          */
-        protected function displayFormats()
+        protected function displayFormats(): array
         {
             return ['date' => $this->dateDisplayFormat, 'datetime' => $this->datetimeDisplayFormat, 'time' => $this->timeDisplayFormat];
         }

@@ -50,7 +50,7 @@
          */
         protected $slugImmutable = true;
 
-        #region Scenarios
+        //region Scenarios
         /**
          * @inheritdoc
          */
@@ -63,9 +63,9 @@
 
             return $scenarios;
         }
-        #endregion
+        //endregion
 
-        #region Rulesets
+        //region Rulesets
         /**
          * @inheritdoc
          */
@@ -111,9 +111,9 @@
 
             return ArrayHelper::merge($filters, $rules);
         }
-        #endregion
+        //endregion
 
-        #region Float Attributes
+        //region Float Attributes
         /**
          * @param array $attributes
          *
@@ -137,7 +137,7 @@
 
             return $realRules;
         }
-        #region Money Attributes
+        //region Money Attributes
         /**
          * @return array
          */
@@ -150,9 +150,9 @@
         {
             return [];
         }
-        #endregion
+        //endregion
 
-        #region Percentages Attributes
+        //region Percentages Attributes
         /**
          * @return array
          */
@@ -168,10 +168,10 @@
         {
             return [];
         }
-        #endregion
-        #endregion
+        //endregion
+        //endregion
 
-        #region Behaviors
+        //region Behaviors
         /**
          * @inheritdoc
          */
@@ -220,9 +220,9 @@
 
             return $behaviors;
         }
-        #endregion
+        //endregion
 
-        #region Events
+        //region Events
         /**
          * @inheritdoc
          */
@@ -240,9 +240,9 @@
 
             parent::afterValidate();
         }
-        #endregion
+        //endregion
 
-        #region Delete
+        //region Delete
         /**
          * {@inheritdoc}
          */
@@ -297,9 +297,9 @@
         {
             return parent::delete();
         }
-        #endregion
+        //endregion
 
-        #region Fields
+        //region Fields
         /**
          * @inheritdoc
          */
@@ -307,5 +307,5 @@
         {
             return $this->parseFields(parent::fields());
         }
-        #endregion
+        //endregion
     }
