@@ -15,7 +15,7 @@
 
         const ID_PATTERN_LENGTH = 9;
 
-        #region Numbers
+        //region Numbers
         /**
          * Recebe uma string formatada e retorna apenas os seus números.
          *
@@ -163,9 +163,9 @@
 
             return $string;
         }
-        #endregion
+        //endregion
 
-        #region Compare
+        //region Compare
         /**
          * @param string $originalValue
          * @param string $targetValue
@@ -179,9 +179,9 @@
 
             return ($originalValue == $targetValue);
         }
-        #endregion
+        //endregion
 
-        #region Slug & Filters
+        //region Slug & Filters
         /**
          * @param string  $value
          * @param string  $spaces
@@ -574,9 +574,9 @@
 
             return $string;
         }
-        #endregion
+        //endregion
 
-        #region Lower/Upper/Title Cases
+        //region Lower/Upper/Title Cases
         /**
          * @param string  $string
          * @param integer $mode
@@ -632,9 +632,9 @@
 
             return static::convertCase($string, self::CASE_TITLE);
         }
-        #endregion
+        //endregion
 
-        #region Passwords and Random Strings
+        //region Passwords and Random Strings
         /**
          * @param integer $length
          * @param integer $upper
@@ -777,9 +777,9 @@
         {
             return static::generateRandomString($length, $upper, $lower, $digit, $special);
         }
-        #endregion
+        //endregion
 
-        #region E-mails
+        //region E-mails
         /**
          * @param string $email
          *
@@ -797,9 +797,9 @@
 
             return $email.'@'.$emailSplit[1];
         }
-        #endregion
+        //endregion
 
-        #region Encoding
+        //region Encoding
         /**
          * Verifica se uma string "parece" com UTF-8
          *
@@ -902,9 +902,9 @@
 
             return $convertedString;
         }
-        #endregion
+        //endregion
 
-        #region Currency
+        //region Currency
         /**
          * @param float $amount
          * @param bool  $withPrefix
@@ -918,9 +918,9 @@
 
             return (($withPrefix) ? 'R$ ' : '').number_format($amount, 2, ',', '.');
         }
-        #endregion
+        //endregion
 
-        #region Name & Surname
+        //region Name & Surname
         /**
          * @param string $fullName
          *
@@ -994,9 +994,9 @@
         {
             return static::lastName($fullName);
         }
-        #endregion
+        //endregion
 
-        #region Other
+        //region Other
         /**
          * @param string $text
          * @param int    $max
@@ -1075,5 +1075,5 @@
 
             return substr_replace($str,$replacement,  $start, $end - $start);
         }
-        #endregion
+        //endregion
     }

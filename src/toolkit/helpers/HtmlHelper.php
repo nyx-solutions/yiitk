@@ -6,11 +6,6 @@
 
     /**
      * Class HtmlHelper
-     *
-     * @category Html
-     * @author   Jonatas Sas
-     *
-     * @package  yiitk\helpers
      */
     class HtmlHelper extends Html
     {
@@ -20,7 +15,7 @@
          *
          * @return string
          */
-        public static function createCssClass($current, $new = [])
+        public static function createCssClass($current, $new = []): string
         {
             if (!is_array($current)) {
                 if (empty($current)) {

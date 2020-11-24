@@ -2,6 +2,9 @@
 
     namespace yiitk\db;
 
+    use yii\base\NotSupportedException;
+    use yii\db\Connection;
+    use yii\db\Exception as DbException;
     use yii\db\ColumnSchemaBuilder;
     use yii\db\Schema;
 
@@ -15,17 +18,19 @@
         /**
          * @var bool
          */
-        protected $useJsonColumn = true;
+        protected bool $useJsonColumn = true;
 
         /**
-         * @return \yii\db\Connection the database connection to be used for schema building.
+         * @return Connection the database connection to be used for schema building.
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
-        protected abstract function getDb();
+        abstract protected function getDb();
 
         /**
          * @return bool
          */
-        protected abstract function isUsingMySqlDriver();
+        abstract protected function isUsingMySqlDriver(): bool;
 
         /**
          * Creates a ENUM column
@@ -34,17 +39,17 @@
          *
          * @return ColumnSchemaBuilder the column instance which can be further customized.
          *
-         * @throws \yii\base\Exception
-         * @throws \yii\base\NotSupportedException
+         * @throws DbException
+         * @throws NotSupportedException
          */
-        public function enum($options = [])
+        public function enum(array $options = []): ColumnSchemaBuilder
         {
             if (!$this->isUsingMySqlDriver()) {
-                throw new \yii\base\Exception('ENUM column type is only supported in MySQL.');
+                throw new DbException('ENUM column type is only supported in MySQL.');
             }
 
-            if (!is_array($options) || count($options) <= 0) {
-                throw new \yii\base\Exception('ENUM column type needs at least one option.');
+            if (count($options) <= 0) {
+                throw new DbException('ENUM column type needs at least one option.');
             }
 
             $type = '';
@@ -63,9 +68,9 @@
          *
          * @return ColumnSchemaBuilder the column instance which can be further customized.
          *
-         * @throws \yii\base\NotSupportedException
+         * @throws NotSupportedException
          */
-        public function mediumText()
+        public function mediumText(): ColumnSchemaBuilder
         {
             if (!$this->isUsingMySqlDriver()) {
                 return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TEXT);
@@ -79,9 +84,9 @@
          *
          * @return ColumnSchemaBuilder the column instance which can be further customized.
          *
-         * @throws \yii\base\NotSupportedException
+         * @throws NotSupportedException
          */
-        public function longText()
+        public function longText(): ColumnSchemaBuilder
         {
             if (!$this->isUsingMySqlDriver()) {
                 return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TEXT);
@@ -95,9 +100,9 @@
          *
          * @return ColumnSchemaBuilder the column instance which can be further customized.
          *
-         * @throws \yii\base\NotSupportedException
+         * @throws NotSupportedException
          */
-        public function tinyText()
+        public function tinyText(): ColumnSchemaBuilder
         {
             if (!$this->isUsingMySqlDriver()) {
                 return $this->getDb()->getSchema()->createColumnSchemaBuilder(Schema::TYPE_TEXT);
@@ -109,7 +114,7 @@
         /**
          * @inheritdoc
          */
-        public function json()
+        public function json(): ColumnSchemaBuilder
         {
             if ($this->useJsonColumn) {
                 return parent::json();

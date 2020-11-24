@@ -2,6 +2,8 @@
 
     namespace yiitk\validators;
 
+    use JsonException;
+    use Yii;
     use yiitk\helpers\StringHelper;
     use yii\validators\Validator;
 
@@ -10,18 +12,25 @@
      */
     class PersonTaxIdValidator extends Validator
     {
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
             parent::init();
 
-            $this->message = \Yii::t('yiitk', 'The brazilian tax number is not valid.');
+            $this->message = Yii::t('yiitk', 'The brazilian tax number is not valid.');
         }
+        //endregion
 
+        //region Validations
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function validateAttribute($model, $attribute)
         {
@@ -33,11 +42,11 @@
         /**
          * Validates a if a value is a valid CPF number.
          *
-         * @param $taxId string CPF Number
+         * @param $taxId string|null CPF Number
          *
          * @return bool
          */
-        public function validateTaxId($taxId)
+        public function validateTaxId(?string $taxId): bool
         {
             $taxId = (string)StringHelper::justNumbers((string)$taxId);
 
@@ -55,7 +64,7 @@
          *
          * @return bool
          */
-        public static function isTaxIdValid($taxId)
+        public static function isTaxIdValid(string $taxId): bool
         {
             $taxId = StringHelper::justNumbers($taxId);
 
@@ -73,17 +82,18 @@
                 ])
             ) {
                 return false;
-            } else {
-                for ($t = 9; $t < 11; $t++) {
-                    for ($d = 0, $c = 0; $c < $t; $c++) {
-                        $d += $taxId[$c] * (($t + 1) - $c);
-                    }
+            }
 
-                    $d = ((10 * $d) % 11) % 10;
+            for ($t = 9; $t < 11; $t++) {
+                for ($d = 0, $c = 0; $c < $t; $c++) {
+                    $d += $taxId[$c] * (($t + 1) - $c);
+                }
 
-                    if ($taxId[$c] != $d) {
-                        return false;
-                    }
+                $d = ((10 * $d) % 11) % 10;
+
+                /** @noinspection TypeUnsafeComparisonInspection */
+                if ($taxId[$c] != $d) {
+                    return false;
                 }
             }
 
@@ -92,26 +102,34 @@
 
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
-        public function validateValue($value)
+        protected function validateValue($value)
         {
-            if (!$this->validateTaxId($value)) {
-                return [$this->message, []];
-            } else {
+            if ($this->validateTaxId($value)) {
                 return null;
             }
+
+            return [$this->message, []];
         }
 
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function clientValidateAttribute($model, $attribute, $view)
         {
-            $message = json_encode($this->message);
+            try {
+                $message = json_encode($this->message, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                $message = '';
+            }
 
             $skipOnEmpty = (($this->skipOnEmpty) ? 'if(cpf == \'\') return true;' : '');
 
-            return <<<JS
+            return /** @lang TEXT */ <<<JS
 if(typeof(validateCpfNumber) != 'function'){
 	function validateCpfNumber(cpf){
 		var sum, residual;
@@ -149,6 +167,6 @@ if(!validateCpfNumber(value)){
 }
 
 JS;
-
         }
+        //endregion
     }

@@ -9,21 +9,27 @@
      */
     class FilterValidator extends \yii\validators\FilterValidator
     {
-        /**
-         * @param callable $filter
-         */
-        public function addFilter($filter)
-        {
-            if (is_callable($filter)) {
-                $this->filter = $filter;
-            }
-        }
-
+        //region Validations
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function clientValidateAttribute($model, $attribute, $view)
         {
             return null;
         }
+        //endregion
+
+        //region Helpers
+        /**
+         * @param callable $filter
+         */
+        public function addFilter(callable $filter): void
+        {
+            if (is_callable($filter)) {
+                $this->filter = $filter;
+            }
+        }
+        //endregion
     }

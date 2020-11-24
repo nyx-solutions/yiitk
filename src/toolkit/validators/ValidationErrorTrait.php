@@ -2,6 +2,8 @@
 
     namespace yiitk\validators;
 
+    use Yii;
+
     /**
      * Trait ValidationErrorTrait
      *
@@ -13,14 +15,12 @@
          * @param array $errors
          *
          * @return array
+         *
+         * @noinspection PhpUnused
          */
-        protected function validationErrors($errors)
+        protected function validationErrors(array $errors): array
         {
-            if (!is_array($errors)) {
-                $errors = [];
-            }
-
-            \Yii::$app->response->statusCode = 422;
+            Yii::$app->response->statusCode = 422;
 
             return $errors;
         }

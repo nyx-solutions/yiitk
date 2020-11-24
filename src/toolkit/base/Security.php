@@ -8,12 +8,15 @@
     class Security extends \yii\base\Security
     {
         /**
-         * @var string
+         * @var string|null
          */
-        public $secretKey = null;
+        public ?string $secretKey = null;
 
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
@@ -23,4 +26,5 @@
                 $this->secretKey = sha1($this->secretKey);
             }
         }
+        //endregion
     }

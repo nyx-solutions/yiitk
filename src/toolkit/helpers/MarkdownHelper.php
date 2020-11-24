@@ -6,8 +6,6 @@
 
     /**
      * Class MarkdownHelper
-     *
-     * @package yiitk\helpers
      */
     class MarkdownHelper extends Markdown
     {

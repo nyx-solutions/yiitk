@@ -2,6 +2,8 @@
 
     namespace yiitk\widgets;
 
+    use Closure;
+    use Yii;
     use yii\base\Arrayable;
     use yii\base\InvalidConfigException;
     use yii\base\Model;
@@ -21,7 +23,7 @@
         public $model;
 
         /**
-         * @var array a list of attributes to be displayed in the detail view. Each array element
+         * @var array|null a list of attributes to be displayed in the detail view. Each array element
          * represents the specification for displaying one particular attribute.
          *
          * An attribute can be specified as a string in the format of `attribute`, `attribute:format` or `attribute:format:label`,
@@ -53,35 +55,35 @@
          * - `captionOptions`: the HTML attributes to customize label tag. For example: `['class' => 'bg-red']`.
          *   Please refer to [[\yii\helpers\BaseHtml::renderTagAttributes()]] for the supported syntax.
          */
-        public $attributes;
+        public ?array $attributes = null;
 
         /**
          * @var array the HTML attributes for the container tag of this widget. The `tag` option specifies
          * what container tag should be used. It defaults to `table` if not set.
          * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
          */
-        public $options = ['class' => 'table table-bordered detail-view detail-view-table mb-5'];
+        public array $options = ['class' => 'table table-bordered detail-view detail-view-table mb-5'];
 
         /**
          * @var array the HTML attributes for the container tag of this widget. The `tag` option specifies
          * what container tag should be used. It defaults to `table` if not set.
          * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
          */
-        public $tableRowOptions = ['class' => ' detail-view-table-row'];
+        public array $tableRowOptions = ['class' => ' detail-view-table-row'];
 
         /**
          * @var array the HTML attributes for the container tag of this widget. The `tag` option specifies
          * what container tag should be used. It defaults to `table` if not set.
          * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
          */
-        public $tableColLabelOptions = [];
+        public array $tableColLabelOptions = [];
 
         /**
          * @var array the HTML attributes for the container tag of this widget. The `tag` option specifies
          * what container tag should be used. It defaults to `table` if not set.
          * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
          */
-        public $tableColValueOptions = [];
+        public array $tableColValueOptions = [];
 
         /**
          * @var array|Formatter the formatter used to format model attribute values into displayable texts.
@@ -90,10 +92,12 @@
          */
         public $formatter;
 
-        #region Initialization
+        //region Initialization
         /**
          * Initializes the detail view.
          * This method will initialize required property values.
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
@@ -104,9 +108,9 @@
             }
 
             if ($this->formatter === null) {
-                $this->formatter = \Yii::$app->getFormatter();
+                $this->formatter = Yii::$app->getFormatter();
             } elseif (is_array($this->formatter)) {
-                $this->formatter = \Yii::createObject($this->formatter);
+                $this->formatter = Yii::createObject($this->formatter);
             }
 
             if (!$this->formatter instanceof Formatter) {
@@ -135,9 +139,9 @@
                 $this->options['id'] = $this->getId();
             }
         }
-        #endregion
+        //endregion
 
-        #region Run
+        //region Run
         /**
          * Renders the detail view.
          * This is the main entry of the whole detail view rendering.
@@ -148,7 +152,7 @@
             $cols = 0;
 
             foreach ($this->attributes as $attribute) {
-                if (!ArrayHelper::isAssociative($attribute, false) && !empty($attribute)) {
+                if (!empty($attribute) && !ArrayHelper::isAssociative($attribute, false)) {
                     $attribute = array_values($attribute);
 
                     $totalCols = (count($attribute) * 2);
@@ -172,17 +176,21 @@
 
             $this->attributes = array_values($this->attributes);
 
+            /** @noinspection SlowArrayOperationsInLoopInspection */
+            /** @noinspection ForeachInvariantsInspection */
             for ($i = 0; $i < count($this->attributes); $i++) {
                 $html           = '';
                 $attribute      = $this->attributes[$i];
                 $availableCols  = $cols;
                 $currentHtmlRow = '';
 
-                if (!ArrayHelper::isAssociative($attribute, false) && !empty($attribute)) {
+                if (!empty($attribute) && !ArrayHelper::isAssociative($attribute, false)) {
                     $attribute = array_values($attribute);
 
+                    /** @noinspection SlowArrayOperationsInLoopInspection */
+                    /** @noinspection ForeachInvariantsInspection */
                     for ($j = 0; $j < count($attribute); $j++) {
-                        $availableCols = ($availableCols - 2);
+                        $availableCols -= 2;
 
                         if ((count($attribute) - 1) === $j) {
                             $currentHtmlRow .= $this->renderAttribute($attribute[$j], ($availableCols + 1), $defaultLabelWidth, $defaultValueWidth);
@@ -191,7 +199,9 @@
                         }
                     }
                 } else {
-                    if ($this->isGroupRow($attribute)) {
+                    $isGroupRow = $this->isGroupRow($attribute);
+
+                    if ($isGroupRow) {
                         if (isset($attribute['visible']) && !$attribute['visible']) {
                             continue;
                         }
@@ -227,9 +237,9 @@
 
             echo Html::tag($tag, implode("\n", $rows), $options);
         }
-        #endregion
+        //endregion
 
-        #region Render
+        //region Render
         /**
          * Renders a single attribute.
          *
@@ -240,18 +250,16 @@
          *
          * @return string the rendering result
          */
-        protected function renderAttribute($attribute, $colspan, $defaultLabelWidth, $defaultValueWidth)
+        protected function renderAttribute(array $attribute, int $colspan, string $defaultLabelWidth, string $defaultValueWidth): string
         {
-            $colspan = (int)$colspan;
-
             $userLabelOptions = ((isset($attribute['labelOptions']) && is_array($attribute['labelOptions'])) ? $attribute['labelOptions'] : []);
             $userValueOptions = ((isset($attribute['valueOptions']) && is_array($attribute['valueOptions'])) ? $attribute['valueOptions'] : []);
 
             $labelOptions = ArrayHelper::merge($this->tableColLabelOptions, $userLabelOptions, []);
             $valueOptions = ArrayHelper::merge($this->tableColValueOptions, $userValueOptions, []);
 
-            $labelWidth = 'width:'.((isset($attribute['labelWidth']) && !empty($attribute['labelWidth'])) ? $attribute['labelWidth'] : $defaultLabelWidth).';';
-            $valueWidth = 'width:'.((isset($attribute['valueWidth']) && !empty($attribute['valueWidth'])) ? $attribute['valueWidth'] : $defaultValueWidth).';';
+            $labelWidth = 'width:'.((!empty($attribute['labelWidth'])) ? $attribute['labelWidth'] : $defaultLabelWidth).';';
+            $valueWidth = 'width:'.((!empty($attribute['valueWidth'])) ? $attribute['valueWidth'] : $defaultValueWidth).';';
 
             if ($colspan > 1) {
                 $valueOptions['colspan'] = $colspan;
@@ -291,14 +299,14 @@
 
             return "{$label}{$value}";
         }
-        #endregion
+        //endregion
 
-        #region Normalize Attributes
+        //region Normalize Attributes
         /**
          * Normalizes the attribute specifications.
          * @throws InvalidConfigException
          */
-        protected function normalizeAttributes()
+        protected function normalizeAttributes(): void
         {
             if ($this->attributes === null) {
                 if ($this->model instanceof Model) {
@@ -327,27 +335,27 @@
                     $this->attributes[$i] = $attribute;
                 }
 
-                if (is_array($attribute) && count($attribute) > 0) {
+                if (is_array($attribute) && !empty($attribute)) {
                     if ($this->isGroupRow($attribute)) {
                         $this->attributes[$i] = $attribute;
 
                         continue;
-                    } else {
-                        foreach ($attribute as $j => $innerAttribute) {
-                            $innerAttribute = $this->normalizeAttribute($innerAttribute);
+                    }
 
-                            if ($innerAttribute !== false) {
-                                $attribute[$j] = $innerAttribute;
-                            } else {
-                                unset($attribute[$j]);
-                            }
-                        }
+                    foreach ($attribute as $j => $innerAttribute) {
+                        $innerAttribute = $this->normalizeAttribute($innerAttribute);
 
-                        if (!empty($attribute)) {
-                            $this->attributes[$i] = $attribute;
+                        if ($innerAttribute !== false) {
+                            $attribute[$j] = $innerAttribute;
                         } else {
-                            unset($this->attributes[$i]);
+                            unset($attribute[$j]);
                         }
+                    }
+
+                    if (!empty($attribute)) {
+                        $this->attributes[$i] = $attribute;
+                    } else {
+                        unset($this->attributes[$i]);
                     }
                 } else {
                     $attribute = $this->normalizeAttribute($attribute);
@@ -377,8 +385,8 @@
 
                 $attribute = [
                     'attribute' => $matches[1],
-                    'format'    => ((isset($matches[3])) ? $matches[3] : 'text'),
-                    'label'     => ((isset($matches[5])) ? $matches[5] : null),
+                    'format'    => ($matches[3] ?? 'text'),
+                    'label'     => ($matches[5] ?? null),
                 ];
             }
 
@@ -408,7 +416,7 @@
                 throw new InvalidConfigException('The attribute configuration requires the "attribute" element to determine the value and display label.');
             }
 
-            if ($attribute['value'] instanceof \Closure) {
+            if ($attribute['value'] instanceof Closure) {
                 $attribute['value'] = call_user_func($attribute['value'], $this->model, $this);
             }
 
@@ -422,17 +430,17 @@
 
             return $attribute;
         }
-        #endregion
+        //endregion
 
-        #region Helpers
+        //region Helpers
         /**
          * @param array $row
          *
          * @return bool
          */
-        protected function isGroupRow($row)
+        protected function isGroupRow(array $row): bool
         {
-            return (isset($row['group'], $row['label']) && $row['group'] && !empty($row['label']));
+            return ($row['group'] && !empty($row['label']));
         }
-        #endregion
+        //endregion
     }

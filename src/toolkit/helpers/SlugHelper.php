@@ -2,8 +2,6 @@
 
     namespace yiitk\helpers;
 
-    use Yii;
-
     /**
      * Class SlugHelper
      *
@@ -11,18 +9,24 @@
      */
     class SlugHelper extends StringHelper
     {
-        const SLUG_METHOD_SINGLE = 1;
-        const SLUG_METHOD_AS_KEY = 2;
+        public const SLUG_METHOD_SINGLE = 1;
+        public const SLUG_METHOD_AS_KEY = 2;
+
+        protected const VALID_SLUG_METHODS = [self::SLUG_METHOD_SINGLE, self::SLUG_METHOD_AS_KEY];
 
         /**
-         * @param array   $items
-         * @param integer $method
+         * @param array $items
+         * @param int   $method
          *
          * @return array
          */
-        public static function asSlugs($items, $method = self::SLUG_METHOD_SINGLE)
+        public static function asSlugs(array $items, int $method = self::SLUG_METHOD_SINGLE): array
         {
-            if (is_array($items) && count($items) > 0) {
+            if (!in_array($method, self::VALID_SLUG_METHODS)) {
+                $method = self::SLUG_METHOD_SINGLE;
+            }
+
+            if (!empty($items)) {
                 $slugs = [];
 
                 foreach ($items as $item) {
@@ -36,19 +40,19 @@
                 }
 
                 return $slugs;
-            } else {
-                return [];
             }
+
+            return [];
         }
 
         /**
-         * @param string  $value
-         * @param string  $spaces
-         * @param integer $case
+         * @param string $value
+         * @param string $spaces
+         * @param int    $case
          *
          * @return string
          */
-        public static function convert($value = '', $spaces = '-', $case = MB_CASE_LOWER)
+        public static function convert(string $value = '', string $spaces = '-', int $case = MB_CASE_LOWER): string
         {
             return static::asSlug($value, $spaces, $case);
         }

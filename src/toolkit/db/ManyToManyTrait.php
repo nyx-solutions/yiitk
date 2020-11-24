@@ -13,8 +13,13 @@
     {
         /**
          * Returns a value indicating whether the model has an attribute with the specified name.
+         *
          * @param string $name the name of the attribute
+         *
          * @return bool whether the model has an attribute with the specified name.
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
+         * @noinspection PhpMissingParamTypeInspection
          */
         abstract public function hasAttribute($name);
 
@@ -28,12 +33,17 @@
          * - the class has a member variable with the specified name (when `$checkVars` is true);
          * - an attached behavior has a property of the given name (when `$checkBehaviors` is true).
          *
-         * @param string $name the property name
-         * @param bool $checkVars whether to treat member variables as properties
-         * @param bool $checkBehaviors whether to treat behaviors' properties as properties of this component
+         * @param string $name           the property name
+         * @param bool   $checkVars      whether to treat member variables as properties
+         * @param bool   $checkBehaviors whether to treat behaviors' properties as properties of this component
+         *
          * @return bool whether the property is defined
-         * @see canGetProperty()
-         * @see canSetProperty()
+         * @see          canGetProperty()
+         * @see          canSetProperty()
+         *
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
+         * @noinspection PhpMissingParamTypeInspection
          */
         abstract public function hasProperty($name, $checkVars = true, $checkBehaviors = true);
 
@@ -52,31 +62,34 @@
          * $customer->save();
          * ```
          *
-         * @param bool $runValidation whether to perform validation (calling [[validate()]])
-         * before saving the record. Defaults to `true`. If the validation fails, the record
-         * will not be saved to the database and this method will return `false`.
-         * @param array $attributeNames list of attribute names that need to be saved. Defaults to null,
-         * meaning all attributes that are loaded from DB will be saved.
+         * @param bool $runValidation  whether to perform validation (calling [[validate()]])
+         *                             before saving the record. Defaults to `true`. If the validation fails, the record
+         *                             will not be saved to the database and this method will return `false`.
+         * @param null $attributeNames list of attribute names that need to be saved. Defaults to null,
+         *                             meaning all attributes that are loaded from DB will be saved.
+         *
          * @return bool whether the saving succeeded (i.e. no validation errors occurred).
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         abstract public function save($runValidation = true, $attributeNames = null);
 
         /**
          * @return array
          */
-        public function linkManyToManyRelations()
+        public function linkManyToManyRelations(): array
         {
             return [];
         }
 
         /**
-         * @param string                   $relation
-         * @param integer[]|ActiveRecord[] $values
-         * @param bool                     $save
+         * @param string             $relation
+         * @param int|ActiveRecord[] $values
+         * @param bool               $save
          *
          * @return bool
          */
-        public function updateManyToManyRelations(string $relation, array $values, bool $save = false)
+        public function updateManyToManyRelations(string $relation, array $values, bool $save = false): bool
         {
             $ids = [];
 
@@ -116,7 +129,7 @@
          * @return bool
          * @throws UnknownPropertyException
          */
-        public function addManyToManyRelation(string $relation, ActiveRecord $record, bool $save = false)
+        public function addManyToManyRelation(string $relation, ActiveRecord $record, bool $save = false): bool
         {
             $currentRelations = $this->findManyToManyRelations($relation);
 
@@ -126,14 +139,14 @@
         }
 
         /**
-         * @param string  $relation
-         * @param integer $id
-         * @param bool    $save
+         * @param string $relation
+         * @param int    $id
+         * @param bool   $save
          *
          * @return bool
          * @throws UnknownPropertyException
          */
-        public function addManyToManyRelationById(string $relation, int $id, bool $save = false)
+        public function addManyToManyRelationById(string $relation, int $id, bool $save = false): bool
         {
             $currentRelations = $this->findManyToManyRelations($relation);
 
@@ -150,14 +163,15 @@
          * @return bool
          * @throws UnknownPropertyException
          */
-        public function removeFromManyToManyRelation(string $relation, ActiveRecord $record, bool $save = false)
+        public function removeFromManyToManyRelation(string $relation, ActiveRecord $record, bool $save = false): bool
         {
             $currentRelations = $this->findManyToManyRelations($relation);
 
             if ($record->hasProperty('id') || $record->hasAttribute('id')) {
+                /** @noinspection PhpPossiblePolymorphicInvocationInspection */
                 $id = (int)$record->id;
 
-                if (($key = array_search($id, $currentRelations)) !== false) {
+                if (($key = array_search($id, $currentRelations, true)) !== false) {
                     unset($currentRelations[$key]);
                 }
             }
@@ -166,20 +180,18 @@
         }
 
         /**
-         * @param string  $relation
-         * @param integer $id
-         * @param bool    $save
+         * @param string $relation
+         * @param int    $id
+         * @param bool   $save
          *
          * @return bool
          * @throws UnknownPropertyException
          */
-        public function removeFromManyToManyRelationById(string $relation, int $id, bool $save = false)
+        public function removeFromManyToManyRelationById(string $relation, int $id, bool $save = false): bool
         {
             $currentRelations = $this->findManyToManyRelations($relation);
 
-            $id = (int)$id;
-
-            if (($key = array_search($id, $currentRelations)) !== false) {
+            if (($key = array_search($id, $currentRelations, true)) !== false) {
                 unset($currentRelations[$key]);
             }
 
@@ -189,22 +201,20 @@
         /**
          * @param string $relation
          *
-         * @return integer[]
+         * @return array
          *
          * @throws UnknownPropertyException
          */
-        public function findManyToManyRelations(string $relation)
+        public function findManyToManyRelations(string $relation): array
         {
             $populateProperty = "{$relation}Ids";
 
             if ($this->hasProperty($populateProperty)) {
                 $ids = $this->$populateProperty;
 
-                if (is_array($ids) && count($ids) > 0) {
+                if (is_array($ids) && !empty($ids)) {
                     $ids = array_map(
-                        function ($id) {
-                            return intval($id);
-                        },
+                        'intval',
                         $ids
                     );
                 } else {

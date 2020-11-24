@@ -13,20 +13,23 @@
         /**
          * @var string
          */
-        public $thousands = '.';
+        public string $thousands = '.';
 
         /**
          * @var string
          */
-        public $decimal = ',';
+        public string $decimal = ',';
 
         /**
-         * @var integer
+         * @var int
          */
-        public $precision = 2;
+        public int $precision = 2;
 
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
@@ -34,11 +37,10 @@
             $decimal   = $this->decimal;
 
             $this->addFilter(
-                function ($value) use ($thousands, $decimal) {
+                static function ($value) use ($thousands, $decimal) {
                     $value = trim((string)$value);
 
-                    $value = str_replace($thousands, '', $value);
-                    $value = str_replace($decimal, '.', $value);
+                    $value = str_replace([$thousands, $decimal], ['', '.'], $value);
                     $value = (float)preg_replace('/([^0-9.]+)/', '', (string)$value);
 
                     return $value;
@@ -47,4 +49,5 @@
 
             parent::init();
         }
+        //endregion
     }

@@ -2,40 +2,50 @@
 
     namespace yiitk\jobs;
 
+    use Yii;
+    use yii\base\BaseObject;
+    use yii\base\Exception as YiiException;
+    use yii\queue\RetryableJobInterface;
     use yii\swiftmailer\Message;
     use yiitk\swiftmailer\QueuedMailer;
 
     /**
      * Class MailerJob.
      *
-     * @property integer $ttr
+     * @property int $ttr
      */
-    class MailerJob extends \yii\base\BaseObject implements \yii\queue\RetryableJobInterface
+    class MailerJob extends BaseObject implements RetryableJobInterface
     {
         /**
-         * @var QueuedMailer
+         * @var QueuedMailer|null
          */
-        public $mailer;
+        public ?QueuedMailer $mailer = null;
 
         /**
-         * @var Message
+         * @var Message|null
          */
-        public $message;
+        public ?Message $message = null;
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function execute($queue)
         {
             if ($this->mailer instanceof QueuedMailer) {
-                if (!($this->mailer->getSwiftMailer()->send($this->message->getSwiftMessage())) > 0) {
-                    throw new \Exception(\Yii::t('yiitk', 'The system could not send the e-mail message.'));
+                $sended = (int)$this->mailer->getSwiftMailer()->send($this->message->getSwiftMessage());
+
+                if ($sended <= 0) {
+                    throw new YiiException(Yii::t('yiitk', 'The system could not send the e-mail message.'));
                 }
             }
         }
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function getTtr()
         {
@@ -43,7 +53,9 @@
         }
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function canRetry($attempt, $error)
         {

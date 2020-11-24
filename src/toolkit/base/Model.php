@@ -12,28 +12,24 @@
      */
     class Model extends \yii\base\Model
     {
-        use EnumTrait, FlashMessagesTrait;
+        use EnumTrait;
+        use FlashMessagesTrait;
 
         /**
          * @var bool
          */
-        protected $enableFlashMessages = true;
+        protected bool $addModelsErrosToFlashMessages = false;
 
-        /**
-         * @var bool
-         */
-        protected $addModelsErrosToFlashMessages = false;
-
-        #region Events
+        //region Events
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function afterValidate()
         {
             if ($this->enableFlashMessages && $this->addModelsErrosToFlashMessages) {
-                $errors = $this->getErrors();
-
-                foreach ($errors as $error) {
+                foreach ($this->getErrors() as $error) {
                     foreach ($error as $message) {
                         $this->addErrorMessage($message);
                     }
@@ -42,15 +38,17 @@
 
             parent::afterValidate();
         }
-        #endregion
+        //endregion
 
-        #region Fields
+        //region Fields
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function fields()
         {
             return $this->parseFields(parent::fields());
         }
-        #endregion
+        //endregion
     }

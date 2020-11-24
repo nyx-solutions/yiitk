@@ -1,7 +1,12 @@
 <?php
 
+    /**
+     * @noinspection PhpMissingFieldTypeInspection
+     */
+
     namespace yiitk\widgets\forms\gmaps;
 
+    use Yii;
     use yii\base\InvalidConfigException;
     use yii\widgets\InputWidget;
 
@@ -13,8 +18,8 @@
      */
     class GmapInputWidget extends InputWidget
     {
-        const DEFAULT_INITIAL_LATITUDE = -23.5505199;
-        const DEFAULT_INITIAL_LONGITUDE = -46.63330939999997;
+        public const DEFAULT_INITIAL_LATITUDE = -23.5505199;
+        public const DEFAULT_INITIAL_LONGITUDE = -46.63330939999997;
 
         /**
          * @inheritdoc
@@ -22,7 +27,7 @@
         public $name = 'gmap';
 
         /**
-         * @var integer
+         * @var int
          */
         public $mapId;
 
@@ -57,12 +62,12 @@
         public $initialLongitude = self::DEFAULT_INITIAL_LONGITUDE;
 
         /**
-         * @var integer
+         * @var int
          */
         public $mapHeight = 400;
 
         /**
-         * @var integer
+         * @var int
          */
         public $mapMarginBottom = 25;
 
@@ -71,14 +76,17 @@
          */
         public $googleApiKey = '';
 
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
             parent::init();
 
-            $this->mapId = date('YmdHis').rand(100000, 999999);
+            $this->mapId = date('YmdHis').random_int(100000, 999999);
 
             $view = $this->getView();
 
@@ -95,14 +103,16 @@
             }
 
             if (empty($this->searchPlaceholder)) {
-                $this->searchPlaceholder = \Yii::t('yiitk', 'Enter a location...');
+                $this->searchPlaceholder = Yii::t('yiitk', 'Enter a location...');
             }
 
             GmapInputWidgetAsset::$googleApiKey = $this->googleApiKey;
 
             GmapInputWidgetAsset::register($view);
         }
+        //endregion
 
+        //region Run
         /**
          * @inheritdoc
          */
@@ -110,24 +120,24 @@
         {
             if ($this->hasModel()) {
                 throw new InvalidConfigException('This widget does not accept Models.');
-            } else {
-                echo $this->_styles();
-                echo $this->_scripts();
-                echo $this->_html();
             }
+
+            echo $this->_styles();
+            echo $this->_scripts();
+            echo $this->_html();
         }
 
         /**
          * @return string
          */
-        private function _styles()
+        private function _styles(): string
         {
             $id              = $this->id;
             $mapId           = $this->mapId;
             $mapHeight       = (int)$this->mapHeight;
             $mapMarginBottom = (int)$this->mapMarginBottom;
 
-            return <<<STYLES
+            return /** @lang TEXT */ <<<STYLES
 <style type="text/css">
     div#gmap-{$id}-{$mapId}-canvas{height:{$mapHeight}px;margin:0 0 {$mapMarginBottom}px 0;padding:0}
 
@@ -142,7 +152,7 @@ STYLES;
         /**
          * @return string
          */
-        private function _scripts()
+        private function _scripts(): string
         {
             $id                  = $this->id;
             $mapId               = $this->mapId;
@@ -152,7 +162,7 @@ STYLES;
             $initialLatitude     = $this->initialLatitude;
             $initialLongitude    = $this->initialLongitude;
 
-            return <<<SCRIPT
+            return /** @lang TEXT */ <<<SCRIPT
 <script type="text/javascript">
     function initializeGmap_{$id}_{$mapId}() {
         var elements = {
@@ -254,15 +264,16 @@ SCRIPT;
         /**
          * @return string
          */
-        private function _html()
+        private function _html(): string
         {
             $id                = $this->id;
             $mapId             = $this->mapId;
             $searchPlaceholder = $this->searchPlaceholder;
 
-            return <<<HTML
+            return /** @lang TEXT */ <<<HTML
 <input id="gmap-{$id}-{$mapId}-search-input" class="gmap-{$id}-{$mapId}-controls" type="text" placeholder="{$searchPlaceholder}" autocomplete="off" />
 <div id="gmap-{$id}-{$mapId}-canvas"></div>
 HTML;
         }
+        //endregion
     }

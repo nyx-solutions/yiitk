@@ -6,8 +6,6 @@
 
     /**
      * Class HtmlPurifierHelper
-     *
-     * @package yiitk\helpers
      */
     class HtmlPurifierHelper extends HtmlPurifier
     {

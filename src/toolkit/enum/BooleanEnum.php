@@ -18,8 +18,8 @@
      */
     class BooleanEnum extends BaseEnum
     {
-        const YES = 'yes';
-        const NO  = 'no';
+        public const YES = 'yes';
+        public const NO  = 'no';
 
         /**
          * {@inheritdoc}
@@ -32,7 +32,7 @@
         /**
          * {@inheritdoc}
          */
-        protected static function labels()
+        protected static function labels(): array
         {
             return [
                 self::YES => 'Yes',

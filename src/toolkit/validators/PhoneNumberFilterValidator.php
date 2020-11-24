@@ -12,17 +12,21 @@
      */
     class PhoneNumberFilterValidator extends FilterValidator
     {
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
             $this->addFilter(
-                function ($value) {
+                static function ($value) {
                     return MaskHelper::maskPhone($value);
                 }
             );
 
             parent::init();
         }
+        //endregion
     }

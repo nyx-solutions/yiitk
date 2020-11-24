@@ -12,17 +12,21 @@
      */
     class JustNumbersFilterValidator extends FilterValidator
     {
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
             $this->addFilter(
-                function ($value) {
+                static function ($value) {
                     return StringHelper::justNumbers($value);
                 }
             );
 
             parent::init();
         }
+        //endregion
     }

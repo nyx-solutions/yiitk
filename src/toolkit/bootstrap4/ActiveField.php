@@ -21,7 +21,7 @@
          */
         public $labelOptions = ['class' => 'control-label'];
 
-        #region Initialization
+        //region Initialization
         /**
          * @inheritdoc
          */
@@ -31,9 +31,9 @@
 
             $this->labelOptions = ['class' => 'control-label'];
         }
-        #endregion
+        //endregion
 
-        #region Fields
+        //region Fields
         /**
          * @inheritdoc
          */
@@ -65,9 +65,9 @@
         {
             return parent::dropdownList($items, $this->ensureFormControlClass($options));
         }
-        #endregion
+        //endregion
 
-        #region Money and Percentage Fields
+        //region Money and Percentage Fields
         /**
          * @param array  $additionalOptions
          *
@@ -130,9 +130,9 @@
 
             return $rules;
         }
-        #endregion
+        //endregion
 
-        #region Helpers
+        //region Helpers
         /**
          * @param array $options
          *
@@ -162,5 +162,5 @@
 
             return $options;
         }
-        #endregion
+        //endregion
     }

@@ -3,12 +3,13 @@
     namespace yiitk\behaviors;
 
     use Closure;
+    use Exception;
     use yiitk\enum\BooleanEnum;
     use yiitk\helpers\FileManagerHelper;
     use yiitk\models\File;
     use Yii;
     use yii\base\Behavior;
-    use yii\base\Exception;
+    use yii\base\Exception as YiiException;
     use yii\base\InvalidConfigException;
     use yii\base\InvalidArgumentException;
     use yii\db\BaseActiveRecord;
@@ -52,55 +53,55 @@
         /**
          * @event Event an event that is triggered after a file is uploaded.
          */
-        const EVENT_AFTER_UPLOAD = 'afterUpload';
+        public const EVENT_AFTER_UPLOAD = 'afterUpload';
 
         /**
          * @var string
          */
-        public $fileClass = FileManagerHelper::class;
+        public string $fileClass = FileManagerHelper::class;
 
         /**
          * @var string the attribute which holds the attachment.
          */
-        public $attribute;
+        public string $attribute = '';
 
         /**
          * @var string the attribute which holds the relation with the attachment.
          */
-        public $idAttribute;
+        public string $idAttribute = '';
 
         /**
          * @var string
          */
-        public $name;
+        public string $name = '';
 
         /**
          * @var array the scenarios in which the behavior will be triggered
          */
-        public $scenarios = [];
+        public array $scenarios = [];
 
         /**
          * @var string the base path or path alias to the directory in which to save files.
          */
-        public $path;
+        public string $path = '';
 
         /**
          * @var string the base path or path alias to the temp directory in which to save files.
          */
-        public $tmpPath;
+        public string $tmpPath = '';
 
         /**
          * @var string the base URL or path alias for this file
          */
-        public $url;
+        public string $url = '';
 
         /**
          * @var bool Getting file instance by name
          */
-        public $instanceByName = false;
+        public bool $instanceByName = false;
 
         /**
-         * @var boolean|callable generate a new unique name for the file
+         * @var bool|callable generate a new unique name for the file
          * set true or anonymous function takes the old filename and returns a new name.
          *
          * @see self::generateFileName()
@@ -108,48 +109,45 @@
         public $generateNewName = true;
 
         /**
-         * @var boolean If `true` current attribute file will be deleted
+         * @var bool If `true` current attribute file will be deleted
          */
-        public $unlinkOnSave = true;
+        public bool $unlinkOnSave = true;
 
         /**
-         * @var boolean If `true` current attribute file will be deleted after model deletion.
+         * @var bool If `true` current attribute file will be deleted after model deletion.
          */
-        public $unlinkOnDelete = true;
+        public bool $unlinkOnDelete = true;
 
         /**
-         * @var boolean $deleteTempFile whether to delete the temporary file after saving.
+         * @var bool $deleteTempFile whether to delete the temporary file after saving.
          */
-        public $deleteTempFile = true;
+        public bool $deleteTempFile = true;
 
         /**
          * @var Closure
          */
-        public $afterUploadCallback;
+        public Closure $afterUploadCallback;
 
         /**
          * @var array
          */
-        public $variations = [];
+        public array $variations = [];
 
         /**
-         * @var File
+         * @var File|null
          */
-        protected $fileModel;
+        protected ?File $fileModel = null;
 
         /**
-         * @var string
+         * @var UploadedFile|null the uploaded file instance.
          */
-        protected $originalFileName;
+        private ?UploadedFile $_file = null;
 
-        /**
-         * @var UploadedFile the uploaded file instance.
-         */
-        private $_file;
-
-        #region Initialization
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
@@ -171,11 +169,13 @@
                 throw new InvalidConfigException('The "url" property must be set.');
             }
         }
-        #endregion
+        //endregion
 
-        #region Model Events
+        //region Events
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function events()
         {
@@ -192,16 +192,18 @@
         /**
          * This method is invoked before validation starts.
          */
-        public function beforeValidate()
+        public function beforeValidate(): void
         {
             /** @var BaseActiveRecord $model */
             $model = $this->owner;
 
-            if (in_array($model->scenario, $this->scenarios)) {
+            if (in_array($model->scenario, $this->scenarios, true)) {
                 if (($file = $model->getAttribute($this->attribute)) instanceof UploadedFile) {
                     $this->_file = $file;
                 } else {
-                    if ($this->instanceByName === true) {
+                    $instanceByName = (bool)$this->instanceByName;
+
+                    if ($instanceByName) {
                         $this->_file = UploadedFile::getInstanceByName($this->attribute);
                     } else {
                         $this->_file = UploadedFile::getInstance($model, $this->attribute);
@@ -219,29 +221,27 @@
         /**
          * This method is called at the beginning of inserting or updating a record.
          */
-        public function beforeSave()
+        public function beforeSave(): void
         {
             /** @var BaseActiveRecord $model */
             $model = $this->owner;
 
-            if (in_array($model->scenario, $this->scenarios)) {
+            if (in_array($model->scenario, $this->scenarios, true)) {
                 if ($this->_file instanceof UploadedFile) {
-                    if (!$model->getIsNewRecord() && $model->isAttributeChanged($this->attribute)) {
-                        if ($this->unlinkOnSave === true) {
-                            $this->delete($this->attribute, true);
-                        }
+                    /** @noinspection NotOptimalIfConditionsInspection */
+                    if (!$model->getIsNewRecord() && $model->isAttributeChanged($this->attribute) && $this->unlinkOnSave) {
+                        $this->delete($this->attribute, true);
                     }
 
                     $model->setAttribute($this->attribute, $this->_file->name);
                 } else {
-                    // Protect attribute
                     unset($model->{$this->attribute});
                 }
             } else {
-                if (!$model->getIsNewRecord() && $model->isAttributeChanged($this->attribute)) {
-                    if ($this->unlinkOnSave === true) {
-                        $this->delete($this->attribute, true);
-                    }
+                $verify = (!$model->getIsNewRecord() && $model->isAttributeChanged($this->attribute));
+
+                if ($verify && $this->unlinkOnSave) {
+                    $this->delete($this->attribute, true);
                 }
             }
         }
@@ -249,9 +249,9 @@
         /**
          * This method is called at the end of inserting or updating a record.
          *
-         * @throws InvalidArgumentException
+         * @throws InvalidArgumentException|YiiException
          */
-        public function afterSave()
+        public function afterSave(): void
         {
             if ($this->_file instanceof UploadedFile) {
                 $path = $this->getUploadPath($this->attribute);
@@ -278,7 +278,7 @@
         /**
          * This method is invoked after deleting a record.
          */
-        public function afterDelete()
+        public function afterDelete(): void
         {
             $attribute = $this->attribute;
 
@@ -286,41 +286,41 @@
                 $this->delete($attribute);
             }
         }
-        #endregion
 
-        #region Internal Events
         /**
          * This method is invoked after uploading a file.
          * The default implementation raises the [[EVENT_AFTER_UPLOAD]] event.
          * You may override this method to do postprocessing after the file is uploaded.
          * Make sure you call the parent implementation so that the event is raised properly.
          */
-        protected function afterUpload()
+        protected function afterUpload(): void
         {
             /** @var BaseActiveRecord $model */
             $model = $this->owner;
 
             $model->trigger(self::EVENT_AFTER_UPLOAD);
         }
-        #endregion
+        //endregion
 
-        #region Getters
+        //region Getters
         /**
          * Returns file path for the attribute.
          *
-         * @param string  $attribute
-         * @param boolean $old
+         * @param string $attribute
+         * @param bool   $old
          *
          * @return string|null the file path.
+         *
+         * @throws Exception
          */
-        public function getUploadPath($attribute, $old = false)
+        public function getUploadPath(string $attribute, bool $old = false): ?string
         {
             /** @var BaseActiveRecord $model */
             $model = $this->owner;
 
             $path = $this->resolvePath($this->tmpPath);
 
-            $fileName = (($old === true) ? $model->getOldAttribute($attribute) : $model->$attribute);
+            $fileName = (($old) ? $model->getOldAttribute($attribute) : $model->$attribute);
 
             return (($fileName) ? Yii::getAlias("{$path}/{$fileName}") : null);
         }
@@ -331,8 +331,10 @@
          * @param string $attribute
          *
          * @return string|null
+         *
+         * @throws Exception
          */
-        public function getUploadUrl($attribute)
+        public function getUploadUrl(string $attribute): ?string
         {
             /** @var BaseActiveRecord $model */
             $model = $this->owner;
@@ -347,9 +349,9 @@
         /**
          * Returns the UploadedFile instance.
          *
-         * @return UploadedFile
+         * @return UploadedFile|null
          */
-        public function getUploadedFile()
+        public function getUploadedFile(): ?UploadedFile
         {
             return $this->_file;
         }
@@ -359,26 +361,26 @@
          *
          * @return string
          */
-        protected function getFileName($file)
+        protected function getFileName(UploadedFile $file)
         {
             if ($this->generateNewName) {
                 return (($this->generateNewName instanceof Closure) ? call_user_func($this->generateNewName, $file) : $this->generateFileName($file));
-            } else {
-                return $this->sanitize($file->name);
             }
-        }
-        #endregion
 
-        #region Save / Delete
+            return static::sanitize($file->name);
+        }
+        //endregion
+
+        //region Save / Delete
         /**
          * Saves the uploaded file.
          *
          * @param UploadedFile $file the uploaded file instance
          * @param string       $path the file path used to save the uploaded file
          *
-         * @return boolean true whether the file is saved successfully
+         * @return bool true whether the file is saved successfully
          */
-        protected function save($file, $path)
+        protected function save(UploadedFile $file, string $path): bool
         {
             return $file->saveAs($path, (bool)$this->deleteTempFile);
         }
@@ -387,9 +389,11 @@
          * Deletes old file.
          *
          * @param string $attribute
-         * @param boolean $old
+         * @param bool   $old
+         *
+         * @throws Exception
          */
-        protected function delete($attribute, $old = false)
+        protected function delete(string $attribute, bool $old = false): void
         {
             $path = $this->getUploadPath($attribute, $old);
 
@@ -397,24 +401,26 @@
                 unlink($path);
             }
         }
-        #endregion
+        //endregion
 
-        #region Strategic Helpers
+        //region Strategic Helpers
         /**
          * Replaces all placeholders in path variable with corresponding values.
          *
          * @param string $path
          *
-         * @return mixed
+         * @return string
+         *
+         * @throws Exception
          */
-        protected function resolvePath($path)
+        protected function resolvePath(string $path): string
         {
             /** @var BaseActiveRecord $model */
             $model = $this->owner;
 
-            return preg_replace_callback(
+            return (string)preg_replace_callback(
                 '/{([^}]+)}/',
-                function ($matches) use ($model) {
+                static function ($matches) use ($model) {
                     $name = $matches[1];
 
                     $attribute = ArrayHelper::getValue($model, $name);
@@ -423,28 +429,31 @@
                         $attribute = Inflector::slug($attribute, '-');
 
                         return $attribute;
-                    } else {
-                        $attribute = Inflector::slug($matches[0], '-');
-
-                        return $attribute;
                     }
+
+                    $attribute = Inflector::slug($matches[0], '-');
+
+                    return $attribute;
                 },
                 $path
             );
         }
+
         /**
          * @param string $name
          *
-         * @return mixed
+         * @return string
+         *
+         * @throws Exception
          */
-        protected function parseName($name)
+        protected function parseName(string $name): string
         {
             /** @var BaseActiveRecord $model */
             $model = $this->owner;
 
-            return preg_replace_callback(
+            $result = preg_replace_callback(
                 '/{([^}]+)}/',
-                function ($matches) use ($model) {
+                static function ($matches) use ($model) {
                     $name = $matches[1];
 
                     $attribute = ArrayHelper::getValue($model, $name);
@@ -457,6 +466,8 @@
                 },
                 $name
             );
+
+            return (string)$result;
         }
 
         /**
@@ -464,13 +475,13 @@
          *
          * #my*  unsaf<e>&file:name?".png
          *
-         * @param string $filename the source filename to be "sanitized"
+         * @param string $fileName the source filename to be "sanitized"
          *
-         * @return boolean string the sanitized filename
+         * @return bool string the sanitized filename
          */
-        public static function sanitize($filename)
+        public static function sanitize(string $fileName): bool
         {
-            return Inflector::slug($filename, '-');
+            return Inflector::slug($fileName, '-');
         }
 
         /**
@@ -480,20 +491,20 @@
          *
          * @return string
          */
-        protected function generateFileName($file)
+        protected function generateFileName(UploadedFile $file): string
         {
-            $uid = sha1(uniqid(rand().date('YmdHis'), true));
+            $uid = sha1(uniqid(mt_rand().date('YmdHis'), true));
             $ext = strtolower($file->extension);
 
             return "{$uid}.{$ext}";
         }
-        #endregion
+        //endregion
 
-        #region Internal File
+        //region Internal File
         /**
-         * @throws Exception
+         * @throws YiiException
          */
-        protected function loadFileModel()
+        protected function loadFileModel(): void
         {
             /** @var BaseActiveRecord $model */
             $model = $this->owner;
@@ -508,6 +519,7 @@
             $fileName     = "{$baseFileName}.{$ext}";
             $tmpFile      = $this->resolvePath($this->tmpPath)."/{$fileName}";
 
+            /** @noinspection NotOptimalIfConditionsInspection */
             if ($model->hasAttribute($idAttribute) && (int)$model->$idAttribute > 0) {
                 $id = $model->$idAttribute;
 
@@ -524,7 +536,7 @@
                     $file->deletable       = BooleanEnum::NO;
 
                     if (!$file->save()) {
-                        throw new Exception('The system could not complete the upload process.');
+                        throw new YiiException('The system could not complete the upload process.');
                     }
 
                     $this->fileModel = $file;
@@ -548,7 +560,7 @@
             $file->deletable       = BooleanEnum::NO;
 
             if (!$file->save()) {
-                throw new Exception('The system could not complete the upload process.');
+                throw new YiiException('The system could not complete the upload process.');
             }
 
             $this->fileModel = $file;
@@ -564,8 +576,10 @@
          * @param array  $variations
          *
          * @return array
+         *
+         * @throws Exception
          */
-        protected function generateFileData($name, $tmpFile, $path, $url, $file, $ext, $variations = [])
+        protected function generateFileData(string $name, string $tmpFile, string $path, string $url, string $file, string $ext, array $variations = []): array
         {
             $data = [
                 'name'       => $name,
@@ -574,7 +588,7 @@
                 'variations' => []
             ];
 
-            list($width, $height) = getimagesize(Yii::getAlias($tmpFile));
+            [$width, $height] = getimagesize(Yii::getAlias($tmpFile));
 
             $width  = (int)$width;
             $height = (int)$height;
@@ -583,7 +597,7 @@
 
             foreach ($variations as $variationId => $variation) {
                 if (isset($variation['name'], $variation['width'], $variation['height'], $variation['quality'])) {
-                    if ($variationId == 'original') {
+                    if ($variationId === 'original') {
                         continue;
                     }
 
@@ -600,5 +614,5 @@
 
             return $data;
         }
-        #endregion
+        //endregion
     }

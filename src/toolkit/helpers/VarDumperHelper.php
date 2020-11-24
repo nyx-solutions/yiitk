@@ -6,8 +6,6 @@
 
     /**
      * Class VarDumperHelper
-     *
-     * @package yiitk\helpers
      */
     class VarDumperHelper extends VarDumper
     {

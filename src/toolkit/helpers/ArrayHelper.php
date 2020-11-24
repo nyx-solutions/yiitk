@@ -4,8 +4,6 @@
 
     /**
      * Class ArrayHelper
-     *
-     * @package yiitk\helpers
      */
     class ArrayHelper extends \yii\helpers\ArrayHelper
     {
@@ -14,9 +12,9 @@
          *
          * @return array
          */
-        public static function asAssociative($items)
+        public static function asAssociative(array $items): array
         {
-            if (is_array($items) && count($items) > 0) {
+            if (!empty($items)) {
                 $newItems = [];
 
                 foreach ($items as $item) {
@@ -24,8 +22,8 @@
                 }
 
                 return $newItems;
-            } else {
-                return [];
             }
+
+            return [];
         }
     }

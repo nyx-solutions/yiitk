@@ -2,6 +2,8 @@
 
     namespace yiitk\console\controllers;
 
+    use DirectoryIterator;
+    use Yii;
     use yii\base\ErrorException;
     use yiitk\helpers\FileHelper;
 
@@ -28,10 +30,10 @@
         {
             if (is_array($this->paths)) {
                 foreach ($this->paths as $path) {
-                    $path = \Yii::getAlias($path);
+                    $path = Yii::getAlias($path);
 
                     if (is_dir($path)) {
-                        foreach (new \DirectoryIterator($path) as $fileInfo) {
+                        foreach (new DirectoryIterator($path) as $fileInfo) {
                             if($fileInfo->isDot()) {
                                 continue;
                             }

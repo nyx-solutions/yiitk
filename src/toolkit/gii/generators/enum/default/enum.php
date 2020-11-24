@@ -17,7 +17,7 @@
 ?>
 
     namespace <?= $generator->findEnumNamespace(); ?>;
-    <?php if ($generator->findEnumNamespace() != $generator->findBaseNamespace()) : ?><?= "\n    "; ?>use <?= trim($generator->baseClass, '\\'); ?>;<?= "\n"; ?><?php endif; ?>
+    <?php if ($generator->findEnumNamespace() !== $generator->findBaseNamespace()) : ?><?= "\n    "; ?>use <?= trim($generator->baseClass, '\\'); ?>;<?= "\n"; ?><?php endif; ?>
 
     /**
      * <?= StringHelper::basename($generator->enumClass); ?> Class

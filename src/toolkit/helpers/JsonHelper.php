@@ -6,8 +6,6 @@
 
     /**
      * Class JsonHelper
-     *
-     * @package yiitk\helpers
      */
     class JsonHelper extends Json
     {

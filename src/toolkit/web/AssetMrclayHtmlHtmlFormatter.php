@@ -2,6 +2,7 @@
 
     namespace yiitk\web;
 
+    use Minify_HTML;
     use yii\base\Component;
 
     /**
@@ -14,10 +15,13 @@
          * @param string $html
          *
          * @return string
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
+         * @noinspection PhpMissingParamTypeInspection
          */
         public function format($html)
         {
-            return \Minify_HTML::minify((string)$html, []);
+            return Minify_HTML::minify((string)$html, []);
         }
 
     }

@@ -2,6 +2,7 @@
 
     namespace yiitk\i18n;
 
+    use Yii;
     use yiitk\enum\base\BaseEnum;
     use yiitk\helpers\HtmlHelper as Html;
     use yiitk\helpers\MaskHelper;
@@ -14,14 +15,14 @@
      */
     class Formatter extends \yii\i18n\Formatter
     {
-        #region Formatters
-        #region ENUM
+        //region Formatters
+        //region ENUM
         /**
-         * @param string $value
+         * @param string|BaseEnum $value
          *
          * @return string
          */
-        public function asEnum($value)
+        public function asEnum($value): string
         {
             if ($value instanceof BaseEnum) {
                 return $value->label;
@@ -29,15 +30,15 @@
 
             return $this->nullDisplay;
         }
-        #endregion
+        //endregion
 
-        #region Brazilian Zicodes (CEP)
+        //region Brazilian Zicodes (CEP)
         /**
-         * @param string $value
+         * @param string|null $value
          *
          * @return string
          */
-        public function asZipcode($value)
+        public function asZipcode(?string $value): string
         {
             if (empty($value)) {
                 return $this->nullDisplay;
@@ -45,15 +46,15 @@
 
             return MaskHelper::mask(str_pad(StringHelper::justNumbers($value), 8, '0', STR_PAD_LEFT), 'zipcode');
         }
-        #endregion
+        //endregion
 
-        #region Phones
+        //region Phones
         /**
-         * @param string $value
+         * @param string|null $value
          *
          * @return string
          */
-        public function asPhone($value)
+        public function asPhone(?string $value): string
         {
             if (empty($value)) {
                 return $this->nullDisplay;
@@ -63,27 +64,27 @@
         }
 
         /**
-         * @param string $value
+         * @param string|null $value
          *
          * @return string
          */
-        public function asTel($value)
+        public function asTel(?string $value): string
         {
             if (empty($value)) {
                 return $this->nullDisplay;
             }
 
-            return ((!empty($value)) ? 'tel:+55'.StringHelper::justNumbers($value) : '');
+            return 'tel:+55'.StringHelper::justNumbers($value);
         }
-        #endregion
+        //endregion
 
-        #region Brazilian TaxId (CPF e CNPJ)
+        //region Brazilian TaxId (CPF e CNPJ)
         /**
-         * @param string $value
+         * @param string|null $value
          *
-         * @return string
+         * @return string|null
          */
-        public function asPersonTaxId($value)
+        public function asPersonTaxId(?string $value): ?string
         {
             if (empty($value)) {
                 return null;
@@ -93,11 +94,11 @@
         }
 
         /**
-         * @param string $value
+         * @param string|null $value
          *
          * @return string
          */
-        public function asCompanyTaxId($value)
+        public function asCompanyTaxId(?string $value): ?string
         {
             if (empty($value)) {
                 return null;
@@ -107,31 +108,31 @@
         }
 
         /**
-         * @param string $value
+         * @param string|null $value
          *
          * @return string
          */
-        public function asTaxId($value)
+        public function asTaxId(?string $value): ?string
         {
             if (empty($value)) {
                 return $this->nullDisplay;
             }
 
-            if (strlen((string)$value) <= 11) {
+            if (strlen($value) <= 11) {
                 return $this->asPersonTaxId($value);
             }
 
             return $this->asCompanyTaxId($value);
         }
-        #endregion
+        //endregion
 
-        #region Name & Surname
+        //region Name & Surname
         /**
-         * @param string $value
+         * @param string|null $value
          *
          * @return string
          */
-        public function asName($value)
+        public function asName(?string $value): string
         {
             if (empty($value)) {
                 return $this->nullDisplay;
@@ -141,11 +142,11 @@
         }
 
         /**
-         * @param string $value
+         * @param string|null $value
          *
          * @return string
          */
-        public function asSurname($value)
+        public function asSurname(?string $value): string
         {
             if (empty($value)) {
                 return $this->nullDisplay;
@@ -153,26 +154,25 @@
 
             return StringHelper::asLastName($value);
         }
-        #endregion
+        //endregion
 
-        #region Sensitive
+        //region Sensitive
         /**
-         * @param string $value
-         *
-         * @param string $hidden
+         * @param string|null $value
+         * @param string      $hidden
          *
          * @return string
          */
-        public function asSensitive($value, $hidden = '******')
+        public function asSensitive(?string $value, string $hidden = '******'): string
         {
             if (empty($value)) {
                 return $this->nullDisplay;
             }
 
-            $value = Html::encode(strip_tags((string)$value));
+            $value = Html::encode(strip_tags($value));
 
-            return Html::tag('span', $hidden, ['class' => 'sensitive-data', 'onclick' => "$(this).html('{$value}').attr('title', '').css('cursor', 'auto');", 'style' => 'cursor:pointer;', 'title' => \Yii::t('yiitk', 'Click to view real content...')]);
+            return Html::tag('span', $hidden, ['class' => 'sensitive-data', 'onclick' => "$(this).html('{$value}').attr('title', '').css('cursor', 'auto');", 'style' => 'cursor:pointer;', 'title' => Yii::t('yiitk', 'Click to view real content...')]);
         }
-        #endregion
-        #endregion
+        //endregion
+        //endregion
     }

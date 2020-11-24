@@ -2,6 +2,8 @@
 
     namespace yiitk\validators;
 
+    use JsonException;
+    use Yii;
     use yiitk\helpers\StringHelper;
     use yii\validators\Validator;
 
@@ -10,18 +12,25 @@
      */
     class CompanyTaxIdValidator extends Validator
     {
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
             parent::init();
 
-            $this->message = \Yii::t('yiitk', 'The brazilian company tax number is not valid.');
+            $this->message = Yii::t('yiitk', 'The brazilian company tax number is not valid.');
         }
+        //endregion
 
+        //region Validations
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function validateAttribute($model, $attribute)
         {
@@ -33,11 +42,11 @@
         /**
          * Validates a if a value is a valid CPF number.
          *
-         * @param $taxId string CNPJ Number
+         * @param $taxId string|null CNPJ Number
          *
          * @return bool
          */
-        private function validateTaxId($taxId)
+        private function validateTaxId(?string $taxId): bool
         {
             $taxId = (string)StringHelper::justNumbers($taxId);
 
@@ -47,6 +56,7 @@
 
             $taxId = str_pad($taxId, 14, '0', STR_PAD_LEFT);
 
+            /** @noinspection NotOptimalIfConditionsInspection */
             if (strlen($taxId) < 14 || strlen($taxId) > 14) {
                 return false;
             }
@@ -54,50 +64,57 @@
             for ($i = 0, $j = 5, $sum = 0; $i < 12; $i++) {
                 $sum += $taxId[$i] * $j;
 
-                $j = ($j == 2) ? 9 : $j - 1;
+                $j = ($j === 2) ? 9 : $j - 1;
             }
 
             $residual = $sum % 11;
 
-            if ($taxId[12] != ($residual < 2 ? 0 : 11 - $residual)) {
+            if ($taxId[12] !== ($residual < 2 ? 0 : 11 - $residual)) {
                 return false;
             }
 
-
             for ($i = 0, $j = 6, $sum = 0; $i < 13; $i++) {
-
                 $sum += $taxId[$i] * $j;
 
-                $j = ($j == 2) ? 9 : $j - 1;
+                $j = ($j === 2) ? 9 : $j - 1;
             }
 
             $residual = ($sum % 11);
 
-            return $taxId[13] == ($residual < 2 ? 0 : 11 - $residual);
+            return $taxId[13] === ($residual < 2 ? 0 : 11 - $residual);
         }
 
         /**
          * @inheritdoc
+         *
+         * @noinspection PhpOverridingMethodVisibilityInspection
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function validateValue($value)
         {
-            if (!$this->validateTaxId($value)) {
-                return [$this->message, []];
-            } else {
+            if ($this->validateTaxId($value)) {
                 return null;
             }
+
+            return [$this->message, []];
         }
 
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function clientValidateAttribute($model, $attribute, $view)
         {
-            $message = json_encode($this->message);
+            try {
+                $message = json_encode($this->message, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                $message = '';
+            }
 
             $skipOnEmpty = (($this->skipOnEmpty) ? 'if(cnpj == \'\') return true;' : '');
 
-            return <<<JS
+            return /** @lang TEXT */<<<JS
 if(typeof(validateCnpjNumber) != 'function'){
 	function validateCnpjNumber(cnpj){
 		cnpj = cnpj.replace(/([^0-9]{1,})/g, '');
@@ -138,6 +155,6 @@ if(!validateCnpjNumber(value)){
 }
 
 JS;
-
         }
+        //endregion
     }

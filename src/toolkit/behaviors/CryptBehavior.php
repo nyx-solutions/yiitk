@@ -2,6 +2,8 @@
 
     namespace yiitk\behaviors;
 
+    use JsonException;
+    use Yii;
     use yii\base\Behavior;
     use yii\db\ActiveRecord;
     use yiitk\base\Security;
@@ -16,20 +18,35 @@
         /**
          * @var array
          */
-        public $attributes = [];
+        public array $attributes = [];
 
         /**
          * @var string
          */
-        public $key = '';
+        public string $key = '';
 
         /**
          * @var bool
          */
-        public $json = false;
+        public bool $json = false;
 
+        //region Initialization
+        /**
+         * @return void
+         */
+        protected function initialization(): void
+        {
+            foreach ($this->attributes as $attribute) {
+                $this->owner->setAttribute($attribute, null);
+            }
+        }
+        //endregion
+
+        //region Events
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function events()
         {
@@ -42,17 +59,9 @@
                 ActiveRecord::EVENT_AFTER_UPDATE  => function () {$this->decode();},
             ];
         }
+        //endregion
 
-        /**
-         * @return void
-         */
-        protected function initialization(): void
-        {
-            foreach ($this->attributes as $attribute) {
-                $this->owner->setAttribute($attribute, null);
-            }
-        }
-
+        //region Encode & Decode
         /**
          * @return void
          */
@@ -67,7 +76,11 @@
 
                 if (!empty($value)) {
                     if ($this->json) {
-                        $value = json_encode($value);
+                        try {
+                            $value = json_encode($value, JSON_THROW_ON_ERROR);
+                        } catch (JsonException $e) {
+                            $value = null;
+                        }
                     }
 
                     if (!is_null($value)) {
@@ -91,27 +104,32 @@
                     $value = $this->security->decryptByKey(utf8_decode($value), $this->key);
 
                     if ($this->json) {
-                        $value = json_decode($value, true);
+                        try {
+                            $value = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
+                        } catch (JsonException $e) {
+                            $value = null;
+                        }
                     }
                 }
 
                 $this->owner->setAttribute($attribute, $value);
             }
         }
+        //endregion
 
-        #region Getters
+        //region Getters
         /**
          * @return \yii\base\Security|Security
          */
         protected function getSecurity()
         {
-            $security = \Yii::$app->getSecurity();
+            $security = Yii::$app->getSecurity();
 
             if ($security instanceof Security) {
-                $this->key = $security->secretKey;
+                $this->key = (string)$security->secretKey;
             }
 
             return $security;
         }
-        #endregion
+        //endregion
     }

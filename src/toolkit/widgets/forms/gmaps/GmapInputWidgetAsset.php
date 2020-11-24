@@ -1,9 +1,14 @@
 <?php
 
+    /**
+     * @noinspection PhpMissingFieldTypeInspection
+     */
+
     namespace yiitk\widgets\forms\gmaps;
 
     use yii\web\AssetBundle;
     use yii\web\View;
+    use yii\web\JqueryAsset;
 
     /**
      * Class GmapInputWidgetAsset
@@ -16,22 +21,7 @@
         /**
          * @var string
          */
-        public static $googleApiKey = '';
-
-        /**
-         * @inheritdoc
-         */
-        public $sourcePath = null;
-
-        /**
-         * @inheritdoc
-         */
-        public $css = [];
-
-        /**
-         * @inheritdoc
-         */
-        public $js = [];
+        public static string $googleApiKey = '';
 
         /**
          * @inheritdoc
@@ -41,10 +31,13 @@
         /**
          * @inheritdoc
          */
-        public $depends = ['yii\web\JqueryAsset'];
+        public $depends = [JqueryAsset::class];
 
+        //region Initialization
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function init()
         {
@@ -54,4 +47,5 @@
 
             $this->js = ['https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places'.((!empty($apiKey)) ? "&key={$apiKey}" : '')];
         }
+        //endregion
     }
