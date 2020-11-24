@@ -2,8 +2,12 @@
 
     namespace yiitk\db;
 
+    use Exception;
+    use Throwable;
+    use Yii;
     use yii\behaviors\SluggableBehavior;
     use yii\db\Expression;
+    use yii\db\StaleObjectException;
     use yiitk\behaviors\DateTimeBehavior;
     use yiitk\behaviors\LinkManyBehavior;
     use yiitk\enum\base\EnumTrait;
@@ -20,39 +24,33 @@
      */
     class ActiveRecord extends \yii\db\ActiveRecord
     {
-        use EnumTrait, FlashMessagesTrait, ManyToManyTrait;
+        use EnumTrait;
+        use FlashMessagesTrait;
+        use ManyToManyTrait;
 
-        const SCENARIO_INSERT = 'insert';
-        const SCENARIO_UPDATE = 'update';
-
-        /**
-         * @var bool
-         */
-        protected $enableFlashMessages = true;
-
-        /**
-         * @var bool
-         */
-        protected $isSearch = false;
+        public const SCENARIO_INSERT = 'insert';
+        public const SCENARIO_UPDATE = 'update';
 
         /**
          * @var string
          */
-        protected $slugAttribute = 'title';
+        protected string $slugAttribute = 'title';
 
         /**
          * @var bool
          */
-        protected $slugEnsureUnique = true;
+        protected bool $slugEnsureUnique = true;
 
         /**
          * @var bool
          */
-        protected $slugImmutable = true;
+        protected bool $slugImmutable = true;
 
         //region Scenarios
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function scenarios()
         {
@@ -68,6 +66,8 @@
         //region Rulesets
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function rules()
         {
@@ -77,7 +77,7 @@
             $moneyAttributes      = $this->moneyAttributes();
             $percentageAttributes = $this->percentageAttributes();
 
-            if (is_array($moneyAttributes) && count($moneyAttributes) > 0) {
+            if (is_array($moneyAttributes) && !empty($moneyAttributes)) {
                 $filters[] = [array_keys($moneyAttributes), 'filter', 'filter' => fn ($value) => NumberHelper::brazilianCurrencyToFloat($value)];
 
                 foreach ($moneyAttributes as $k => $attrRules) {
@@ -93,7 +93,7 @@
                 }
             }
 
-            if (is_array($percentageAttributes) && count($percentageAttributes) > 0) {
+            if (is_array($percentageAttributes) && !empty($percentageAttributes)) {
                 $filters[] = [array_keys($percentageAttributes), 'filter', 'filter' => fn ($value) => NumberHelper::percentToFloat($value)];
 
                 foreach ($percentageAttributes as $k => $attrRules) {
@@ -115,11 +115,11 @@
 
         //region Float Attributes
         /**
-         * @param array $attributes
+         * @param array|null $attributes
          *
          * @return array
          */
-        protected function parseFloatAttributesRules($attributes = [])
+        protected function parseFloatAttributesRules(?array $attributes = []): array
         {
             $realRules = [];
 
@@ -141,12 +141,12 @@
         /**
          * @return array
          */
-        final public function money()
+        final public function money(): array
         {
             return array_keys($this->moneyAttributes());
         }
 
-        public function moneyAttributes()
+        public function moneyAttributes(): array
         {
             return [];
         }
@@ -156,7 +156,7 @@
         /**
          * @return array
          */
-        final public function percentage()
+        final public function percentage(): array
         {
             return array_keys($this->percentageAttributes());
         }
@@ -164,7 +164,7 @@
         /**
          * @return array
          */
-        public function percentageAttributes()
+        public function percentageAttributes(): array
         {
             return [];
         }
@@ -174,6 +174,8 @@
         //region Behaviors
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function behaviors()
         {
@@ -183,8 +185,8 @@
                 $behaviors['datetime'] = [
                     'class'      => DateTimeBehavior::class,
                     'attributes' => [
-                        ActiveRecord::EVENT_BEFORE_INSERT => ['createdAt', 'updatedAt'],
-                        ActiveRecord::EVENT_BEFORE_UPDATE => 'updatedAt'
+                        self::EVENT_BEFORE_INSERT => ['createdAt', 'updatedAt'],
+                        self::EVENT_BEFORE_UPDATE => 'updatedAt'
                     ]
                 ];
             }
@@ -195,7 +197,7 @@
 
             $linkManyAttributes = $this->linkManyToManyRelations();
 
-            if (is_array($linkManyAttributes) && count($linkManyAttributes) > 0) {
+            if (is_array($linkManyAttributes) && !empty($linkManyAttributes)) {
                 foreach ($linkManyAttributes as $key => $value) {
                     $extraColumns = [];
                     $attribute    = $value;
@@ -225,13 +227,13 @@
         //region Events
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function afterValidate()
         {
             if ($this->enableFlashMessages) {
-                $errors = $this->getErrors();
-
-                foreach ($errors as $error) {
+                foreach ($this->getErrors() as $error) {
                     foreach ($error as $message) {
                         $this->addErrorMessage($message);
                     }
@@ -251,16 +253,16 @@
             if ($this->enableFlashMessages) {
                 try {
                     if (parent::delete()) {
-                        $this->addSuccessMessage(\Yii::t('yiitk', 'The requested entry was successfully removed.'));
+                        $this->addSuccessMessage(Yii::t('yiitk', 'The requested entry was successfully removed.'));
 
                         return true;
-                    } else {
-                        $this->addErrorMessage(\Yii::t('yiitk', 'It was not possible to remove the requested entry.'));
-
-                        return false;
                     }
-                } catch (\Exception $e) {
-                    $this->addErrorMessage(\Yii::t('yiitk', 'It was not possible to remove the requested entry because it was attached to another entry in the system.'));
+
+                    $this->addErrorMessage(Yii::t('yiitk', 'It was not possible to remove the requested entry.'));
+
+                    return false;
+                } catch (Exception $e) {
+                    $this->addErrorMessage(Yii::t('yiitk', 'It was not possible to remove the requested entry because it was attached to another entry in the system.'));
 
                     return false;
                 }
@@ -272,26 +274,26 @@
         /**
          * @return bool
          *
-         * @throws \Throwable
+         * @throws Throwable
          */
-        public function softDelete()
+        public function softDelete(): bool
         {
             try {
                 if (parent::delete()) {
                     return true;
-                } else {
-                    return false;
                 }
-            } catch (\Exception $e) {
+
                 return false;
-            }
+            } catch (Exception $e) {}
+
+            return false;
         }
 
         /**
          * @return false|int
          *
-         * @throws \Throwable
-         * @throws \yii\db\StaleObjectException
+         * @throws Throwable
+         * @throws StaleObjectException
          */
         public function hardDelete()
         {
@@ -302,6 +304,8 @@
         //region Fields
         /**
          * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
          */
         public function fields()
         {
