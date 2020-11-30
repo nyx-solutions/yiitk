@@ -2,26 +2,21 @@
 
     namespace yiitk\web;
 
-    use Minify_HTML;
     use yii\base\Component;
 
     /**
-     * @author Semenov Alexander <semenov@skeeks.com>
-     * @author Jonatas Sas <atendimento@jsas.com.br>
+     * @deprecated
      */
     class AssetMrclayHtmlHtmlFormatter extends Component implements IAssetHtmlFormatter
     {
         /**
-         * @param string $html
+         * @param string|null $content
          *
          * @return string
-         *
-         * @noinspection ReturnTypeCanBeDeclaredInspection
-         * @noinspection PhpMissingParamTypeInspection
          */
-        public function format($html)
+        public function format(?string $content): string
         {
-            return Minify_HTML::minify((string)$html, []);
+            return $content;
         }
 
     }

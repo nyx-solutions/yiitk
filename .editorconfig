@@ -9,3 +9,6 @@ insert_final_newline = true
 
 [*.{php, html}]
 indent_size = 4
+
+[make-symlink]
+indent_size = 4

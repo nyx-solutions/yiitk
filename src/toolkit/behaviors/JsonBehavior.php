@@ -17,9 +17,9 @@
         public array $attributes = [];
 
         /**
-         * @var string|null
+         * @var mixed
          */
-        public ?string $emptyValue = null;
+        public $emptyValue;
 
         /**
          * @var bool
