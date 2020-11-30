@@ -486,38 +486,28 @@
             foreach ((new ReflectionClass(static::class))->getConstants() as $constantKey => $constantValue) {
                 $this->_bind(
                     strtolower(static::$preposition).InflectorHelper::camelize(strtolower($constantKey)),
-                    function () use ($constantValue) {
-                        return ($this->getValue() === $constantValue);
-                    }
+                    fn() => ($this->getValue() === $constantValue)
                 );
 
                 $this->_bind(
                     lcfirst(InflectorHelper::camelize(strtolower($constantKey))),
-                    static function () use ($constantValue) {
-                        return $constantValue;
-                    }
+                    fn() => $constantValue
                 );
             }
 
             $this->_bind(
                 'value',
-                function () {
-                    return $this->getValue();
-                }
+                fn() => $this->getValue()
             );
 
             $this->_bind(
                 'label',
-                function () {
-                    return $this::findLabel($this->getValue());
-                }
+                fn() => $this::findLabel($this->getValue())
             );
 
             $this->_bind(
                 'slug',
-                function () {
-                    return $this::findSlug($this->getValue());
-                }
+                fn() => $this::findSlug($this->getValue())
             );
         }
 
@@ -525,9 +515,9 @@
 
         /**
          * @param string   $name
-         * @param Closure $method
+         * @param callable $method
          */
-        private function _bind(string $name, Closure $method): void
+        private function _bind(string $name, callable $method): void
         {
             $this->validations[$name] = Closure::bind($method, $this, get_class($this));
         }

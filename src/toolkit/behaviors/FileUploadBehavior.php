@@ -106,7 +106,7 @@
          *
          * @see self::generateFileName()
          */
-        public $generateNewName = true;
+        public bool $generateNewName = true;
 
         /**
          * @var bool If `true` current attribute file will be deleted

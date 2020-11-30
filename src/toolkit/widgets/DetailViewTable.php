@@ -440,7 +440,9 @@
          */
         protected function isGroupRow(array $row): bool
         {
-            return ($row['group'] && !empty($row['label']));
+            $isGroup = (bool)($row['group'] ?? false);
+
+            return ($isGroup && !empty($row['label']));
         }
         //endregion
     }

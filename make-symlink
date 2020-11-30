@@ -3,10 +3,11 @@
 
     /**
      * Creates symlink for development (without the /vendor folder)
-     * Usage: ./make-symlink (using the default path: ../../../adm) or ./make-symlink /path/to/symlink.
+     * Usage: ./make-symlink (using the default path: ../../../pkg) or ./make-symlink /path/to/symlink.
      */
 
-    $basePath = dirname(dirname(dirname(dirname(__FILE__)))).'/adm';
+    $baseDir  = dirname(__FILE__, 3);
+    $basePath = "{$baseDir}/pkg";
 
     if (isset($argv[1]) && is_dir($argv[1])) {
         $basePath = $argv[1];
@@ -15,13 +16,13 @@
     $source = __DIR__;
     $target = "{$basePath}/yiitk/yiitk";
 
-    if (!is_dir($target)) {
-        mkdir($target, 0755, true);
+    if (!is_dir($target) && !mkdir($target, 0755, true) && !is_dir($target)) {
+        throw new RuntimeException(sprintf('Directory "%s" was not created', $target));
     }
 
-    $src                = "{$source}/src";
-    $composer           = "{$source}/composer.json";
-    $composerLock       = "{$source}/composer.lock";
+    $src          = "{$source}/src";
+    $composer     = "{$source}/composer.json";
+    $composerLock = "{$source}/composer.lock";
 
     $targetSrc          = "{$target}/src";
     $targetComposer     = "{$target}/composer.json";

@@ -5,18 +5,14 @@
     /**
      * Interface IAssetFormatter
      *
-     * @author Semenov Alexander <semenov@skeeks.com>
-     * @author Jonatas Sas <atendimento@jsas.com.br>
+     * @deprecated
      */
     interface IAssetHtmlFormatter
     {
         /**
-         * @param string $content
+         * @param string|null $content
          *
          * @return string
-         *
-         * @noinspection ReturnTypeCanBeDeclaredInspection
-         * @noinspection PhpMissingParamTypeInspection
          */
-        public function format($content);
+        public function format(?string $content): string;
     }
