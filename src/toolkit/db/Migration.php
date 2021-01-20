@@ -187,13 +187,7 @@
          */
         public function addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete = null, $update = null)
         {
-            $indexName = $name;
-
-            if (preg_match('/}}$/', $indexName)) {
-                $indexName = preg_replace('/^(.*)}}$/', '$1_idx}}', $indexName);
-            } else {
-                $indexName .= '_idx';
-            }
+            $indexName = $this->generateIndexName($name);
 
             $this->createIndex($indexName, $table, $columns);
 
@@ -214,13 +208,7 @@
          */
         public function addUniqueForeignKey(string $name, string $table, $columns, string $refTable, $refColumns, ?string $delete = null, ?string $update = null): void
         {
-            $indexName = $name;
-
-            if (preg_match('/}}$/', $indexName)) {
-                $indexName = preg_replace('/^(.*)}}$/', '$1_idx}}', $indexName);
-            } else {
-                $indexName .= '_idx';
-            }
+            $indexName = $this->generateIndexName($name);
 
             $this->createIndex($indexName, $table, $columns, true);
 
@@ -253,6 +241,20 @@
          */
         public function dropForeignKey($name, $table)
         {
+            $indexName = $this->generateIndexName($name);
+
+            parent::dropForeignKey($name, $table);
+
+            $this->dropIndex($indexName, $table);
+        }
+
+        /**
+         * @param string $name
+         *
+         * @return string
+         */
+        protected function generateIndexName(string $name): string
+        {
             $indexName = $name;
 
             if (preg_match('/}}$/', $indexName)) {
@@ -261,9 +263,7 @@
                 $indexName .= '_idx';
             }
 
-            parent::dropForeignKey($name, $table);
-
-            $this->dropIndex($indexName, $table);
+            return $indexName;
         }
         //endregion
 

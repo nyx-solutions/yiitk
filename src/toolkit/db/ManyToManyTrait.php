@@ -83,9 +83,9 @@
         }
 
         /**
-         * @param string             $relation
-         * @param int|ActiveRecord[] $values
-         * @param bool               $save
+         * @param string               $relation
+         * @param int[]|ActiveRecord[] $values
+         * @param bool                 $save
          *
          * @return bool
          */

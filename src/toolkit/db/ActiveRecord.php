@@ -9,6 +9,7 @@
     use yii\db\Expression;
     use yii\db\StaleObjectException;
     use yiitk\behaviors\DateTimeBehavior;
+    use yiitk\behaviors\HashableBehavior;
     use yiitk\behaviors\LinkManyBehavior;
     use yiitk\enum\base\EnumTrait;
     use yiitk\helpers\ArrayHelper;
@@ -45,6 +46,11 @@
          * @var bool
          */
         protected bool $slugImmutable = true;
+
+        /**
+         * @var string
+         */
+        protected string $hashableAttribute = 'hash';
 
         //region Scenarios
         /**
@@ -192,7 +198,21 @@
             }
 
             if ($this->hasAttribute('slug')) {
-                $behaviors['sluggable'] = ['class' => SluggableBehavior::class, 'attribute' => $this->slugAttribute, 'slugAttribute' => 'slug', 'ensureUnique'  => $this->slugEnsureUnique, 'immutable' => $this->slugImmutable];
+                $behaviors['sluggable'] = [
+                    'class'         => SluggableBehavior::class,
+                    'attribute'     => $this->slugAttribute,
+                    'slugAttribute' => 'slug',
+                    'ensureUnique'  => $this->slugEnsureUnique,
+                    'immutable'     => $this->slugImmutable
+                ];
+            }
+
+            if ($this->hasAttribute($this->hashableAttribute)) {
+                $behaviors['hashable'] = [
+                    'class'         => HashableBehavior::class,
+                    'attribute'     => $this->hashableAttribute,
+                    'ensureUnique'  => true
+                ];
             }
 
             $linkManyAttributes = $this->linkManyToManyRelations();
