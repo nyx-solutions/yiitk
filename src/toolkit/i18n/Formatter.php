@@ -6,6 +6,7 @@
     use yiitk\enum\base\BaseEnum;
     use yiitk\helpers\HtmlHelper as Html;
     use yiitk\helpers\MaskHelper;
+    use yiitk\helpers\NumberHelper;
     use yiitk\helpers\StringHelper;
 
     /**
@@ -172,6 +173,64 @@
             $value = Html::encode(strip_tags($value));
 
             return Html::tag('span', $hidden, ['class' => 'sensitive-data', 'onclick' => "$(this).html('{$value}').attr('title', '').css('cursor', 'auto');", 'style' => 'cursor:pointer;', 'title' => Yii::t('yiitk', 'Click to view real content...')]);
+        }
+        //endregion
+
+        //region Brazilian Reais
+        /**
+         * @param mixed $amount
+         * @param bool  $withPrefix
+         * @param float $onNull
+         *
+         * @return string|null
+         */
+        public function asBrazilianCurrency($amount, bool $withPrefix = true, $onNull = 0.00): ?string
+        {
+            if (!is_numeric($amount)) {
+                $amount = $onNull;
+            }
+
+            if (is_numeric($amount)) {
+                $amount = (float)$amount;
+
+                return NumberHelper::toBrazilianCurrency($amount, $withPrefix);
+            }
+
+            return null;
+        }
+        //endregion
+
+        //region Percentage
+        /**
+         * @inheritdoc
+         *
+         * @noinspection ReturnTypeCanBeDeclaredInspection
+         */
+        public function asPercent($value, $decimals = null, $options = [], $textOptions = [])
+        {
+            return $this->asPercentage($value);
+        }
+
+        /**
+         * @param mixed $value
+         * @param bool  $withPrefix
+         * @param mixed $onNull
+         *
+         * @return string|null
+         */
+        public function asPercentage($value, bool $withPrefix = true, $onNull = 0.00)
+        {
+            if (!is_numeric($value)) {
+                $value = $onNull;
+            }
+
+            if (is_numeric($value)) {
+                $value = (float)$value;
+
+                return NumberHelper::toPercentText($value, $withPrefix);
+            }
+
+            return null;
         }
         //endregion
         //endregion
