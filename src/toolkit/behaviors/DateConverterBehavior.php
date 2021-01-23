@@ -31,7 +31,7 @@
         /**
          * @var Formatter|null
          */
-        public ?Formatter $formatter;
+        public ?Formatter $formatter = null;
 
         /**
          * @var string
@@ -66,7 +66,7 @@
         /**
          * @var string|null
          */
-        public ?string $userTimezone;
+        public ?string $userTimezone = null;
 
         //region Initialization
         /**

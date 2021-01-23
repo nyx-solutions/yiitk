@@ -40,7 +40,7 @@
         }
 
         /**
-         * Validates a if a value is a valid CPF number.
+         * Validates a if a value is a valid CNJP number.
          *
          * @param $taxId string|null CNPJ Number
          *
@@ -56,32 +56,35 @@
 
             $taxId = str_pad($taxId, 14, '0', STR_PAD_LEFT);
 
-            /** @noinspection NotOptimalIfConditionsInspection */
-            if (strlen($taxId) < 14 || strlen($taxId) > 14) {
+            if (strlen($taxId) !== 14) {
+                return false;
+            }
+
+            if (preg_match('/(\d)\1{13}/', $taxId)) {
                 return false;
             }
 
             for ($i = 0, $j = 5, $sum = 0; $i < 12; $i++) {
-                $sum += $taxId[$i] * $j;
+                $sum += ((int)$taxId[$i] * $j);
 
-                $j = ($j === 2) ? 9 : $j - 1;
-            }
-
-            $residual = $sum % 11;
-
-            if ($taxId[12] !== ($residual < 2 ? 0 : 11 - $residual)) {
-                return false;
-            }
-
-            for ($i = 0, $j = 6, $sum = 0; $i < 13; $i++) {
-                $sum += $taxId[$i] * $j;
-
-                $j = ($j === 2) ? 9 : $j - 1;
+                $j = (($j === 2) ? 9 : ($j - 1));
             }
 
             $residual = ($sum % 11);
 
-            return $taxId[13] === ($residual < 2 ? 0 : 11 - $residual);
+            if ((int)$taxId[12] !== (($residual < 2) ? 0 : (11 - $residual))) {
+                return false;
+            }
+
+            for ($i = 0, $j = 6, $sum = 0; $i < 13; $i++) {
+                $sum += ((int)$taxId[$i] * $j);
+
+                $j = (($j === 2) ? 9 : ($j - 1));
+            }
+
+            $residual = ($sum % 11);
+
+            return ((int)$taxId[13] === ($residual < 2 ? 0 : 11 - $residual));
         }
 
         /**
