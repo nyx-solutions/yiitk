@@ -52,6 +52,11 @@
          */
         protected string $hashableAttribute = 'hash';
 
+        /**
+         * @var bool
+         */
+        protected bool $addErrorsToFlashMessages = false;
+
         //region Scenarios
         /**
          * @inheritdoc
@@ -252,7 +257,7 @@
          */
         public function afterValidate()
         {
-            if ($this->enableFlashMessages) {
+            if ($this->enableFlashMessages && $this->addErrorsToFlashMessages) {
                 foreach ($this->getErrors() as $error) {
                     foreach ($error as $message) {
                         $this->addErrorMessage($message);
