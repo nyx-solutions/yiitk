@@ -3,6 +3,7 @@
     namespace yiitk\helpers;
 
     use yii\base\Exception;
+    use function is_callable;
 
     /**
      * HashableHelper

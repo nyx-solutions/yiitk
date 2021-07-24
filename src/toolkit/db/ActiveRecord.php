@@ -2,13 +2,13 @@
 
     namespace yiitk\db;
 
-    use Exception;
     use Throwable;
     use Yii;
     use yii\behaviors\SluggableBehavior;
     use yii\db\Expression;
     use yii\db\StaleObjectException;
     use yiitk\behaviors\DateTimeBehavior;
+    use yiitk\behaviors\ExternalIdBehavior;
     use yiitk\behaviors\HashableBehavior;
     use yiitk\behaviors\LinkManyBehavior;
     use yiitk\enum\base\EnumTrait;
@@ -17,11 +17,12 @@
     use yiitk\validators\BrazilianMoneyValidator;
     use yiitk\validators\PercentageValidator;
     use yiitk\web\FlashMessagesTrait;
+    use function is_array;
 
     /**
-     * Class ActiveRecord
+     * ActiveRecord
      *
-     * @package yiitk\db
+     * @noinspection ContractViolationInspection
      */
     class ActiveRecord extends \yii\db\ActiveRecord
     {
@@ -53,6 +54,16 @@
         protected string $hashableAttribute = 'hash';
 
         /**
+         * @var string
+         */
+        protected string $externalIdAttribute = 'externalId';
+
+        /**
+         * @var array
+         */
+        protected array $externalIdAdditionalColumns = [];
+
+        /**
          * @var bool
          */
         protected bool $addErrorsToFlashMessages = false;
@@ -61,7 +72,7 @@
         /**
          * @inheritdoc
          *
-         * @noinspection ReturnTypeCanBeDeclaredInspection
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function scenarios()
         {
@@ -78,7 +89,7 @@
         /**
          * @inheritdoc
          *
-         * @noinspection ReturnTypeCanBeDeclaredInspection
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function rules()
         {
@@ -92,9 +103,13 @@
                 $filters[] = [array_keys($moneyAttributes), 'filter', 'filter' => fn ($value) => NumberHelper::brazilianCurrencyToFloat($value)];
 
                 foreach ($moneyAttributes as $k => $attrRules) {
-                    $min = ((isset($attrRules['min'])) ? (float)$attrRules['min'] : null);
-                    $max = ((isset($attrRules['max'])) ? (float)$attrRules['max'] : null);
-                    $required = ((isset($attrRules['required'])) ? (bool)$attrRules['required'] : true);
+                    $min      = ((isset($attrRules['min'])) ? (float)$attrRules['min'] : null);
+                    $max      = ((isset($attrRules['max'])) ? (float)$attrRules['max'] : null);
+                    $required = true;
+
+                    if (isset($attrRules['required'])) {
+                        $required = (bool)$attrRules['required'];
+                    }
 
                     $rules[] = [$k, BrazilianMoneyValidator::class, 'min' => $min, 'max' => $max];
 
@@ -110,7 +125,11 @@
                 foreach ($percentageAttributes as $k => $attrRules) {
                     $min      = ((isset($attrRules['min'])) ? (float)$attrRules['min'] : null);
                     $max      = ((isset($attrRules['max'])) ? (float)$attrRules['max'] : 100);
-                    $required = ((isset($attrRules['required'])) ? (bool)$attrRules['required'] : true);
+                    $required = true;
+
+                    if (isset($attrRules['required'])) {
+                        $required = (bool)$attrRules['required'];
+                    }
 
                     $rules[] = [$k, PercentageValidator::class, 'min' => $min, 'max' => $max];
 
@@ -118,6 +137,16 @@
                         $rules[] = [$k, 'required'];
                     }
                 }
+            }
+
+            if ($this->hasAttribute($this->externalIdAttribute)) {
+                $targetAttributes = [$this->externalIdAttribute];
+
+                if (!empty($this->externalIdAdditionalColumns)) {
+                    $targetAttributes = array_merge($targetAttributes, $this->externalIdAdditionalColumns);
+                }
+
+                $rules[] = [$this->externalIdAttribute, 'unique', 'targetAttribute' => $targetAttributes, 'skipOnEmpty' => true];
             }
 
             return ArrayHelper::merge($filters, $rules);
@@ -129,6 +158,8 @@
          * @param array|null $attributes
          *
          * @return array
+         *
+         * @noinspection ParameterDefaultValueIsNotNullInspection
          */
         protected function parseFloatAttributesRules(?array $attributes = []): array
         {
@@ -186,7 +217,7 @@
         /**
          * @inheritdoc
          *
-         * @noinspection ReturnTypeCanBeDeclaredInspection
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function behaviors()
         {
@@ -208,7 +239,15 @@
                     'attribute'     => $this->slugAttribute,
                     'slugAttribute' => 'slug',
                     'ensureUnique'  => $this->slugEnsureUnique,
-                    'immutable'     => $this->slugImmutable
+                    'immutable'     => $this->slugImmutable,
+                ];
+            }
+
+            if ($this->hasAttribute($this->externalIdAttribute)) {
+                $behaviors['sluggable'] = [
+                    'class'                            => ExternalIdBehavior::class,
+                    'attribute'                        => $this->externalIdAttribute,
+                    'uniqueValidatorAdditionalColumns' => $this->externalIdAdditionalColumns,
                 ];
             }
 
@@ -271,7 +310,9 @@
 
         //region Delete
         /**
-         * {@inheritdoc}
+         * @inheritdoc
+         *
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function delete()
         {
@@ -286,7 +327,7 @@
                     $this->addErrorMessage(Yii::t('yiitk', 'It was not possible to remove the requested entry.'));
 
                     return false;
-                } catch (Exception $e) {
+                } catch (Throwable) {
                     $this->addErrorMessage(Yii::t('yiitk', 'It was not possible to remove the requested entry because it was attached to another entry in the system.'));
 
                     return false;
@@ -309,7 +350,7 @@
                 }
 
                 return false;
-            } catch (Exception $e) {}
+            } catch (Throwable) {}
 
             return false;
         }
@@ -319,6 +360,8 @@
          *
          * @throws Throwable
          * @throws StaleObjectException
+         *
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function hardDelete()
         {
@@ -330,7 +373,7 @@
         /**
          * @inheritdoc
          *
-         * @noinspection ReturnTypeCanBeDeclaredInspection
+         * @noinspection PhpMissingReturnTypeInspection
          */
         public function fields()
         {
