@@ -5,7 +5,7 @@
     use BadMethodCallException;
     use Closure;
     use ReflectionClass;
-    use ReflectionException;
+    use Throwable;
     use Yii;
     use yii\base\InvalidCallException;
     use yii\base\InvalidConfigException;
@@ -15,13 +15,17 @@
     use yiitk\helpers\StringHelper;
 
     /**
-     * Class BaseEnum
+     * Base ENUM
      *
-     * @property mixed $value
-     * @property mixed $label
-     * @property mixed $slug
+     * @property mixed  $value
+     * @property mixed  $label
+     * @property string $foregroundColor
+     * @property string $backgroundColor
+     * @property string $icon
+     * @property string $iconCssClass
+     * @property mixed  $slug
      */
-    class BaseEnum
+    abstract class BaseEnum implements EnumInterface
     {
         /**
          * @var bool
@@ -57,26 +61,22 @@
          *
          * @var mixed
          */
-        protected $currentValue;
+        protected mixed $currentValue = null;
 
         /**
          * @var array
          */
         protected array $validations = [];
 
-        //region Constructor
+        #region Constructor
+
         /**
-         * Sets the value that will be managed by this type instance.
-         *
-         * @param mixed $value The value to be managed
-         *
-         * @throws InvalidConfigException If the value is not valid
-         * @throws ReflectionException
+         * @inheritdoc
          */
         public function __construct($value)
         {
             if (!static::isValidValue($value)) {
-                throw new InvalidConfigException("Value '{$value}' is not part of the enum ".static::class);
+                throw new InvalidConfigException("Value '{$value}' is not part of the enum " . static::class);
             }
 
             $this->currentValue = $value;
@@ -85,81 +85,92 @@
         }
 
         /**
-         * The current class ID
+         * @inheritdoc
          */
         public static function id()
         {
             $id = (new ReflectionClass(static::class))->getShortName();
             $id = StringHelper::convertCase(InflectorHelper::camel2id($id, '_'), StringHelper::CASE_UPPER);
-            $id = str_replace('_ENUM', '', $id);
 
-            return $id;
+            return str_replace('_ENUM', '', $id);
         }
-        //endregion
+        #endregion
 
-        //region Creations
+        #region Creations
         /**
-         * Creates a new type instance using the name of a value.
-         *
-         * @param string $name The name of a value
-         *
-         * @return static The new type instance
-         *
-         * @throws InvalidConfigException
-         * @throws ReflectionException
+         * @inheritdoc
          */
-        public static function createByKey(string $name): BaseEnum
+        public static function createByKey(string $name): static
         {
             $constants = static::findConstantsByKey();
 
             if (!array_key_exists($name, $constants)) {
-                throw new InvalidConfigException("Name '{$name}' is not exists in the enum constants list ".static::class);
+                throw new InvalidConfigException("Name '{$name}' is not exists in the enum constants list " . static::class);
             }
 
             return new static($constants[$name]);
         }
 
         /**
-         * Creates a new type instance using the value.
-         *
-         * @param mixed $value The value
-         *
-         * @return $this The new type instance
-         *
-         * @throws InvalidConfigException
-         * @throws ReflectionException
+         * @inheritdoc
          */
-        public static function createByValue($value): BaseEnum
+        public static function createByValue($value): static
         {
             if (!empty($value) && !array_key_exists($value, static::findConstantsByValue())) {
-                throw new InvalidConfigException("Value '{$value}' is not exists in the enum constants list ".static::class);
+                throw new InvalidConfigException("Value '{$value}' is not exists in the enum constants list " . static::class);
             }
 
             return new static($value);
         }
-        //endregion
+        #endregion
 
-        //region Default
+        #region Default
         /**
-         * @return mixed
+         * @inheritdoc
          */
-        public static function defaultValue()
+        public static function defaultValue(): int|string|null
         {
             return null;
         }
-        //endregion
 
-        //region Listings
         /**
-         * Get list data (value => label)
-         *
-         * @param array $exclude
-         *
-         * @return mixed
-         *
-         * @throws ReflectionException
+         * @inheritdoc
          */
-        public static function listData($exclude = [])
+        public static function defaultForegroundColor(): string
+        {
+            return '#000000';
+        }
+
+        /**
+         * @inheritdoc
+         */
+        public static function defaultBackgroundColor(): string
+        {
+            return '#FFFFFF';
+        }
+
+        /**
+         * @inheritdoc
+         */
+        public static function defaultIcon(): string
+        {
+            return 'fas fa-star';
+        }
+
+        /**
+         * @inheritdoc
+         */
+        public static function iconTemplate(): string
+        {
+            return '<i class="{icon}"></i>';
+        }
+        #endregion
+
+        #region Listings
+        /**
+         * @inheritdoc
+         */
+        public static function listData($exclude = []): array
         {
             $useI18n      = static::$useI18n;
             $i18nCategory = static::findI18nCategory(static::class);
@@ -189,13 +200,9 @@
         }
 
         /**
-         * Get list data (['key' => value, 'label' => label])
-         *
-         * @return mixed
-         *
-         * @throws ReflectionException
+         * @inheritdoc
          */
-        public static function listDataWithDetails()
+        public static function listDataWithDetails(): array
         {
             $items = [];
 
@@ -204,7 +211,7 @@
                     'constant' => $key,
                     'key'      => lcfirst(InflectorHelper::camelize(strtolower($key))),
                     'value'    => $value,
-                    'label'    => static::findLabel($value)
+                    'label'    => static::findLabel($value),
                 ];
             }
 
@@ -212,9 +219,7 @@
         }
 
         /**
-         * @return array
-         *
-         * @throws ReflectionException
+         * @inheritdoc
          */
         public static function range(): array
         {
@@ -229,8 +234,6 @@
 
         /**
          * @return array
-         *
-         * @throws ReflectionException
          */
         protected static function findLabels(): array
         {
@@ -248,9 +251,33 @@
         }
 
         /**
-         * @return array
+         * @inheritdoc
          */
-        protected static function labels(): array
+        public static function labels(): array
+        {
+            return [];
+        }
+
+        /**
+         * @inheritdoc
+         */
+        public static function foregroundColors(): array
+        {
+            return [];
+        }
+
+        /**
+         * @inheritdoc
+         */
+        public static function backgroundColors(): array
+        {
+            return [];
+        }
+
+        /**
+         * @inheritdoc
+         */
+        public static function icons(): array
         {
             return [];
         }
@@ -262,31 +289,19 @@
         {
             return [];
         }
-        //endregion
+        #endregion
 
-        //region Find
+        #region Find
         /**
-         * get constant key by value(label)
-         *
-         * @param mixed $value
-         *
-         * @return mixed
-         *
-         * @throws ReflectionException
+         * @inheritdoc
          */
-        public static function findValueByKey($value)
+        public static function findValueByKey($value): string|int|bool
         {
             return array_search($value, static::listData(), true);
         }
 
         /**
-         * Get label by value
-         *
-         * @param string value
-         *
-         * @return string label
-         *
-         * @throws ReflectionException
+         * @inheritdoc
          */
         public static function findLabel($value): ?string
         {
@@ -305,13 +320,67 @@
         }
 
         /**
-         * Get label by value
+         * @inheritdoc
+         */
+        public static function findForegroundColor($value): string
+        {
+            $list = static::foregroundColors();
+
+            if (isset($list[$value])) {
+                return (string)$list[$value];
+            }
+
+            return static::defaultForegroundColor();
+        }
+
+        /**
+         * @inheritdoc
+         */
+        public static function findBackgroundColor($value): string
+        {
+            $list = static::backgroundColors();
+
+            if (isset($list[$value])) {
+                return (string)$list[$value];
+            }
+
+            return static::defaultBackgroundColor();
+        }
+
+        /**
+         * @inheritdoc
+         */
+        public static function findIconCssClass($value): string
+        {
+            $list = static::icons();
+
+            if (isset($list[$value])) {
+                return (string)$list[$value];
+            }
+
+            return static::defaultIcon();
+        }
+
+        /**
+         * @inheritdoc
+         */
+        public static function findIcon($value): string
+        {
+            $list     = static::icons();
+            $template = static::iconTemplate();
+            $icon     = static::defaultIcon();
+
+            if (isset($list[$value])) {
+                $icon = (string)$list[$value];
+            }
+
+            return str_replace('{icon}', $icon, $template);
+        }
+
+        /**
+         * @inheritdoc
          *
-         * @param string value
-         *
-         * @return string label
-         *
-         * @throws ReflectionException
+         * @noinspection PhpRedundantOptionalArgumentInspection
          */
         public static function findSlug($value): ?string
         {
@@ -335,11 +404,7 @@
         }
 
         /**
-         * Returns the list of constants (by name) for this type.
-         *
-         * @return array The list of constants by name
-         *
-         * @throws ReflectionException
+         * @inheritdoc
          */
         public static function findConstantsByKey(): array
         {
@@ -353,11 +418,7 @@
         }
 
         /**
-         * Returns the list of constants (by value) for this type.
-         *
-         * @return array The list of constants by value
-         *
-         * @throws ReflectionException
+         * @inheritdoc
          */
         public static function findConstantsByValue(): array
         {
@@ -369,15 +430,11 @@
 
             return static::$values[$class];
         }
-        //endregion
+        #endregion
 
-        //region Getters
+        #region Getters
         /**
-         * Returns the name of the value.
-         *
-         * @return array|string The name, or names, of the value
-         *
-         * @throws ReflectionException
+         * @inheritdoc
          */
         public function getKey()
         {
@@ -387,19 +444,37 @@
         }
 
         /**
-         * Unwraps the type and returns the raw value.
-         *
-         * @return mixed The raw value managed by the type instance
+         * @inheritdoc
          */
-        public function getValue()
+        public function getValue(): mixed
         {
             return $this->currentValue;
         }
-        //endregion
+        #endregion
 
-        //region i18n
+        #region Verifications
+        /**
+         * @inheritdoc
+         */
+        public static function colorable(): bool
+        {
+            return false;
+        }
+
+        /**
+         * @inheritdoc
+         */
+        public static function iconable(): bool
+        {
+            return false;
+        }
+        #endregion
+
+        #region i18n
         /**
          * @return void
+         *
+         * @noinspection PhpRedundantOptionalArgumentInspection
          */
         protected static function loadI18n(): void
         {
@@ -416,7 +491,7 @@
                 return;
             }
 
-            $path = dirname($class->getFileName()).'/messages';
+            $path = dirname($class->getFileName()) . '/messages';
             $file = "{$name}.php";
 
             if (is_dir($path)) {
@@ -424,7 +499,7 @@
                     'class'          => PhpMessageSource::class,
                     'sourceLanguage' => 'en-US',
                     'basePath'       => $path,
-                    'fileMap'        => [$uid => $file]
+                    'fileMap'        => [$uid => $file],
                 ];
 
                 self::$i18nMessageCategories[static::class] = $uid;
@@ -432,9 +507,7 @@
         }
 
         /**
-         * @param string $className
-         *
-         * @return string
+         * @inheritdoc
          */
         public static function findI18nCategory(string $className): string
         {
@@ -444,18 +517,11 @@
 
             return (self::$i18nMessageCategories[$className] ?? 'app');
         }
-        //endregion
+        #endregion
 
-        //region Validations
+        #region Validations
         /**
-         * Checks if a name is valid for this type.
-         *
-         * @param string $name The name of the value
-         *
-         * @return bool If the name is valid for this type, `true` is returned.
-         * Otherwise, the name is not valid and `false` is returned
-         *
-         * @throws ReflectionException
+         * @inheritdoc
          */
         public static function isValidKey(string $name): bool
         {
@@ -463,21 +529,15 @@
         }
 
         /**
-         * Checks if a value is valid for this type.
-         *
-         * @param string $value The value
-         *
-         * @return bool If the value is valid for this type, `true` is returned.
-         * Otherwise, the value is not valid and `false` is returned
-         *
-         * @throws ReflectionException
+         * @inheritdoc
          */
         public static function isValidValue(string $value): bool
         {
-            return (is_null($value) || empty($value) || array_key_exists($value, static::findConstantsByValue()));
+            return (empty($value) || array_key_exists($value, static::findConstantsByValue()));
         }
 
-        //region Magic Validations
+        #region Magic Validations
+
         /**
          * @return void
          */
@@ -485,33 +545,53 @@
         {
             foreach ((new ReflectionClass(static::class))->getConstants() as $constantKey => $constantValue) {
                 $this->_bind(
-                    strtolower(static::$preposition).InflectorHelper::camelize(strtolower($constantKey)),
-                    fn() => ($this->getValue() === $constantValue)
+                    strtolower(static::$preposition) . InflectorHelper::camelize(strtolower($constantKey)),
+                    fn () => ($this->getValue() === $constantValue)
                 );
 
                 $this->_bind(
                     lcfirst(InflectorHelper::camelize(strtolower($constantKey))),
-                    fn() => $constantValue
+                    fn () => $constantValue
                 );
             }
 
             $this->_bind(
                 'value',
-                fn() => $this->getValue()
+                fn () => $this->getValue()
             );
 
             $this->_bind(
                 'label',
-                fn() => $this::findLabel($this->getValue())
+                fn () => $this::findLabel($this->getValue())
+            );
+
+            $this->_bind(
+                'foregroundColor',
+                fn () => $this::findForegroundColor((string)$this->getValue())
+            );
+
+            $this->_bind(
+                'backgroundColor',
+                fn () => $this::findBackgroundColor((string)$this->getValue())
+            );
+
+            $this->_bind(
+                'icon',
+                fn () => $this::findIcon((string)$this->getValue())
+            );
+
+            $this->_bind(
+                'iconCssClass',
+                fn () => $this::findIconCssClass((string)$this->getValue())
             );
 
             $this->_bind(
                 'slug',
-                fn() => $this::findSlug($this->getValue())
+                fn () => $this::findSlug($this->getValue())
             );
         }
 
-        //region Bind
+        #region Bind
 
         /**
          * @param string   $name
@@ -521,15 +601,11 @@
         {
             $this->validations[$name] = Closure::bind($method, $this, get_class($this));
         }
-        //endregion
+        #endregion
 
-        //region Magic Methods
+        #region Magic Methods
         /**
-         * @param string $name
-         *
-         * @return bool
-         *
-         * @noinspection PhpMissingParamTypeInspection
+         * @inheritdoc
          */
         public function __get($name)
         {
@@ -541,58 +617,39 @@
         }
 
         /**
-         * @param string $name
-         * @param mixed  $value
-         *
-         * @noinspection PhpMissingParamTypeInspection
+         * @inheritdoc
          */
         public function __set($name, $value)
         {
             if (array_key_exists($name, $this->validations)) {
-                throw new InvalidCallException('You cannot set the read-only Enum property: '.get_class($this).'::'.$name);
+                throw new InvalidCallException('You cannot set the read-only Enum property: ' . get_class($this) . '::' . $name);
             }
         }
 
         /**
-         * @param string $name
-         *
-         * @noinspection PhpMissingParamTypeInspection
+         * @inheritdoc
          */
         public function __unset($name)
         {
             if (array_key_exists($name, $this->validations)) {
-                throw new InvalidCallException('You cannot unset the read-only Enum property: '.get_class($this).'::'.$name);
+                throw new InvalidCallException('You cannot unset the read-only Enum property: ' . get_class($this) . '::' . $name);
             }
         }
 
         /**
-         * @param string $name
-         *
-         * @return bool
-         *
-         * @noinspection PhpMissingParamTypeInspection
+         * @inheritdoc
          */
         public function __isset($name)
         {
             return array_key_exists($name, $this->validations);
         }
-        //endregion
-        //endregion
-        //endregion
+        #endregion
+        #endregion
+        #endregion
 
-        //region Magic Methods
+        #region Magic Methods
         /**
-         * Returns a value when called statically like so: MyEnum::SOME_VALUE() given SOME_VALUE is a class constant
-         *
-         * @param string $name
-         * @param array  $arguments
-         *
-         * @return static
-         *
-         * @throws InvalidConfigException
-         * @throws ReflectionException
-         *
-         * @noinspection PhpMissingParamTypeInspection
+         * @inheritdoc
          */
         public static function __callStatic($name, $arguments)
         {
@@ -604,11 +661,11 @@
                 return new static($constants[$name]);
             }
 
-            throw new BadMethodCallException("No static method or enum constant '{$name}' in class ".static::class);
+            throw new BadMethodCallException("No static method or enum constant '{$name}' in class " . static::class);
         }
 
         /**
-         * @return string
+         * @inheritdoc
          */
         public function __toString()
         {
@@ -616,17 +673,55 @@
         }
 
         /**
-         * @return array
-         *
-         * @throws ReflectionException
+         * @inheritdoc
          */
         public function __debugInfo()
         {
             return [
                 'value'   => $this->currentValue,
                 'label'   => $this->label,
-                'options' => static::listData()
+                'options' => static::listData(),
             ];
         }
-        //endregion
+        #endregion
+
+        #region Helpers
+        /**
+         * @inheritdoc
+         */
+        public static function guess(mixed $value, mixed $default = null): static
+        {
+            if (is_string($default)) {
+                if (in_array($default, static::range(), true)) {
+                    $default = static::createByValue($default);
+                } else {
+                    $default = null;
+                }
+            }
+
+            if ($default === null) {
+                $default = static::defaultValue();
+
+                if ($default === null) {
+                    throw new InvalidConfigException('The default value cannot be null.');
+                }
+
+                $default = static::createByValue($default);
+            }
+
+            try {
+                if ($value instanceof static) {
+                    return $value;
+                }
+
+                if (is_string($value) && in_array($value, static::range(), true)) {
+                    return static::createByValue($value);
+                }
+            } catch (Throwable) {
+            }
+
+
+            return $default;
+        }
+        #endregion
     }

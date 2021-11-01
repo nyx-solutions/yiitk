@@ -10,30 +10,51 @@
     use yiitk\helpers\StringHelper;
 
     /**
-     * Class Formatter
-     *
-     * @package yiitk\i18n
+     * Formatter
      */
     class Formatter extends \yii\i18n\Formatter
     {
-        //region Formatters
-        //region ENUM
+        #region Formatters
+        #region ENUM
         /**
          * @param string|BaseEnum $value
+         * @param bool            $colorable
+         * @param bool            $iconable
+         * @param string          $iconFontSize
          *
          * @return string
          */
-        public function asEnum($value): string
+        public function asEnum($value, bool $colorable = false, bool $iconable = false, string $iconFontSize = '20px'): string
         {
             if ($value instanceof BaseEnum) {
+                if ($iconable && $value::iconable()) {
+                    $label = Html::encode($value->label);
+
+                    if ($colorable && $value::colorable()) {
+                        return <<<HTML
+<span style="color:{$value->foregroundColor} !important;font-size:{$iconFontSize} !important;" title="{$label}">{$value->icon}</span>
+HTML;
+                    }
+
+                    return <<<HTML
+<span style="font-size:{$iconFontSize} !important;" title="{$label}">{$value->icon}</span>
+HTML;
+                }
+
+                if ($colorable && $value::colorable()) {
+                    return <<<HTML
+<span style="color:{$value->foregroundColor} !important;font-weight:bold !important;">{$value->label}</span>
+HTML;
+                }
+
                 return $value->label;
             }
 
             return $this->nullDisplay;
         }
-        //endregion
+        #endregion
 
-        //region Brazilian Zicodes (CEP)
+        #region Brazilian Zicodes (CEP)
         /**
          * @param string|null $value
          *
@@ -47,9 +68,9 @@
 
             return MaskHelper::mask(str_pad(StringHelper::justNumbers($value), 8, '0', STR_PAD_LEFT), 'zipcode');
         }
-        //endregion
+        #endregion
 
-        //region Phones
+        #region Phones
         /**
          * @param string|null $value
          *
@@ -77,9 +98,9 @@
 
             return 'tel:+55'.StringHelper::justNumbers($value);
         }
-        //endregion
+        #endregion
 
-        //region Brazilian TaxId (CPF e CNPJ)
+        #region Brazilian TaxId (CPF e CNPJ)
         /**
          * @param string|null $value
          *
@@ -97,7 +118,7 @@
         /**
          * @param string|null $value
          *
-         * @return string
+         * @return string|null
          */
         public function asCompanyTaxId(?string $value): ?string
         {
@@ -111,7 +132,7 @@
         /**
          * @param string|null $value
          *
-         * @return string
+         * @return string|null
          */
         public function asTaxId(?string $value): ?string
         {
@@ -125,9 +146,9 @@
 
             return $this->asCompanyTaxId($value);
         }
-        //endregion
+        #endregion
 
-        //region Name & Surname
+        #region Name & Surname
         /**
          * @param string|null $value
          *
@@ -155,9 +176,9 @@
 
             return StringHelper::asLastName($value);
         }
-        //endregion
+        #endregion
 
-        //region Sensitive
+        #region Sensitive
         /**
          * @param string|null $value
          * @param string      $hidden
@@ -174,9 +195,9 @@
 
             return Html::tag('span', $hidden, ['class' => 'sensitive-data', 'onclick' => "$(this).html('{$value}').attr('title', '').css('cursor', 'auto');", 'style' => 'cursor:pointer;', 'title' => Yii::t('yiitk', 'Click to view real content...')]);
         }
-        //endregion
+        #endregion
 
-        //region Brazilian Reais
+        #region Brazilian Reais
         /**
          * @param mixed $amount
          * @param bool  $withPrefix
@@ -198,9 +219,25 @@
 
             return null;
         }
-        //endregion
 
-        //region Percentage
+        /**
+         * @param mixed        $amount
+         * @param bool         $withPrefix
+         * @param float|string $onNull
+         *
+         * @return string|null
+         */
+        public function asMoney(mixed $amount, bool $withPrefix = true, mixed $onNull = 0.00): ?string
+        {
+            if ($amount === null) {
+                return $this->nullDisplay;
+            }
+
+            return $this->asBrazilianCurrency($amount, $withPrefix, $onNull);
+        }
+        #endregion
+
+        #region Percentage
         /**
          * @inheritdoc
          *
@@ -232,6 +269,6 @@
 
             return null;
         }
-        //endregion
-        //endregion
+        #endregion
+        #endregion
     }

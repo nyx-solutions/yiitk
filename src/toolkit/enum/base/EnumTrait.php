@@ -12,7 +12,7 @@
     use yii\db\BaseActiveRecord;
 
     /**
-     * Trait EnumTrait
+     * Trait Enum
      *
      * @noinspection LowerAccessLevelInspection
      */
@@ -38,11 +38,12 @@
          */
         private array $_enumAttributes = [];
 
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
          * @noinspection ReturnTypeCanBeDeclaredInspection
+         * @noinspection PhpMultipleClassDeclarationsInspection
          */
         public function init()
         {
@@ -56,7 +57,7 @@
                     $default = $enum['default'];
 
                     /** @var BaseEnum $class */
-                    if (is_null($default)) {
+                    if ($default === null) {
                         $default = $class::createByValue($class::defaultValue());
                     }
 
@@ -99,13 +100,12 @@
             }
 
             if (is_callable(['parent', 'init'])) {
-                /** @noinspection PhpUndefinedClassInspection */
                 parent::init();
             }
         }
-        //endregion
+        #endregion
 
-        //region Fields
+        #region Fields
         /**
          * @param array $fields
          *
@@ -153,9 +153,9 @@
 
             return $fields;
         }
-        //endregion
+        #endregion
 
-        //region Enum
+        #region Enum
         /**
          * @return array
          */
@@ -163,9 +163,9 @@
         {
             return [];
         }
-        //endregion
+        #endregion
 
-        //region Bind Methods
+        #region Bind Methods
         /**
          * @throws ReflectionException
          *
@@ -226,7 +226,7 @@
                                 $this->setEnumAttribute($key, $enum::createByKey($value));
                             } elseif ($enum::isValidValue($value)) {
                                 $this->setEnumAttribute($key, $enum::createByValue($value));
-                            } elseif (is_null($value)) {
+                            } elseif ($value === null) {
                                 $this->setEnumAttribute($key, null);
                             } elseif (empty($value)) {
                                 $this->setEnumAttribute($key, '');
@@ -253,7 +253,7 @@
         /**
          * @param string $attribute
          *
-         * @return BaseEnum
+         * @return BaseEnum|null
          */
         public function getEnumAttribute(string $attribute): ?BaseEnum
         {
@@ -264,17 +264,17 @@
          * @param string $attribute
          * @param mixed  $value
          */
-        public function setEnumAttribute(string $attribute, $value): void
+        public function setEnumAttribute(string $attribute, mixed $value): void
         {
             if ($value instanceof BaseEnum) {
                 $this->_enumAttributes[$attribute] = $value;
 
-                $this->setAttribute($attribute, ((is_null($value)) ? null : $value->__toString()));
+                $this->setAttribute($attribute, $value->__toString());
             }
         }
-        //endregion
+        #endregion
 
-        //region Generic Methods
+        #region Generic Methods
         /**
          * @param string $name
          *
@@ -298,15 +298,17 @@
 
             return 'set'.InflectorHelper::camelize($name);
         }
-        //endregion
+        #endregion
 
-        //region Magic Methods
+        #region Magic Methods
         /**
          * @param $name
          * @param $value
          *
          * @throws ReflectionException
          * @throws UnknownPropertyException
+         *
+         * @noinspection PhpMultipleClassDeclarationsInspection
          */
         public function __set($name, $value)
         {
@@ -321,7 +323,6 @@
             }
 
             if (is_callable(['parent', '__set'])) {
-                /** @noinspection PhpUndefinedClassInspection */
                 parent::__set($name, $value);
             }
         }
@@ -333,6 +334,8 @@
          *
          * @throws ReflectionException
          * @throws UnknownPropertyException
+         *
+         * @noinspection PhpMultipleClassDeclarationsInspection
          */
         public function __get($name)
         {
@@ -344,7 +347,6 @@
                 return call_user_func($this->_enumMethods[$getter]);
             }
 
-            /** @noinspection PhpUndefinedClassInspection */
             return (is_callable(['parent', '__get']) ? parent::__get($name) : null);
         }
 
@@ -356,6 +358,8 @@
          * @throws ReflectionException
          *
          * @noinspection PhpMissingParamTypeInspection
+         * @noinspection PhpTernaryExpressionCanBeReplacedWithConditionInspection
+         * @noinspection PhpMultipleClassDeclarationsInspection
          */
         public function __isset($name)
         {
@@ -367,7 +371,6 @@
                 return true;
             }
 
-            /** @noinspection PhpUndefinedClassInspection */
             return (is_callable(['parent', '__isset']) ? parent::__isset($name) : false);
         }
 
@@ -377,6 +380,7 @@
          * @throws ReflectionException
          *
          * @noinspection PhpMissingParamTypeInspection
+         * @noinspection PhpMultipleClassDeclarationsInspection
          */
         public function __unset($name)
         {
@@ -389,9 +393,8 @@
             }
 
             if (is_callable(['parent', '__unset'])) {
-                /** @noinspection PhpUndefinedClassInspection */
                 parent::__unset($name);
             }
         }
-        //endregion
+        #endregion
     }

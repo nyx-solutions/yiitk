@@ -3,9 +3,10 @@
     namespace yiitk\enum;
 
     use yiitk\enum\base\BaseEnum;
+    use yiitk\enum\base\EnumerableInterface;
 
     /**
-     * Class BooleanEnum
+     * Boolean Enum
      *
      * @property string $yes
      * @property string $no
@@ -16,23 +17,23 @@
      * @method static   yes
      * @method static   no
      */
-    class BooleanEnum extends BaseEnum
+    class BooleanEnum extends BaseEnum implements EnumerableInterface
     {
         public const YES = 'yes';
         public const NO  = 'no';
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
          */
-        public static function defaultValue()
+        public static function defaultValue(): int|string|null
         {
             return self::NO;
         }
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
          */
-        protected static function labels(): array
+        public static function labels(): array
         {
             return [
                 self::YES => 'Yes',

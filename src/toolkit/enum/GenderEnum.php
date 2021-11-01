@@ -3,9 +3,10 @@
     namespace yiitk\enum;
 
     use yiitk\enum\base\BaseEnum;
+    use yiitk\enum\base\EnumerableInterface;
 
     /**
-     * Class GenderEnum
+     * Gender Enum
      *
      * @property string $male
      * @property string $female
@@ -16,23 +17,23 @@
      * @method   static male
      * @method   static female
      */
-    class GenderEnum extends BaseEnum
+    class GenderEnum extends BaseEnum implements EnumerableInterface
     {
         public const MALE   = 'male';
         public const FEMALE = 'female';
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
          */
-        public static function defaultValue()
+        public static function defaultValue(): int|string|null
         {
             return self::FEMALE;
         }
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
          */
-        protected static function labels(): array
+        public static function labels(): array
         {
             return [
                 self::MALE   => 'Male',
