@@ -1,5 +1,9 @@
 <?php
 
+    /**
+     * @noinspection PhpMissingFieldTypeInspection
+     */
+
     namespace yiitk\i18n;
 
     use Yii;
@@ -14,6 +18,11 @@
      */
     class Formatter extends \yii\i18n\Formatter
     {
+        /**
+         * @var null
+         */
+        public $nullDisplay = null;
+
         #region Formatters
         #region ENUM
         /**
@@ -268,6 +277,45 @@ HTML;
             }
 
             return null;
+        }
+        #endregion
+
+        #region Numbers
+        /**
+         * @param mixed  $value
+         * @param int    $decimals
+         * @param string $decimalSeparator
+         * @param string $thousandsSeparator
+         *
+         * @return string|null
+         */
+        public function asNumeric(mixed $value, int $decimals = 0, string $decimalSeparator = ',', string $thousandsSeparator = '.'): ?string
+        {
+            if (empty($value)) {
+                return $this->nullDisplay;
+            }
+
+            if (is_numeric($value)) {
+                return number_format($value, $decimals, $decimalSeparator, $thousandsSeparator);
+            }
+
+            return (string)$value;
+        }
+        #endregion
+
+        #region HTML
+        /**
+         * @param mixed $value
+         *
+         * @return string|null
+         */
+        public function asHtmlText(mixed $value): ?string
+        {
+            if ($value === null) {
+                return $this->nullDisplay;
+            }
+
+            return nl2br((string)$value);
         }
         #endregion
         #endregion
