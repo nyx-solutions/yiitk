@@ -3,9 +3,10 @@
     namespace yiitk\enum;
 
     use yiitk\enum\base\BaseEnum;
+    use yiitk\enum\base\EnumerableInterface;
 
     /**
-     * Class BooleanEnum
+     * Status Enum
      *
      * @property string $active
      * @property string $inactive
@@ -22,7 +23,7 @@
      * @method static   blocked
      * @method static   waitingConfirmation
      */
-    class StatusEnum extends BaseEnum
+    class StatusEnum extends BaseEnum implements EnumerableInterface
     {
         public const ACTIVE               = 'active';
         public const INACTIVE             = 'inactive';
@@ -30,17 +31,17 @@
         public const WAITING_CONFIRMATION = 'waiting_confirmation';
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
          */
-        public static function defaultValue()
+        public static function defaultValue(): int|string|null
         {
             return self::INACTIVE;
         }
 
         /**
-         * {@inheritdoc}
+         * @inheritdoc
          */
-        protected static function labels(): array
+        public static function labels(): array
         {
             return [
                 self::ACTIVE               => 'Active',

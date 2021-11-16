@@ -89,6 +89,10 @@
          */
         public static function brazilianCurrencyToFloat(?string $amount): float
         {
+            if (is_numeric($amount)) {
+                return (float)$amount;
+            }
+
             if (empty($amount)) {
                 $amount = 'R$ 0,00';
             }
