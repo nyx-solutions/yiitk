@@ -6,8 +6,11 @@
 
     namespace yiitk\i18n;
 
+    use DateTime;
     use Yii;
     use yiitk\enum\base\BaseEnum;
+    use yiitk\enum\base\EnumInterface;
+    use yiitk\enum\BooleanEnum;
     use yiitk\helpers\HtmlHelper as Html;
     use yiitk\helpers\MaskHelper;
     use yiitk\helpers\NumberHelper;
@@ -60,6 +63,26 @@ HTML;
             }
 
             return $this->nullDisplay;
+        }
+
+        /**
+         * @param mixed              $value
+         * @param string             $enumClass
+         * @param EnumInterface|null $default
+         *
+         * @return EnumInterface
+         */
+        public function asGuessEnum(mixed $value, string $enumClass = BooleanEnum::class, EnumInterface $default = null): EnumInterface
+        {
+            if (is_subclass_of($enumClass, EnumInterface::class)) {
+                $enum = $enumClass::guess($value, $default, true);
+
+                if ($enum instanceof EnumInterface) {
+                    return $enum;
+                }
+            }
+
+            return $default;
         }
         #endregion
 
@@ -317,6 +340,95 @@ HTML;
 
             return nl2br((string)$value);
         }
+        #endregion
+
+        #region Date Time
+        /**
+         * @param mixed  $value
+         * @param bool   $returnDateTime
+         * @param string $returnFormat
+         *
+         * @return string|DateTime|null
+         */
+        public function asGuessDate(mixed $value, bool $returnDateTime = false, string $returnFormat = 'Y-m-d'): string|DateTime|null
+        {
+            $formats = [
+                'Y-m-d'       => '/^([\d]{4})\-([\d]{2})\-([\d]{2})$/',
+                'Y-m-d H:i'   => '/^([\d]{4})\-([\d]{2})\-([\d]{2}) ([\d]{2})\:([\d]{2})$/',
+                'Y-m-d H:i:s' => '/^([\d]{4})\-([\d]{2})\-([\d]{2}) ([\d]{2})\:([\d]{2})\:([\d]{2})$/',
+                'd/m/Y'       => '/^([\d]{2})\/([\d]{2})\/([\d]{4})$/',
+                'd/m/Y H:i'   => '/^([\d]{2})\/([\d]{2})\/([\d]{4}) ([\d]{2})\:([\d]{2})$/',
+                'd/m/Y H:i:s' => '/^([\d]{2})\/([\d]{2})\/([\d]{4}) ([\d]{2})\:([\d]{2})\:([\d]{2})$/',
+            ];
+
+            if (!empty($value) && is_string($value)) {
+                $value = $this->_normalizeDate($value);
+
+                foreach ($formats as $format => $pattern) {
+                    if (preg_match($pattern, $value)) {
+                        $date = DateTime::createFromFormat($format, $value);
+
+                        if ($date instanceof DateTime) {
+                            if ($returnDateTime) {
+                                return $date;
+                            }
+
+                            return $date->format($returnFormat);
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        #region Helpers
+        /**
+         * @param string $value
+         *
+         * @return string
+         */
+        private function _normalizeDate(string $value): string
+        {
+            if (preg_match('/^([\d]{1,2})\/([\d]{1,2})\/([\d]{2,4}) ?([\d]{1,2})?:?([\d]{1,2})?:?([\d]{1,2})?$/', $value, $matches)) {
+                $day     = (int)($matches[1] ?? 0);
+                $month   = (int)($matches[2] ?? 0);
+                $year    = (int)($matches[3] ?? 0);
+                $hours   = (int)($matches[4] ?? 0);
+                $minutes = (int)($matches[5] ?? 0);
+                $seconds = (int)($matches[6] ?? 0);
+
+                $day     = str_pad((string)$day, 2, '0', STR_PAD_LEFT);
+                $month   = str_pad((string)$month, 2, '0', STR_PAD_LEFT);
+                $year    = ((strlen($year) === 2) ? "20{$year}" : $year);
+                $hours   = str_pad((string)$hours, 2, '0', STR_PAD_LEFT);
+                $minutes = str_pad((string)$minutes, 2, '0', STR_PAD_LEFT);
+                $seconds = str_pad((string)$seconds, 2, '0', STR_PAD_LEFT);
+
+                return sprintf('%s/%s/%s %s:%s:%s', $day, $month, $year, $hours, $minutes, $seconds);
+            }
+
+            if (preg_match('/^([\d]{2,4})-([\d]{1,2})-([\d]{1,2}) ?([\d]{1,2})?:?([\d]{1,2})?:?([\d]{1,2})?$/', $value, $matches)) {
+                $year    = (int)($matches[1] ?? 0);
+                $month   = (int)($matches[2] ?? 0);
+                $day     = (int)($matches[3] ?? 0);
+                $hours   = (int)($matches[4] ?? 0);
+                $minutes = (int)($matches[5] ?? 0);
+                $seconds = (int)($matches[6] ?? 0);
+
+                $day     = str_pad((string)$day, 2, '0', STR_PAD_LEFT);
+                $month   = str_pad((string)$month, 2, '0', STR_PAD_LEFT);
+                $year    = ((strlen($year) === 2) ? "20{$year}" : $year);
+                $hours   = str_pad((string)$hours, 2, '0', STR_PAD_LEFT);
+                $minutes = str_pad((string)$minutes, 2, '0', STR_PAD_LEFT);
+                $seconds = str_pad((string)$seconds, 2, '0', STR_PAD_LEFT);
+
+                return sprintf('%s/%s/%s %s:%s:%s', $day, $month, $year, $hours, $minutes, $seconds);
+            }
+
+            return $value;
+        }
+        #endregion
         #endregion
         #endregion
     }
