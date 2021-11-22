@@ -8,8 +8,8 @@
 
     use DateTime;
     use Yii;
+    use yii\base\InvalidConfigException;
     use yiitk\enum\base\BaseEnum;
-    use yiitk\enum\base\EnumInterface;
     use yiitk\enum\BooleanEnum;
     use yiitk\helpers\HtmlHelper as Html;
     use yiitk\helpers\MaskHelper;
@@ -66,20 +66,33 @@ HTML;
         }
 
         /**
-         * @param mixed              $value
-         * @param string             $enumClass
-         * @param EnumInterface|null $default
+         * @param mixed                    $value
+         * @param string                   $enumClass
+         * @param BaseEnum|string|int|null $default
+         * @param bool                     $returnValue
          *
-         * @return EnumInterface
+         * @return BaseEnum|string|int
+         *
+         * @throws InvalidConfigException
          */
-        public function asGuessEnum(mixed $value, string $enumClass = BooleanEnum::class, EnumInterface $default = null): EnumInterface
+        public function asGuessEnum(mixed $value, string $enumClass = BooleanEnum::class, BaseEnum|string|int|null $default = null, bool $returnValue = true): BaseEnum|string|int
         {
-            if (is_subclass_of($enumClass, EnumInterface::class)) {
+            if (is_subclass_of($enumClass, BaseEnum::class)) {
+                if ($default === null) {
+                    $default = $enumClass::defaultValue();
+                }
+
                 $enum = $enumClass::guess($value, $default, true);
 
-                if ($enum instanceof EnumInterface) {
-                    return $enum;
+                if ($enum instanceof BaseEnum) {
+                    return (($returnValue) ? $enum->value : $enum);
                 }
+            } else {
+                throw new InvalidConfigException(sprintf('The "$enumClass" must be an instance of %s.', BaseEnum::class));
+            }
+
+            if ($returnValue) {
+                return (($default instanceof BaseEnum) ? $default->value : $enumClass::createByValue($default));
             }
 
             return $default;
