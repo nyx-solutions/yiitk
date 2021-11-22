@@ -273,10 +273,11 @@
         /**
          * @param mixed      $value
          * @param mixed|null $default
+         * @param bool       $useLabel
          *
          * @return static
          */
-        public static function guess(mixed $value, mixed $default = null): static;
+        public static function guess(mixed $value, mixed $default = null, bool $useLabel = false): static;
         #endregion
 
         #region Magic Methods

@@ -689,14 +689,22 @@
         /**
          * @inheritdoc
          */
-        public static function guess(mixed $value, mixed $default = null): static
+        public static function guess(mixed $value, mixed $default = null, bool $useLabel = false): static
         {
+            if ($useLabel) {
+                return static::guessByLabel($value, $default);
+            }
+
             if (is_string($default)) {
                 if (in_array($default, static::range(), true)) {
                     $default = static::createByValue($default);
                 } else {
                     $default = null;
                 }
+            }
+
+            if (!$default instanceof static) {
+                $default = null;
             }
 
             if ($default === null) {
@@ -716,6 +724,82 @@
 
                 if (is_string($value) && in_array($value, static::range(), true)) {
                     return static::createByValue($value);
+                }
+            } catch (Throwable) {
+            }
+
+
+            return $default;
+        }
+
+        /**
+         * @param mixed      $label
+         * @param mixed|null $default
+         *
+         * @return static
+         *
+         * @throws InvalidConfigException
+         */
+        protected static function guessByLabel(mixed $label, mixed $default = null): static
+        {
+            $listing = static::listData();
+            $range   = static::range();
+
+            if (is_string($default)) {
+                if (in_array($default, $range, true)) {
+                    $default = static::createByValue($default);
+                } else {
+                    $aux = array_filter(
+                        $listing,
+                        static fn ($item) => StringHelper::compare($default, $item)
+                    );
+
+                    if (is_array($aux) && !empty($aux)) {
+                        $aux = array_keys($aux);
+                        $aux = reset($aux);
+
+                        $default = static::createByValue($aux);
+                    } else {
+                        $default = null;
+                    }
+                }
+            }
+
+            if (!$default instanceof static) {
+                $default = null;
+            }
+
+            if ($default === null) {
+                $default = static::defaultValue();
+
+                if ($default === null) {
+                    throw new InvalidConfigException('The default value cannot be null.');
+                }
+
+                $default = static::createByValue($default);
+            }
+
+            try {
+                if ($label instanceof static) {
+                    return $label;
+                }
+
+                if (is_string($label)) {
+                    if (in_array($label, $range, true)) {
+                        return static::createByValue($label);
+                    }
+
+                    $aux = array_filter(
+                        $listing,
+                        static fn ($item) => StringHelper::compare($label, $item)
+                    );
+
+                    if (is_array($aux) && !empty($aux)) {
+                        $aux = array_keys($aux);
+                        $aux = reset($aux);
+
+                        return static::createByValue($aux);
+                    }
                 }
             } catch (Throwable) {
             }
