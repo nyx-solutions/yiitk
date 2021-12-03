@@ -4,15 +4,15 @@
 
     use JsonException;
     use Yii;
-    use yiitk\helpers\StringHelper;
     use yii\validators\Validator;
+    use yiitk\helpers\StringHelper;
 
     /**
      * Class PersonTaxIdValidator
      */
     class PersonTaxIdValidator extends Validator
     {
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -24,9 +24,9 @@
 
             $this->message = Yii::t('yiitk', 'The brazilian tax number is not valid.');
         }
-        //endregion
+        #endregion
 
-        //region Validations
+        #region Validations
         /**
          * @inheritdoc
          *
@@ -42,7 +42,7 @@
         /**
          * Validates a if a value is a valid CPF number.
          *
-         * @param $taxId string|null CPF Number
+         * @param string|null $taxId CPF Number
          *
          * @return bool
          */
@@ -123,7 +123,7 @@
         {
             try {
                 $message = json_encode($this->message, JSON_THROW_ON_ERROR);
-            } catch (JsonException $e) {
+            } catch (JsonException) {
                 $message = '';
             }
 
@@ -168,5 +168,5 @@ if(!validateCpfNumber(value)){
 
 JS;
         }
-        //endregion
+        #endregion
     }

@@ -99,7 +99,7 @@
             $moneyAttributes      = $this->moneyAttributes();
             $percentageAttributes = $this->percentageAttributes();
 
-            if (is_array($moneyAttributes) && !empty($moneyAttributes)) {
+            if (!empty($moneyAttributes)) {
                 $filters[] = [array_keys($moneyAttributes), 'filter', 'filter' => fn ($value) => NumberHelper::brazilianCurrencyToFloat($value)];
 
                 foreach ($moneyAttributes as $k => $attrRules) {
@@ -119,7 +119,7 @@
                 }
             }
 
-            if (is_array($percentageAttributes) && !empty($percentageAttributes)) {
+            if (!empty($percentageAttributes)) {
                 $filters[] = [array_keys($percentageAttributes), 'filter', 'filter' => fn ($value) => NumberHelper::percentToFloat($value)];
 
                 foreach ($percentageAttributes as $k => $attrRules) {
@@ -223,7 +223,7 @@
         {
             $behaviors = parent::behaviors();
 
-            if ($this->hasAttribute('createdAt') && $this->hasAttribute('updatedAt')) {
+            if (!$this->isSearch && $this->hasAttribute('createdAt') && $this->hasAttribute('updatedAt')) {
                 $behaviors['datetime'] = [
                     'class'      => DateTimeBehavior::class,
                     'attributes' => [
@@ -243,15 +243,15 @@
                 ];
             }
 
-            if ($this->hasAttribute($this->externalIdAttribute)) {
-                $behaviors['sluggable'] = [
+            if (!$this->isSearch && $this->hasAttribute($this->externalIdAttribute)) {
+                $behaviors['externable'] = [
                     'class'                            => ExternalIdBehavior::class,
                     'attribute'                        => $this->externalIdAttribute,
                     'uniqueValidatorAdditionalColumns' => $this->externalIdAdditionalColumns,
                 ];
             }
 
-            if ($this->hasAttribute($this->hashableAttribute)) {
+            if (!$this->isSearch && $this->hasAttribute($this->hashableAttribute)) {
                 $behaviors['hashable'] = [
                     'class'         => HashableBehavior::class,
                     'attribute'     => $this->hashableAttribute,
@@ -261,7 +261,7 @@
 
             $linkManyAttributes = $this->linkManyToManyRelations();
 
-            if (is_array($linkManyAttributes) && !empty($linkManyAttributes)) {
+            if (!empty($linkManyAttributes)) {
                 foreach ($linkManyAttributes as $key => $value) {
                     $extraColumns = [];
                     $attribute    = $value;

@@ -12,7 +12,7 @@
      */
     class CompanyTaxIdValidator extends Validator
     {
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -24,9 +24,9 @@
 
             $this->message = Yii::t('yiitk', 'The brazilian company tax number is not valid.');
         }
-        //endregion
+        #endregion
 
-        //region Validations
+        #region Validations
         /**
          * @inheritdoc
          *
@@ -34,7 +34,7 @@
          */
         public function validateAttribute($model, $attribute)
         {
-            if (!$this->validateTaxId($model->$attribute)) {
+            if (!static::validateTaxId($model->$attribute, $this->skipOnEmpty)) {
                 $this->addError($model, $attribute, $this->message);
             }
         }
@@ -42,15 +42,18 @@
         /**
          * Validates a if a value is a valid CNJP number.
          *
-         * @param $taxId string|null CNPJ Number
+         * @param string|null $taxId CNPJ Number
+         * @param bool        $skipOnEmpty
          *
          * @return bool
+         *
+         * @noinspection PhpConditionAlreadyCheckedInspection
          */
-        private function validateTaxId(?string $taxId): bool
+        public static function validateTaxId(?string $taxId, bool $skipOnEmpty = true): bool
         {
             $taxId = (string)StringHelper::justNumbers($taxId);
 
-            if ($this->skipOnEmpty && empty($taxId)) {
+            if ($skipOnEmpty && empty($taxId)) {
                 return true;
             }
 
@@ -88,6 +91,17 @@
         }
 
         /**
+         * @param string|null $taxId
+         * @param bool        $skipOnEmpty
+         *
+         * @return bool
+         */
+        public static function isTaxIdValid(?string $taxId, bool $skipOnEmpty = true): bool
+        {
+            return static::validateTaxId($taxId, $skipOnEmpty);
+        }
+
+        /**
          * @inheritdoc
          *
          * @noinspection PhpOverridingMethodVisibilityInspection
@@ -95,7 +109,7 @@
          */
         public function validateValue($value)
         {
-            if ($this->validateTaxId($value)) {
+            if (static::validateTaxId($value, $this->skipOnEmpty)) {
                 return null;
             }
 
@@ -111,7 +125,7 @@
         {
             try {
                 $message = json_encode($this->message, JSON_THROW_ON_ERROR);
-            } catch (JsonException $e) {
+            } catch (JsonException) {
                 $message = '';
             }
 
@@ -159,5 +173,5 @@ if(!validateCnpjNumber(value)){
 
 JS;
         }
-        //endregion
+        #endregion
     }
