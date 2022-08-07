@@ -17,7 +17,7 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "php": ">=8.0.0 <8.1",
+    "php": ">=8.1.0 <8.2",
 
     "ext-json": "*",
     "ext-curl": "*",
@@ -66,6 +66,9 @@
     "process-timeout": 1800,
     "fxp-asset": {
       "enabled": false
+    },
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true
     }
   },
   "repositories": [
