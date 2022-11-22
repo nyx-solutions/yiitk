@@ -2,6 +2,7 @@
 
     namespace yiitk\bootstrap4;
 
+    use yii\bootstrap4\Html;
     use yiitk\db\ActiveRecord;
     use yiitk\helpers\ArrayHelper;
     use yiitk\helpers\NumberHelper;
@@ -40,9 +41,11 @@
         public function textInput($options = [])
         {
             if ($this->model instanceof ActiveRecord) {
-                if (in_array($this->attribute, $this->model->money())) {
+                $attribute = Html::getAttributeName($this->attribute);
+
+                if (in_array($attribute, $this->model->money())) {
                     $options = $this->findBrazilianMoneyFieldOptions($options);
-                } elseif (in_array($this->attribute, $this->model->percentage())) {
+                } elseif (in_array($attribute, $this->model->percentage())) {
                     $options = $this->findPercentageFieldOptions($options);
                 }
             }
@@ -120,9 +123,9 @@
                 $rules = [];
             }
 
-            if ($this->model->hasProperty($this->attribute)) {
-                $attribute = $this->attribute;
+            $attribute = Html::getAttributeName($this->attribute);
 
+            if ($this->model->hasProperty($attribute)) {
                 $rules['formatted'] = (($percentage) ? NumberHelper::toPercentText($this->model->$attribute) : NumberHelper::toBrazilianCurrency($this->model->$attribute));
             } else {
                 $rules['formatted'] = (($percentage) ? NumberHelper::toPercentText(0) : NumberHelper::toBrazilianCurrency(0));
