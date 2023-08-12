@@ -88,6 +88,8 @@
          * @param bool                 $save
          *
          * @return bool
+         *
+         * @noinspection PhpUndefinedFieldInspection
          */
         public function updateManyToManyRelations(string $relation, array $values, bool $save = false): bool
         {
@@ -97,7 +99,6 @@
                 if (is_numeric($value)) {
                     $ids[] = (int)$value;
                 } elseif ($value instanceof self && ($value->hasProperty('id') || $value->hasAttribute('id'))) {
-                    /** @noinspection PhpPossiblePolymorphicInvocationInspection */
                     $ids[] = (int)$value->id;
                 }
             }

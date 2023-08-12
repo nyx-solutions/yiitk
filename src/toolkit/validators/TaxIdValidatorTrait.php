@@ -19,7 +19,7 @@
          */
         abstract public function addError($attribute, $error = '');
 
-        //region Validations
+        #region Validations
         /**
          * @param string $attribute the attribute currently being validated
          */
@@ -170,5 +170,5 @@
 
             return (string)$number;
         }
-        //endregion
+        #endregion
     }

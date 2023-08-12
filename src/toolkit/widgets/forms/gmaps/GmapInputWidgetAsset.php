@@ -33,7 +33,7 @@
          */
         public $depends = [JqueryAsset::class];
 
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -47,5 +47,5 @@
 
             $this->js = ['https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places'.((!empty($apiKey)) ? "&key={$apiKey}" : '')];
         }
-        //endregion
+        #endregion
     }

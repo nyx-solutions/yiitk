@@ -76,7 +76,7 @@
          */
         public $googleApiKey = '';
 
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -110,9 +110,9 @@
 
             GmapInputWidgetAsset::register($view);
         }
-        //endregion
+        #endregion
 
-        //region Run
+        #region Run
         /**
          * @inheritdoc
          */
@@ -275,5 +275,5 @@ SCRIPT;
 <div id="gmap-{$id}-{$mapId}-canvas"></div>
 HTML;
         }
-        //endregion
+        #endregion
     }

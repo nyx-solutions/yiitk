@@ -9,6 +9,7 @@
     use Yii;
     use yii\base\InvalidCallException;
     use yii\base\InvalidConfigException;
+    use yii\helpers\Inflector;
     use yii\i18n\PhpMessageSource;
     use yiitk\helpers\ArrayHelper;
     use yiitk\helpers\InflectorHelper;
@@ -87,12 +88,21 @@
         /**
          * @inheritdoc
          */
-        public static function id()
+        public static function id(): string
         {
             $id = (new ReflectionClass(static::class))->getShortName();
-            $id = StringHelper::convertCase(InflectorHelper::camel2id($id, '_'), StringHelper::CASE_UPPER);
+            $id = StringHelper::convertCase(InflectorHelper::camel2id($id, '_'));
 
             return str_replace('_ENUM', '', $id);
+        }
+
+        /**
+         * @inheritdoc
+         */
+        public static function uid(): string
+        {
+            $id = (new ReflectionClass(static::class))->getShortName();
+            return (string)StringHelper::toLowerCase(InflectorHelper::camel2id($id, '_'));
         }
         #endregion
 
@@ -243,7 +253,7 @@
                 $labels = [];
 
                 foreach (static::findConstantsByKey() as $value) {
-                    $labels[$value] = InflectorHelper::camel2words($value, true);
+                    $labels[$value] = InflectorHelper::camel2words($value);
                 }
             }
 

@@ -13,7 +13,7 @@
      */
     class PasswordStrengthValidator extends StrengthValidator
     {
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -37,5 +37,5 @@
 
             parent::init();
         }
-        //endregion
+        #endregion
     }

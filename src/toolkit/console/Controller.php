@@ -3,7 +3,7 @@
     namespace yiitk\console;
 
     /**
-     * Class Controller
+     * Controller
      */
     class Controller extends \yii\console\Controller
     {

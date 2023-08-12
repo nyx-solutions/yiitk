@@ -41,7 +41,7 @@
          */
         public string $languages = 'pt-BR';
 
-        //region Rulesets
+        #region Rulesets
         /**
          * {@inheritdoc}
          */
@@ -88,9 +88,9 @@
                 $this->addError($attribute, "The default constant must be listed in the constants definitions.");
             }
         }
-        //endregion
+        #endregion
 
-        //region Attribute Labels and Hints
+        #region Attribute Labels and Hints
         /**
          * @inheritdoc
          *
@@ -157,9 +157,9 @@
         {
             return ['baseClass'];
         }
-        //endregion
+        #endregion
 
-        //region Required Templates
+        #region Required Templates
         /**
          * @inheritdoc
          *
@@ -172,9 +172,9 @@
                 'language.php',
             ];
         }
-        //endregion
+        #endregion
 
-        //region Success Message
+        #region Success Message
         /**
          * @inheritdoc
          *
@@ -184,9 +184,9 @@
         {
             return 'The Enum has been generated successfully.';
         }
-        //endregion
+        #endregion
 
-        //region Generation
+        #region Generation
         /**
          * @inheritdoc
          *
@@ -210,9 +210,9 @@
 
             return $files;
         }
-        //endregion
+        #endregion
 
-        //region Getters
+        #region Getters
         /**
          * @inheritdoc
          *
@@ -232,9 +232,9 @@
         {
             return 'This generator helps you to quickly generate a new Enum class.';
         }
-        //endregion
+        #endregion
 
-        //region Strategic Helpers
+        #region Strategic Helpers
 
 
         /**
@@ -335,5 +335,5 @@
 
             return ltrim(substr($this->baseClass, 0, -(strlen($name) + 1)), '\\');
         }
-        //endregion
+        #endregion
     }

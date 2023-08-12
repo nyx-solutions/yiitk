@@ -12,7 +12,7 @@
      */
     class OneWordValidator extends Validator
     {
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -24,9 +24,9 @@
 
             $this->message = Yii::t('yiitk', 'The field "{attribute}" must have only one word (without numbers, special chars or spaces).');
         }
-        //endregion
+        #endregion
 
-        //region Validations
+        #region Validations
         /**
          * @inheritdoc
          *
@@ -136,5 +136,5 @@ if(!validateOneWord(value)){
 
 JS;
         }
-        //endregion
+        #endregion
     }

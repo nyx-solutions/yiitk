@@ -30,7 +30,7 @@
          */
         public bool $json = false;
 
-        //region Initialization
+        #region Initialization
         /**
          * @return void
          */
@@ -40,9 +40,9 @@
                 $this->owner->setAttribute($attribute, null);
             }
         }
-        //endregion
+        #endregion
 
-        //region Events
+        #region Events
         /**
          * @inheritdoc
          *
@@ -59,9 +59,9 @@
                 ActiveRecord::EVENT_AFTER_UPDATE  => function () {$this->decode();},
             ];
         }
-        //endregion
+        #endregion
 
-        //region Encode & Decode
+        #region Encode & Decode
         /**
          * @return void
          */
@@ -115,9 +115,9 @@
                 $this->owner->setAttribute($attribute, $value);
             }
         }
-        //endregion
+        #endregion
 
-        //region Getters
+        #region Getters
         /**
          * @return \yii\base\Security|Security
          */
@@ -131,5 +131,5 @@
 
             return $security;
         }
-        //endregion
+        #endregion
     }

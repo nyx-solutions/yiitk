@@ -27,7 +27,7 @@ E na configuração do console, adicione:
         'class' => \yiitk\console\controllers\MigrateController::class,
         'migrationNamespaces' => [
             //...
-            'yiitk\db\migrations\session',
+            'yiitk\console\migrations\session',
             //...
         ]
     ]

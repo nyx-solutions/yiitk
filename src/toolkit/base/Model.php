@@ -20,7 +20,7 @@
          */
         protected bool $addModelsErrosToFlashMessages = false;
 
-        //region Events
+        #region Events
         /**
          * @inheritdoc
          *
@@ -38,9 +38,9 @@
 
             parent::afterValidate();
         }
-        //endregion
+        #endregion
 
-        //region Fields
+        #region Fields
         /**
          * @inheritdoc
          *
@@ -50,5 +50,5 @@
         {
             return $this->parseFields(parent::fields());
         }
-        //endregion
+        #endregion
     }

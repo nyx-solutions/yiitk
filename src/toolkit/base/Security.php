@@ -12,7 +12,7 @@
          */
         public ?string $secretKey = null;
 
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -26,5 +26,5 @@
                 $this->secretKey = sha1($this->secretKey);
             }
         }
-        //endregion
+        #endregion
     }

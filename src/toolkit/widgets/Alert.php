@@ -46,7 +46,7 @@
          */
         public array $closeButton = [];
 
-        //region Run
+        #region Run
         /**
          * @inheritdoc
          */
@@ -75,5 +75,5 @@
                 $session->removeFlash($type);
             }
         }
-        //endregion
+        #endregion
     }

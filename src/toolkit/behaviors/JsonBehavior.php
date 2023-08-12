@@ -26,7 +26,7 @@
          */
         public bool $encodeBeforeValidation = true;
 
-        //region Initialization
+        #region Initialization
         /**
          * @return void
          */
@@ -36,9 +36,9 @@
                 $this->owner->setAttribute($attribute, []);
             }
         }
-        //endregion
+        #endregion
 
-        //region Events
+        #region Events
         /**
          * @inheritdoc
          *
@@ -65,9 +65,9 @@
                 },
             ];
         }
-        //endregion
+        #endregion
 
-        //region Encode & Decode
+        #region Encode & Decode
         /**
          * @return void
          */
@@ -155,5 +155,5 @@
         {
             $this->encode();
         }
-        //endregion
+        #endregion
     }

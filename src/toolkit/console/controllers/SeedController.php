@@ -46,7 +46,7 @@
          */
         public $db = 'db';
 
-        //region Initialization
+        #region Initialization
         /**
          * Initializes the migration.
          * This method will set [[db]] to be the 'db' application component, if it is `null`.
@@ -63,9 +63,9 @@
 
             $this->db->enableSlaves = false;
         }
-        //endregion
+        #endregion
 
-        //region Actions
+        #region Actions
         /**
          * Seeds the database with stored data.
          *
@@ -81,9 +81,9 @@
 
             $this->executeSeeds($runAll);
         }
-        //endregion
+        #endregion
 
-        //region Seeds
+        #region Seeds
         /**
          * @return array
          */
@@ -91,9 +91,9 @@
         {
             return [];
         }
-        //endregion
+        #endregion
 
-        //region Run
+        #region Run
         /**
          * @param bool $all
          *
@@ -254,9 +254,9 @@
         protected function seed($action): void
         {
         }
-        //endregion
+        #endregion
 
-        //region Command Methods
+        #region Command Methods
         /**
          * Prepares for a command to be executed, and outputs to the console.
          *
@@ -282,9 +282,9 @@
                 echo ' done (time: ' . sprintf('%.3f', microtime(true) - $time) . "s)\n";
             }
         }
-        //endregion
+        #endregion
 
-        //region Data Base Methods
+        #region Data Base Methods
         /**
          * Creates and executes an INSERT SQL statement.
          * The method will properly escape the column names, and bind the values to be inserted.
@@ -383,9 +383,9 @@
 
             $this->endCommand($time);
         }
-        //endregion
+        #endregion
 
-        //region Getters
+        #region Getters
         /**
          * @return array|string|Connection
          */
@@ -393,5 +393,5 @@
         {
             return $this->db;
         }
-        //endregion
+        #endregion
     }

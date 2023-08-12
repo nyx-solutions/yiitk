@@ -10,8 +10,10 @@
 
         /**
          * @inheritdoc
+         *
+         * @noinspection PhpMissingParentCallCommonInspection
          */
-        public function safeUp()
+        public function up()
         {
             if ($this->tableExists($this->findCurrentTableName())) {
                 $this->dropTable($this->findCurrentTableName());
@@ -20,8 +22,10 @@
 
         /**
          * @inheritdoc
+         *
+         * @noinspection PhpMissingParentCallCommonInspection
          */
-        public function safeDown()
+        public function down()
         {
             echo "<?= $className; ?> cannot be reverted.\n";
 

@@ -1,11 +1,11 @@
 <?php
 
-    namespace yiitk\db\migrations\file;
+    namespace yiitk\console\migrations\file;
 
-    use yiitk\db\Migration;
-    use yiitk\file\FileManager;
-    use yiitk\enum\BooleanEnum;
     use yii\base\InvalidConfigException;
+    use yiitk\db\Migration;
+    use yiitk\enum\BooleanEnum;
+    use yiitk\file\FileManager;
     use yiitk\Module;
 
     /**
@@ -13,14 +13,15 @@
      *
      * @property FileManager $fileManager
      */
-    class m000002_000002_file extends Migration
+    class M000002000002File extends Migration
     {
         /**
          * @inheritdoc
          *
          * @noinspection RepetitiveMethodCallsInspection
+         * @noinspection PhpMissingParentCallCommonInspection
          */
-        public function safeUp()
+        public function up()
         {
             $this->tableName = $this->fileManager->fileTable;
 
@@ -73,7 +74,7 @@
             }
         }
 
-        //region Getters
+        #region Getters
         /**
          * @return FileManager
          *
@@ -85,7 +86,7 @@
             $yiitk = Module::getInstance();
 
             /** @var FileManager $fileManager */
-            $fileManager = $yiitk->get('fileManager', true);
+            $fileManager = $yiitk->get('fileManager');
 
             if (!$fileManager instanceof FileManager) {
                 throw new InvalidConfigException('The fileManager component must be an instance of '.FileManager::class);
@@ -93,5 +94,5 @@
 
             return $fileManager;
         }
-        //endregion
+        #endregion
     }

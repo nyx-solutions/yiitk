@@ -22,7 +22,7 @@
          */
         public bool $trim = false;
 
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -51,9 +51,9 @@
 
             parent::init();
         }
-        //endregion
+        #endregion
 
-        //region Validations
+        #region Validations
         /**
          * @inheritdoc
          *
@@ -84,5 +84,5 @@
         {
             return null;
         }
-        //endregion
+        #endregion
     }

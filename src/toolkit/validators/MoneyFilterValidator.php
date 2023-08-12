@@ -25,7 +25,7 @@
          */
         public int $precision = 2;
 
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -49,5 +49,5 @@
 
             parent::init();
         }
-        //endregion
+        #endregion
     }

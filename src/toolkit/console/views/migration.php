@@ -44,6 +44,5 @@
 
             parent::init();
         }
-
 <?= $this->render($migrationSubview, ['tableName' => $tableName, 'className' => $className, 'namespace' => $namespace]); ?>
     }

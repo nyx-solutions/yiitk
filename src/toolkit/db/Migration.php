@@ -2,6 +2,7 @@
 
     namespace yiitk\db;
 
+    use yiitk\db\migrations\MigrationSeedTrait;
     use Yii;
     use yii\base\Exception as YiiException;
     use yii\base\NotSupportedException;
@@ -13,19 +14,10 @@
      */
     class Migration extends \yii\db\Migration
     {
-        use SchemaBuilderTrait;
+        use MigrationSeedTrait;
 
-        protected const ROW_FORMAT_COMPACT    = 'COMPACT';
-        protected const ROW_FORMAT_REDUNDANT  = 'REDUNDANT';
-        protected const ROW_FORMAT_DYNAMIC    = 'DYNAMIC';
-        protected const ROW_FORMAT_COMPRESSED = 'COMPRESSED';
-
-        protected const NAME_MAX_LENGTH       = 31;
-
-        /**
-         * @var bool
-         */
-        protected bool $onlyMySql = true;
+        protected const HASH_ALGORITHM  = 'crc32';
+        protected const NAME_MAX_LENGTH = 31;
 
         /**
          * @var int
@@ -47,76 +39,37 @@
          */
         protected ?string $tableOptions = null;
 
-        /**
-         * @var string
-         */
-        public string $tableCharset = 'utf8';
-
-        /**
-         * @var string
-         */
-        public string $tableCollate = 'utf8_unicode_ci';
-
-        /**
-         * @var string
-         */
-        public string $tableEngine = 'InnoDB';
-
-        /**
-         * @var bool
-         */
-        public bool $useMysqlInnoDbRowFormat = true;
-
-        /**
-         * @var bool
-         */
-        public bool $useMysqlInnoDbBarracudaFileFormat = false;
-
-        /**
-         * @var string
-         */
-        public string $mysqlInnoDbRowFormat = self::ROW_FORMAT_DYNAMIC;
-
-        //region Initialization
+        #region Actions
         /**
          * @inheritdoc
          *
-         * @throws NotSupportedException
-         *
-         * @noinspection ReturnTypeCanBeDeclaredInspection
+         * @noinspection PhpMissingReturnTypeInspection
          */
-        public function init()
+        public function up()
         {
-            parent::init();
+            $up = parent::up();
 
-            if ($this->isUsingMySqlDriver()) {
-                $rowFormat = '';
+            if ($up !== false) {
+                $this->applySeeds();
 
-                if ($this->useMysqlInnoDbRowFormat && strtolower($this->tableEngine) === 'innodb') {
-                    $rowFormat = " ROW_FORMAT={$this->mysqlInnoDbRowFormat}";
-                }
-
-                if ($this->useMysqlInnoDbRowFormat && $this->useMysqlInnoDbBarracudaFileFormat && strtolower($this->tableEngine) === 'innodb') {
-                    $rowFormat = " ROW_FORMAT=".self::ROW_FORMAT_COMPRESSED;
-                }
-
-                $this->tableOptions = "CHARACTER SET {$this->tableCharset} COLLATE {$this->tableCollate}{$rowFormat} ENGINE={$this->tableEngine}";
-            } elseif ((bool)$this->onlyMySql) {
-                throw new NotSupportedException('MySQL required.');
+                return $up;
             }
-        }
-        //endregion
 
-        //region DataBase
+            return $up;
+        }
+
         /**
          * @inheritdoc
          */
-        public function safeDown()
+        public function down()
         {
+            parent::down();
+
             $this->dropTable($this->findCurrentTableName());
         }
+        #endregion
 
-        //region DataBase Tables
+        #region Tables
         /**
          * @param string $table
          *
@@ -126,14 +79,16 @@
          */
         public function tableExists(string $table): bool
         {
-            $schema = Yii::$app->db->getSchema();
-
-            $tables        = $schema->getTableNames();
+            $schema        = $this->db->getSchema();
+            $schemaName    = $schema->defaultSchema;
+            $tables        = $schema->getTableNames($schemaName, true);
             $realTableName = $schema->getRawTableName($table);
 
             return (in_array($realTableName, $tables));
         }
+        #endregion
 
+        #region Columns
         /**
          * @param string $table
          * @param string $column
@@ -145,7 +100,7 @@
         public function columnExists(string $table, string $column): bool
         {
             if ($this->tableExists($table)) {
-                $tableSchema = Yii::$app->db->getSchema()->getTableSchema($table);
+                $tableSchema = $this->db->getSchema()->getTableSchema($table);
 
                 if ($tableSchema !== null) {
                     $columns = $tableSchema->getColumnNames();
@@ -169,17 +124,9 @@
         {
             return $this->columnExists($table, $column);
         }
+        #endregion
 
-        /**
-         * @return string
-         */
-        protected function getTableOptions(): string
-        {
-            return (string)$this->tableOptions;
-        }
-        //endregion
-
-        //region DataBase FKs
+        #region Foreign Keys
         /**
          * @inheritdoc
          *
@@ -195,18 +142,25 @@
         }
 
         /**
-         * Builds a SQL statement for adding a foreign key constraint to an existing table.
-         * The method will properly quote the table and column names.
+         * @param string       $name
+         * @param string       $table
+         * @param string|array $columns
+         * @param string       $refTable
+         * @param string|array $refColumns
+         * @param string|null  $delete
+         * @param string|null  $update
          *
-         * @param string       $name       the name of the foreign key constraint.
-         * @param string       $table      the table that the foreign key constraint will be added to.
-         * @param string|array $columns    the name of the column to that the constraint will be added on. If there are multiple columns, separate them with commas or use an array.
-         * @param string       $refTable   the table that the foreign key references to.
-         * @param string|array $refColumns the name of the column that the foreign key references to. If there are multiple columns, separate them with commas or use an array.
-         * @param string|null  $delete     the ON DELETE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION, SET DEFAULT, SET NULL
-         * @param string|null  $update     the ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION, SET DEFAULT, SET NULL
+         * @return void
          */
-        public function addUniqueForeignKey(string $name, string $table, $columns, string $refTable, $refColumns, ?string $delete = null, ?string $update = null): void
+        public function addUniqueForeignKey(
+            string $name,
+            string $table,
+            string|array $columns,
+            string $refTable,
+            string|array $refColumns,
+            ?string $delete = null,
+            ?string $update = null
+        ): void
         {
             $indexName = $this->generateIndexName($name);
 
@@ -216,20 +170,27 @@
         }
 
         /**
-         * Builds a SQL statement for adding a foreign key constraint to an existing table (without index creation).
-         * The method will properly quote the table and column names.
+         * @param string       $name
+         * @param string       $table
+         * @param string|array $columns
+         * @param string       $refTable
+         * @param string|array $refColumns
+         * @param string|null  $delete
+         * @param string|null  $update
          *
-         * @param string       $name       the name of the foreign key constraint.
-         * @param string       $table      the table that the foreign key constraint will be added to.
-         * @param string|array $columns    the name of the column to that the constraint will be added on. If there are multiple columns, separate them with commas or use an array.
-         * @param string       $refTable   the table that the foreign key references to.
-         * @param string|array $refColumns the name of the column that the foreign key references to. If there are multiple columns, separate them with commas or use an array.
-         * @param string|null  $delete     the ON DELETE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION, SET DEFAULT, SET NULL
-         * @param string|null  $update     the ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION, SET DEFAULT, SET NULL
+         * @return void
          *
          * @see addForeignKey
          */
-        public function addForeignKeyWithoutIndex(string $name, string $table, $columns, string $refTable, $refColumns, ?string $delete = null, ?string $update = null): void
+        public function addForeignKeyWithoutIndex(
+            string $name,
+            string $table,
+            string|array $columns,
+            string $refTable,
+            string|array $refColumns,
+            ?string $delete = null,
+            ?string $update = null
+        ): void
         {
             parent::addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete, $update);
         }
@@ -247,7 +208,9 @@
 
             $this->dropIndex($indexName, $table);
         }
+        #endregion
 
+        #region Indexes
         /**
          * @param string $name
          *
@@ -255,9 +218,9 @@
          */
         protected function generateIndexName(string $name): string
         {
-            $indexName = $name;
+            $indexName = trim($name);
 
-            if (preg_match('/}}$/', $indexName)) {
+            if (str_ends_with($indexName, '}}')) {
                 $indexName = preg_replace('/^(.*)}}$/', '$1_idx}}', $indexName);
             } else {
                 $indexName .= '_idx';
@@ -265,9 +228,9 @@
 
             return $indexName;
         }
-        //endregion
+        #endregion
 
-        //region DataBase Views
+        #region Views
         /**
          * @param string $view
          *
@@ -289,6 +252,8 @@
          * @param string $view
          * @param string $select
          *
+         * @return void
+         *
          * @throws YiiException
          */
         public function createView(string $view, string $select): void
@@ -303,6 +268,8 @@
         /**
          * @param string $view
          *
+         * @return void
+         *
          * @throws NotSupportedException
          * @throws YiiException
          */
@@ -316,20 +283,15 @@
                 $this->execute("DROP VIEW {$view}");
             }
         }
-        //endregion
+        #endregion
 
-        //region DataBase Table Names
+        #region Table & Field Names
         /**
          * @return string
          */
         protected function findSimpleTableName(): string
         {
-            $tableName = (string)$this->tableName;
-
-            $tableName = preg_replace('/^{{%/', '', $tableName);
-            $tableName = preg_replace('/}}$/', '', $tableName);
-
-            return $tableName;
+            return preg_replace(['/^{{%/', '/}}$/'], '', (string)$this->tableName);
         }
 
         /**
@@ -367,20 +329,15 @@
          *
          * @throws DbException
          */
-        public function findFieldName(string $name, int $max = self::NAME_MAX_LENGTH, bool $exception = false): string
+        public function findFieldName(string $name, int $max = -1, bool $exception = false): string
         {
-            $tableName            = InflectorHelper::camel2id(((!empty($this->db->tablePrefix)) ? "{$this->db->tablePrefix}_" : '').$this->findSimpleTableName(), '_');
-            $tableNameInitials    = '';
-
-            /** @noinspection MissUsingForeachInspection */
-            foreach (explode('_', $tableName) as $initial) {
-                $tableNameInitials .= $initial;
-            }
-
-            $fieldName = InflectorHelper::camel2id($name, '_');
+            $max               = $this->normalizeDefaultMaxChars($max);
+            $tableName         = InflectorHelper::camel2id(((!empty($this->db->tablePrefix)) ? "{$this->db->tablePrefix}_" : '') . $this->findSimpleTableName(), '_');
+            $tableNameInitials = implode('', explode('_', $tableName));
+            $fieldName         = InflectorHelper::camel2id($name, '_');
 
             if ($exception && strlen($fieldName) > $max) {
-                throw new DbException("The field name {$fieldName} is bigger than the max size ({$max})");
+                throw new DbException("The field name {$fieldName} is bigger than the max size ({$max}).");
             }
 
             return "{$tableNameInitials}_{$fieldName}";
@@ -388,23 +345,89 @@
 
         /**
          * @param string $name
+         * @param bool   $useHash
+         * @param bool   $useTablePrefix
          *
          * @return string
          */
-        public function withTableName(string $name): string
+        public function withPrefix(string $name, bool $useHash = false, bool $useTablePrefix = true): string
         {
-            return '{{%'.$this->findSimpleTableName().'_'.InflectorHelper::camel2id($name, '_').'}}';
-        }
-        //endregion
-        //endregion
+            $table = $this->findSimpleTableName();
+            $name  = (string)InflectorHelper::camel2id($name, '_');
 
-        //region MySQL
+            if ($useHash) {
+                $table = (string)hash(self::HASH_ALGORITHM, $table);
+            }
+
+            if ($useTablePrefix) {
+                return '{{%'.$table.'_'.$name.'}}';
+            }
+
+            return "{$table}_{$name}";
+        }
+
+        /**
+         * @param string $name
+         * @param bool   $useHash
+         * @param bool   $useTablePrefix
+         *
+         * @return string
+         */
+        public function withTableName(string $name, bool $useHash = true, bool $useTablePrefix = false): string
+        {
+            return $this->withPrefix($name, $useHash, $useTablePrefix);
+        }
+        #endregion
+
+        #region Helpers
+        /**
+         * @return string
+         */
+        protected function getTableOptions(): string
+        {
+            return (string)$this->tableOptions;
+        }
+
+        /**
+         * @param int $max
+         *
+         * @return int
+         */
+        protected function normalizeDefaultMaxChars(int $max = -1): int
+        {
+            if ($max === -1) {
+                $max = self::NAME_MAX_LENGTH;
+            }
+
+            return $max;
+        }
+
+        #region Drivers
+        /**
+         * @param string $name
+         *
+         * @return bool
+         */
+        protected function isUsingDriver(string $name): bool
+        {
+            return (strtolower($this->getDb()->getDriverName()) === $name);
+        }
+
         /**
          * @return bool
          */
         protected function isUsingMySqlDriver(): bool
         {
-            return (strtolower($this->getDb()->getDriverName()) === 'mysql');
+            return $this->isUsingDriver('mysql');
         }
-        //endregion
+
+        /**
+         * @return bool
+         */
+        protected function isUsingPostgreSqlDriver(): bool
+        {
+            return $this->isUsingDriver('pgsql');
+        }
+        #endregion
+        #endregion
     }

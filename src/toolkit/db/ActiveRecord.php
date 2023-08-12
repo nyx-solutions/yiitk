@@ -8,6 +8,7 @@
     use yii\db\Expression;
     use yii\db\StaleObjectException;
     use yiitk\behaviors\DateTimeBehavior;
+    use yiitk\behaviors\DbHashableBehavior;
     use yiitk\behaviors\ExternalIdBehavior;
     use yiitk\behaviors\HashableBehavior;
     use yiitk\behaviors\LinkManyBehavior;
@@ -29,6 +30,8 @@
         use EnumTrait;
         use FlashMessagesTrait;
         use ManyToManyTrait;
+        use TransactionTrait;
+        use LockTrait;
 
         public const SCENARIO_INSERT = 'insert';
         public const SCENARIO_UPDATE = 'update';
@@ -68,7 +71,12 @@
          */
         protected bool $addErrorsToFlashMessages = false;
 
-        //region Scenarios
+        /**
+         * @var bool
+         */
+        protected bool $useDbHashableBehavior = false;
+
+        #region Scenarios
         /**
          * @inheritdoc
          *
@@ -83,9 +91,9 @@
 
             return $scenarios;
         }
-        //endregion
+        #endregion
 
-        //region Rulesets
+        #region Rulesets
         /**
          * @inheritdoc
          *
@@ -94,7 +102,7 @@
         public function rules()
         {
             $filters = [];
-            $rules   = [];
+            $rules   = parent::rules();
 
             $moneyAttributes      = $this->moneyAttributes();
             $percentageAttributes = $this->percentageAttributes();
@@ -151,9 +159,9 @@
 
             return ArrayHelper::merge($filters, $rules);
         }
-        //endregion
+        #endregion
 
-        //region Float Attributes
+        #region Float Attributes
         /**
          * @param array|null $attributes
          *
@@ -179,7 +187,7 @@
 
             return $realRules;
         }
-        //region Money Attributes
+        #region Money Attributes
         /**
          * @return array
          */
@@ -192,9 +200,9 @@
         {
             return [];
         }
-        //endregion
+        #endregion
 
-        //region Percentages Attributes
+        #region Percentages Attributes
         /**
          * @return array
          */
@@ -210,10 +218,10 @@
         {
             return [];
         }
-        //endregion
-        //endregion
+        #endregion
+        #endregion
 
-        //region Behaviors
+        #region Behaviors
         /**
          * @inheritdoc
          *
@@ -252,11 +260,18 @@
             }
 
             if (!$this->isSearch && $this->hasAttribute($this->hashableAttribute)) {
-                $behaviors['hashable'] = [
-                    'class'         => HashableBehavior::class,
-                    'attribute'     => $this->hashableAttribute,
-                    'ensureUnique'  => true
-                ];
+                if ($this->useDbHashableBehavior) {
+                    $behaviors['hashable'] = [
+                        'class'         => DbHashableBehavior::class,
+                        'attribute'     => $this->hashableAttribute,
+                    ];
+                } else {
+                    $behaviors['hashable'] = [
+                        'class'         => HashableBehavior::class,
+                        'attribute'     => $this->hashableAttribute,
+                        'ensureUnique'  => false
+                    ];
+                }
             }
 
             $linkManyAttributes = $this->linkManyToManyRelations();
@@ -286,9 +301,9 @@
 
             return $behaviors;
         }
-        //endregion
+        #endregion
 
-        //region Events
+        #region Events
         /**
          * @inheritdoc
          *
@@ -306,9 +321,9 @@
 
             parent::afterValidate();
         }
-        //endregion
+        #endregion
 
-        //region Delete
+        #region Delete
         /**
          * @inheritdoc
          *
@@ -367,9 +382,9 @@
         {
             return parent::delete();
         }
-        //endregion
+        #endregion
 
-        //region Fields
+        #region Fields
         /**
          * @inheritdoc
          *
@@ -379,5 +394,5 @@
         {
             return $this->parseFields(parent::fields());
         }
-        //endregion
+        #endregion
     }

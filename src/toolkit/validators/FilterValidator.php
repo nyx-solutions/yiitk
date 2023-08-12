@@ -9,7 +9,7 @@
      */
     class FilterValidator extends \yii\validators\FilterValidator
     {
-        //region Validations
+        #region Validations
         /**
          * @inheritdoc
          *
@@ -19,9 +19,9 @@
         {
             return null;
         }
-        //endregion
+        #endregion
 
-        //region Helpers
+        #region Helpers
         /**
          * @param callable $filter
          */
@@ -31,5 +31,5 @@
                 $this->filter = $filter;
             }
         }
-        //endregion
+        #endregion
     }

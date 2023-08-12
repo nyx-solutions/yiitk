@@ -11,7 +11,7 @@
      */
     class PercentageValidator extends NumberValidator
     {
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -23,9 +23,9 @@
 
             $this->integerOnly = false;
         }
-        //endregion
+        #endregion
 
-        //region Validations
+        #region Validations
         /**
          * @inheritdoc
          *
@@ -40,5 +40,5 @@
             return 'yii.validation.number(parseFloat(value.replace(/([^0-9\.]+)/gi, \'\')), messages, ' . Json::htmlEncode($options) . ');';
 
         }
-        //endregion
+        #endregion
     }

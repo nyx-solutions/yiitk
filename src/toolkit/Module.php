@@ -2,6 +2,8 @@
 
     namespace yiitk;
 
+    use Yii;
+    use yii\base\InvalidConfigException;
     use yii\i18n\Formatter;
     use yii\i18n\PhpMessageSource;
     use yiitk\file\FileManager;
@@ -17,36 +19,36 @@
         /**
          * @var string
          */
-        public $translationsBasePath = '@yiitk/messages';
+        public string $translationsBasePath = '@yiitk/messages';
 
         /**
          * @var bool
          */
-        public $formatter = true;
+        public bool $formatter = true;
 
         /**
          * @var string
          */
-        public $defaultTimeZone = 'America/Sao_Paulo';
+        public string $defaultTimeZone = 'America/Sao_Paulo';
 
         /**
          * @var array
          */
-        public $sessionDb = [];
+        public array $sessionDb = [];
 
         /**
          * @var array
          */
-        public $fileManager = [];
+        public array $fileManager = [];
 
         /**
          * @var array
          */
-        public $i18n = [];
+        public array $i18n = [];
 
-        //region Initialization
+        #region Initialization
         /**
-         * {@inheritdoc}
+         * @inheritdoc
          */
         public function init()
         {
@@ -54,11 +56,13 @@
 
             parent::init();
         }
-        //endregion
+        #endregion
 
-        //region Setup
+        #region Setup
         /**
          * @return void
+         *
+         * @throws InvalidConfigException
          */
         protected function setup()
         {
@@ -75,8 +79,8 @@
          */
         protected function setupAliases()
         {
-            \Yii::setAlias('@yiitk', __DIR__);
-            \Yii::setAlias('@yiitk/messages', __DIR__.'/messages');
+            Yii::setAlias('@yiitk', __DIR__);
+            Yii::setAlias('@yiitk/messages', __DIR__.'/messages');
         }
 
         /**
@@ -84,7 +88,7 @@
          */
         protected function setupConfiguration()
         {
-            \Yii::configure($this, require(__DIR__.'/config/config.php'));
+            Yii::configure($this, require(__DIR__.'/config/config.php'));
         }
 
         /**
@@ -92,7 +96,7 @@
          */
         protected function setupTranslations()
         {
-            if (!isset(\Yii::$app->i18n->translations['yiitk'])) {
+            if (!isset(Yii::$app->i18n->translations['yiitk'])) {
                 if (empty($this->i18n)) {
                     $this->i18n = [
                         'class'          => PhpMessageSource::class,
@@ -102,20 +106,20 @@
                     ];
                 }
 
-                \Yii::$app->i18n->translations['yiitk'] = $this->i18n;
+                Yii::$app->i18n->translations['yiitk'] = $this->i18n;
             }
         }
 
         /**
          * @return void
          *
-         * @throws \yii\base\InvalidConfigException
+         * @throws InvalidConfigException
          */
         protected function setupFormatter()
         {
             if ($this->formatter) {
                 /** @var Formatter $formatter */
-                $formatter = \Yii::$app->get('formatter', false);
+                $formatter = Yii::$app->get('formatter', false);
 
                 if ($formatter instanceof Formatter) {
                     $formatter->dateFormat        = 'php:d/m/Y';
@@ -152,6 +156,8 @@
 
         /**
          * @return void
+         *
+         * @throws InvalidConfigException
          */
         protected function setupFileManager()
         {
@@ -167,7 +173,7 @@
             $fileManagerConfig = ArrayHelper::merge($fileManagerConfig, $this->fileManager);
 
             /** @var FileManager $fileManager */
-            $fileManager = $this->get('fileManager', true);
+            $fileManager = $this->get('fileManager');
 
             $fileManager->fileTable       = (string)$fileManagerConfig['fileTable'];
             $fileManager->useBigIntegerPk = (bool)$fileManagerConfig['useBigIntegerPk'];
@@ -176,5 +182,5 @@
             $fileManager->fkLength        = (int)$fileManagerConfig['fkLength'];
             $fileManager->fkFieldSuffix   = (string)$fileManagerConfig['fkFieldSuffix'];
         }
-        //endregion
+        #endregion
     }

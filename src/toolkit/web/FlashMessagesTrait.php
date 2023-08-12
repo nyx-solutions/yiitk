@@ -18,7 +18,7 @@
          */
         protected bool $enableFlashMessages = true;
 
-        //region Session
+        #region Session
 
         /**
          * @return bool|Session
@@ -41,9 +41,9 @@
 
             return false;
         }
-        //endregion
+        #endregion
 
-        //region Flash Messages
+        #region Flash Messages
         /**
          * @param string $message           flash message
          * @param bool   $removeAfterAccess whether the flash message should be automatically removed only if
@@ -115,5 +115,5 @@
                 $session->addFlash('info', $message, $removeAfterAccess);
             }
         }
-        //endregion
+        #endregion
     }

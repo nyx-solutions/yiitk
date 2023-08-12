@@ -68,7 +68,7 @@
          */
         public ?string $userTimezone = null;
 
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -84,9 +84,9 @@
 
             $this->userTimezone = $this->userTimezone ?? Yii::$app->timeZone ?? 'GMT';
         }
-        //endregion
+        #endregion
 
-        //region Events
+        #region Events
         /**
          * @inheritdoc
          *
@@ -124,7 +124,7 @@
         {
             $this->updateAttributes($this->displayFormats(), self::EVENT_FIND);
         }
-        //endregion
+        #endregion
 
         /**
          * Update attributes

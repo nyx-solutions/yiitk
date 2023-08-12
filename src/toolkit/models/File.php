@@ -31,7 +31,7 @@
      */
     class File extends ActiveRecord
     {
-        //region Table Name
+        #region Table Name
         /**
          * @inheritdoc
          *
@@ -41,9 +41,9 @@
         {
             return static::findFileManager()->fileTable;
         }
-        //endregion
+        #endregion
 
-        //region Rulesets
+        #region Rulesets
         /**
          * @inheritdoc
          *
@@ -62,9 +62,9 @@
                 [['data', 'tmpData'], 'safe']
             ];
         }
-        //endregion
+        #endregion
 
-        //region Enums
+        #region Enums
         /**
          * {@inheritdoc}
          */
@@ -74,9 +74,9 @@
                 [['deleteOriginal', 'deletable'], 'enumClass' => BooleanEnum::class, 'default' => BooleanEnum::no()]
             ];
         }
-        //endregion
+        #endregion
 
-        //region Attribute Labels
+        #region Attribute Labels
         /**
          * @inheritdoc
          *
@@ -103,9 +103,9 @@
                 'updatedAt'       => Yii::t('yiitk', 'Updated At'),
             ];
         }
-        //endregion
+        #endregion
 
-        //region File Manager
+        #region File Manager
 
         /**
          * @return FileManager|null
@@ -126,5 +126,5 @@
 
             return null;
         }
-        //endregion
+        #endregion
     }

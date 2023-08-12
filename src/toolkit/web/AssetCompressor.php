@@ -134,7 +134,7 @@
          */
         public string $webroot = '@webroot';
 
-        //region Bootstrap
+        #region Bootstrap
         /**
          * @param BaseApplication $app
          *
@@ -144,5 +144,5 @@
         public function bootstrap($app)
         {
         }
-        //endregion
+        #endregion
     }

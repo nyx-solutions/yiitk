@@ -12,7 +12,7 @@
      */
     class PhoneNumberFilterValidator extends FilterValidator
     {
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -28,5 +28,5 @@
 
             parent::init();
         }
-        //endregion
+        #endregion
     }

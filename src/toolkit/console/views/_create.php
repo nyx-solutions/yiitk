@@ -10,8 +10,10 @@
 
         /**
          * @inheritdoc
+         *
+         * @noinspection PhpMissingParentCallCommonInspection
          */
-        public function safeUp()
+        public function up()
         {
             if (!$this->tableExists($this->findCurrentTableName())) {
                 $this->createTable(

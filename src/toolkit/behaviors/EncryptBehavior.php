@@ -27,7 +27,7 @@
          */
         public $value;
 
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -45,9 +45,9 @@
                 ];
             }
         }
-        //endregion
+        #endregion
 
-        //region Getters
+        #region Getters
         /**
          * @inheritdoc
          */
@@ -60,9 +60,9 @@
 
             return (($this->value !== null) ? call_user_func($this->value, $event) : new Expression('NOW()'));
         }
-        //endregion
+        #endregion
 
-        //region Touch
+        #region Touch
         /**
          * Updates a date/time attribute to the current date/time.
          *
@@ -78,5 +78,5 @@
         {
             $this->owner->updateAttributes(array_fill_keys((array)$attribute, $this->getValue(null)));
         }
-        //endregion
+        #endregion
     }

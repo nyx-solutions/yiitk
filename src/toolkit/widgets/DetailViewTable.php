@@ -92,7 +92,7 @@
          */
         public $formatter;
 
-        //region Initialization
+        #region Initialization
         /**
          * Initializes the detail view.
          * This method will initialize required property values.
@@ -139,9 +139,9 @@
                 $this->options['id'] = $this->getId();
             }
         }
-        //endregion
+        #endregion
 
-        //region Run
+        #region Run
         /**
          * Renders the detail view.
          * This is the main entry of the whole detail view rendering.
@@ -237,9 +237,9 @@
 
             echo Html::tag($tag, implode("\n", $rows), $options);
         }
-        //endregion
+        #endregion
 
-        //region Render
+        #region Render
         /**
          * Renders a single attribute.
          *
@@ -299,9 +299,9 @@
 
             return "{$label}{$value}";
         }
-        //endregion
+        #endregion
 
-        //region Normalize Attributes
+        #region Normalize Attributes
         /**
          * Normalizes the attribute specifications.
          * @throws InvalidConfigException
@@ -430,9 +430,9 @@
 
             return $attribute;
         }
-        //endregion
+        #endregion
 
-        //region Helpers
+        #region Helpers
         /**
          * @param array $row
          *
@@ -444,5 +444,5 @@
 
             return ($isGroup && !empty($row['label']));
         }
-        //endregion
+        #endregion
     }

@@ -18,7 +18,12 @@
         /**
          * The current class ID
          */
-        public static function id();
+        public static function id(): string;
+
+        /**
+         * The current class ID
+         */
+        public static function uid(): string;
         #endregion
 
         #region Creations

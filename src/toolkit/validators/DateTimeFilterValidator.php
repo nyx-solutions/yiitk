@@ -24,7 +24,7 @@
          */
         public bool $useTime = true;
 
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -51,5 +51,5 @@
 
             parent::init();
         }
-        //endregion
+        #endregion
     }

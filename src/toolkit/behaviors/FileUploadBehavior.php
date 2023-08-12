@@ -143,7 +143,7 @@
          */
         private ?UploadedFile $_file = null;
 
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -169,9 +169,9 @@
                 throw new InvalidConfigException('The "url" property must be set.');
             }
         }
-        //endregion
+        #endregion
 
-        //region Events
+        #region Events
         /**
          * @inheritdoc
          *
@@ -300,9 +300,9 @@
 
             $model->trigger(self::EVENT_AFTER_UPLOAD);
         }
-        //endregion
+        #endregion
 
-        //region Getters
+        #region Getters
         /**
          * Returns file path for the attribute.
          *
@@ -369,9 +369,9 @@
 
             return static::sanitize($file->name);
         }
-        //endregion
+        #endregion
 
-        //region Save / Delete
+        #region Save / Delete
         /**
          * Saves the uploaded file.
          *
@@ -401,9 +401,9 @@
                 unlink($path);
             }
         }
-        //endregion
+        #endregion
 
-        //region Strategic Helpers
+        #region Strategic Helpers
         /**
          * Replaces all placeholders in path variable with corresponding values.
          *
@@ -498,9 +498,9 @@
 
             return "{$uid}.{$ext}";
         }
-        //endregion
+        #endregion
 
-        //region Internal File
+        #region Internal File
         /**
          * @throws YiiException
          */
@@ -614,5 +614,5 @@
 
             return $data;
         }
-        //endregion
+        #endregion
     }

@@ -4,7 +4,7 @@
   "type": "yii2-extension",
   "keywords": ["yii2", "extension", "framework", "php"],
   "license": "BSD-3-Clause",
-  "version": "4.1.5",
+  "version": "5.0.0",
   "authors": [
     {
       "name": "YiiTK",
@@ -25,30 +25,28 @@
     "ext-mbstring": "*",
     "ext-openssl": "*",
 
-    "yiisoft/yii2": "~2.0.42",
+    "yiisoft/yii2": "~2.0.48",
 
-    "yiisoft/yii2-httpclient": "~2.0.12",
-    "yiisoft/yii2-queue": "~2.3.0",
-    "yiisoft/yii2-swiftmailer": "~2.1.2",
-    "yiisoft/yii2-bootstrap": "~2.0.10",
-    "yiisoft/yii2-bootstrap4": "~2.0.9",
+    "yiisoft/yii2-httpclient": "~2.0.15",
+    "yiisoft/yii2-queue": "~2.3.5",
+    "yiisoft/yii2-swiftmailer": "~2.1.3",
+    "yiisoft/yii2-bootstrap": "~2.0.11",
+    "yiisoft/yii2-bootstrap4": "~2.0.11",
 
-    "kartik-v/yii2-password": "~v1.5.6",
+    "kartik-v/yii2-password": "~v1.5.7",
 
     "yii2tech/ar-linkmany": "~1.0.3",
 
-    "php-curl-class/php-curl-class": "~8.9.0",
+    "php-curl-class/php-curl-class": "~9.17.4",
 
     "justinvoelker/yii2-separatedpager": "~1.0.2",
 
-    "nesbot/carbon": "~2.42.0",
+    "nesbot/carbon": "~2.68.1",
 
     "hashids/hashids": "~4.1.0"
   },
   "require-dev": {
-    "roave/security-advisories": "dev-master",
-
-    "yiisoft/yii2-gii": "~2.0.0",
+    "yiisoft/yii2-gii": "~2.2.6",
     "yiisoft/yii2-faker": "~2.0.0",
 
     "codeception/codeception": "~4.1.12",

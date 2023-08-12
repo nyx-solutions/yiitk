@@ -32,7 +32,7 @@
          */
         private ?SoapClient $_soapClient;
 
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -52,9 +52,9 @@
                 throw new HttpSoapException($exception->getMessage(), (int)$exception->getCode(), $exception);
             }
         }
-        //endregion
+        #endregion
 
-        //region Magic Methods
+        #region Magic Methods
         /**
          * @param string $name
          * @param array  $arguments
@@ -73,5 +73,5 @@
                 throw new HttpSoapException($exception->getMessage(), (int)$exception->getCode(), $exception);
             }
         }
-        //endregion
+        #endregion
     }

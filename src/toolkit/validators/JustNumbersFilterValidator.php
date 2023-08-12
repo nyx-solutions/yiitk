@@ -12,7 +12,7 @@
      */
     class JustNumbersFilterValidator extends FilterValidator
     {
-        //region Initialization
+        #region Initialization
         /**
          * @inheritdoc
          *
@@ -28,5 +28,5 @@
 
             parent::init();
         }
-        //endregion
+        #endregion
     }
